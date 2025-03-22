@@ -19,9 +19,9 @@ Trường : IUH - Đại Học Công Nghiệp TP HCM
 ✔️ **Giao diện thân thiện**: Dễ sử dụng cho cả nhân viên và chủ quán.  
 
 ## 🛠️ Công Nghệ Sử Dụng
-🔹 **Frontend**: HTML, CSS, JavaScript  
-🔹 **Backend**: PHP, MySQL  
-🔹 **Framework**: Laravel / CodeIgniter (tùy chỉnh theo yêu cầu)  
+🔹 **Frontend**: Java 
+🔹 **Backend**: MySQL  
+🔹 **Framework**: Eclipse
 🔹 **Database**: MySQL  
 
 ## 🔥 Mục Tiêu
