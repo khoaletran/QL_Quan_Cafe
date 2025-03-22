@@ -4,7 +4,7 @@
 Chào mừng bạn đến với **Cafe Manager App** – giải pháp quản lý quán nước, cà phê chuyên nghiệp và tiện lợi. Dự án này được tạo ra với mục tiêu giúp các chủ quán tối ưu hoá quy trình phục vụ, quản lý đơn hàng, doanh thu và khách hàng một cách hiệu quả nhất.
 
 ## 🎯 Môn Học
-✨ **Lập Trình Hướng Sự Kiện Với Công Nghệ Java **
+✨ **Lập Trình Hướng Sự Kiện Với Công Nghệ Java**
 
 ## 🎨 Team Phát Triển
 🏫 **Trường**: IUH - Đại Học Công Nghiệp TP HCM  
