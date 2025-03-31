@@ -56,7 +56,7 @@ public class ChiTietHoaDon {
      * @return Thành tiền (số lượng * đơn giá)
      */
     public double getThanhTien() {
-        return soLuong * hangHoa.getDonGia();
+        return soLuong * hangHoa.getGiaSP();
     }
 
     /**
