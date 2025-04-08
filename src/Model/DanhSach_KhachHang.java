@@ -21,7 +21,7 @@ public class DanhSach_KhachHang {
 	
 	public KhachHang timKHbangMa(String sdt) {
 		for(KhachHang kh : list) {
-			if(sdt.equals(kh.getSoDienThoai)) {
+			if(sdt.equals(kh.getSoDienThoai())) {
 				return kh;
 			}
 		}
