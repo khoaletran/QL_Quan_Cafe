@@ -6,7 +6,7 @@ package Model;
  */
 public class ChiTietHoaDon {
     // Thuộc tính
-    private String maCTHD;
+	
     private int soLuong;
     private HangHoa hangHoa; // Tham chiếu đến đối tượng HangHoa thay vì lưu donGia
 
@@ -18,19 +18,10 @@ public class ChiTietHoaDon {
      * @param hangHoa Hàng hóa liên quan đến chi tiết hóa đơn
      */
     public ChiTietHoaDon(String maCTHD, int soLuong, HangHoa hangHoa) {
-        this.maCTHD = maCTHD;
         this.soLuong = soLuong;
         this.hangHoa = hangHoa;
     }
 
-    // Getter và Setter cho maCTHD
-    public String getMaCTHD() {
-        return maCTHD;
-    }
-
-    public void setMaCTHD(String maCTHD) {
-        this.maCTHD = maCTHD;
-    }
 
     // Getter và Setter cho soLuong
     public int getSoLuong() {
@@ -66,6 +57,6 @@ public class ChiTietHoaDon {
      */
     @Override
     public String toString() {
-        return "ChiTietHoaDon [maCTHD=" + maCTHD + ", soLuong=" + soLuong + ", hangHoa=" + hangHoa + ", thanhTien=" + getThanhTien() + "]";
+        return "ChiTietHoaDon [soLuong=" + soLuong + ", hangHoa=" + hangHoa + ", thanhTien=" + getThanhTien() + "]";
     }
 }
