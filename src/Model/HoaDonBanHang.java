@@ -50,7 +50,7 @@ public class HoaDonBanHang {
         return tienSauGiam + chiPhiKhac;
     }
 
-    // Getter và Setter
+    // Getter và Setter kkkkk
     public String getMaHDBH() {
         return maHDBH;
     }
