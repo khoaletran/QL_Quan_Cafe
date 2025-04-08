@@ -1,29 +1,25 @@
 package Model;
 
 /**
- * Lớp ChiTietHoaDon đại diện cho chi tiết của một hóa đơn trong hệ thống.
- * Lớp này chứa các thông tin như mã chi tiết hóa đơn, số lượng và tham chiếu đến hàng hóa.
+ * Lớp ChiTietHoaDon đại diện cho một dòng sản phẩm trong hóa đơn.
+ * Chứa thông tin số lượng và tham chiếu đến đối tượng Hàng hóa.
  */
 public class ChiTietHoaDon {
-    // Thuộc tính
-	
     private int soLuong;
-    private HangHoa hangHoa; // Tham chiếu đến đối tượng HangHoa thay vì lưu donGia
+    private HangHoa hangHoa; // Tham chiếu đến đối tượng HangHoa
 
     /**
-     * Khởi tạo một đối tượng ChiTietHoaDon với các thông tin được cung cấp.
+     * Khởi tạo một chi tiết hóa đơn với số lượng và hàng hóa.
      *
-     * @param maCTHD  Mã chi tiết hóa đơn
-     * @param soLuong Số lượng sản phẩm trong chi tiết hóa đơn
-     * @param hangHoa Hàng hóa liên quan đến chi tiết hóa đơn
+     * @param soLuong Số lượng sản phẩm
+     * @param hangHoa Sản phẩm tương ứng
      */
-    public ChiTietHoaDon(String maCTHD, int soLuong, HangHoa hangHoa) {
+    public ChiTietHoaDon(int soLuong, HangHoa hangHoa) {
         this.soLuong = soLuong;
         this.hangHoa = hangHoa;
     }
 
-
-    // Getter và Setter cho soLuong
+    // Getter và Setter
     public int getSoLuong() {
         return soLuong;
     }
@@ -32,7 +28,6 @@ public class ChiTietHoaDon {
         this.soLuong = soLuong;
     }
 
-    // Getter và Setter cho hangHoa
     public HangHoa getHangHoa() {
         return hangHoa;
     }
@@ -42,21 +37,17 @@ public class ChiTietHoaDon {
     }
 
     /**
-     * Tính thành tiền của chi tiết hóa đơn dựa trên số lượng và đơn giá của hàng hóa.
-     *
-     * @return Thành tiền (số lượng * đơn giá)
+     * Tính thành tiền cho dòng sản phẩm.
+     * @return soLuong * đơn giá sản phẩm
      */
     public double getThanhTien() {
         return soLuong * hangHoa.getGiaSP();
     }
 
-    /**
-     * Trả về chuỗi biểu diễn thông tin của đối tượng ChiTietHoaDon.
-     *
-     * @return Chuỗi chứa thông tin của chi tiết hóa đơn
-     */
     @Override
     public String toString() {
-        return "ChiTietHoaDon [soLuong=" + soLuong + ", hangHoa=" + hangHoa + ", thanhTien=" + getThanhTien() + "]";
+        return "ChiTietHoaDon [hangHoa=" + hangHoa +
+                ", soLuong=" + soLuong +
+                ", thanhTien=" + getThanhTien() + "]";
     }
 }
