@@ -17,10 +17,9 @@ public class KhachHang {
      */
     public KhachHang(String tenKH, String diaChi, String soDienThoai, int diemTL, LoaiKhachHang loaiKhachHang) {
     	 /**
-         * Constructor để tạo một khách hàng với đầy đủ thông tin.
+         * Constructor để tạo một khách hàng khi nhân viên cần tạo mới.
          *
          * @param tenKH         Tên khách hàng
-         * @param diaChi        Địa chỉ khách hàng
          * @param soDienThoai   Số điện thoại khách hàng
          * @param diemTL        Điểm tích lũy của khách hàng
          * @param loaiKhachHang Loại khách hàng (VIP, thường,...)
@@ -34,7 +33,7 @@ public class KhachHang {
     
     public KhachHang(String maKH,String tenKH, String diaChi, String soDienThoai, int diemTL, LoaiKhachHang loaiKhachHang) {
    	 /**
-        * Constructor để tạo một khách hàng với đầy đủ thông tin.
+        * Constructor để tạo một khách hàng với đầy đủ thông tin lấy dữ liệu từ SQL
         *
         * @param maKH          Mã khách hàng
         * @param tenKH         Tên khách hàng
@@ -49,7 +48,22 @@ public class KhachHang {
     	setSoDienThoai(soDienThoai);
     	setDiemTL(diemTL);
     	setLoaiKhachHang(loaiKhachHang);
-   }
+    }
+    
+    public KhachHang(String tenKH ,String soDienThoai,int diemTL) {
+      	 /**
+           * Constructor này tạo khách hành mới với tên và số điện thoại khi nhập ở hóa đơn
+           *
+           * @param tenKH         Tên khách hàng
+           * @param soDienThoai   Số điện thoại khách hàng
+           * @param diemTL        Điểm tích lũy của khách hàng
+           * @param loaiKhachHang Loại khách hàng (VIP, thường,...)
+           */
+       	setTenKH(tenKH);
+       	setSoDienThoai(soDienThoai);
+       	setDiemTL(diemTL);
+       	setLoaiKhachHang(loaiKhachHang);
+      }
 
     public String getMaKH() {
         return maKH;
