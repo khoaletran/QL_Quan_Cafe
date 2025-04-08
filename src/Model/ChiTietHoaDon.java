@@ -15,16 +15,18 @@ public class ChiTietHoaDon {
      * @param hangHoa Sản phẩm tương ứng
      */
     public ChiTietHoaDon(int soLuong, HangHoa hangHoa) {
-        this.soLuong = soLuong;
+        setSoLuong(soLuong);
         this.hangHoa = hangHoa;
     }
-
     // Getter và Setter
     public int getSoLuong() {
         return soLuong;
     }
 
     public void setSoLuong(int soLuong) {
+        if(soLuong <= 0) {
+        	throw new IllegalArgumentException("Số lượng phải lớn hơn 0");
+        }
         this.soLuong = soLuong;
     }
 
