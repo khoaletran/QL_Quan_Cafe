@@ -98,7 +98,6 @@ public class HoaDonBanHang {
     public void setChiTietHoaDonList(List<ChiTietHoaDon> chiTietHoaDonList) {
         this.chiTietHoaDonList = chiTietHoaDonList;
     }
-
     // In thông tin hóa đơn
     @Override
     public String toString() {
