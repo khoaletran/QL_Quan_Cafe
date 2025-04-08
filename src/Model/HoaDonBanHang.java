@@ -1,37 +1,56 @@
 package Model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Lớp HoaDonBanHang đại diện cho một hóa đơn bán hàng trong hệ thống.
- * Lớp này chứa các thông tin cơ bản của hóa đơn như mã hóa đơn, ngày lập, giảm giá, điểm tích lũy và chi phí khách.
+ * Quản lý danh sách chi tiết hóa đơn, tính tổng tiền, áp dụng giảm giá và chi phí khác.
  */
 public class HoaDonBanHang {
-    // Thuộc tính
+    // Thuộc tính cơ bản
     private String maHDBH;
     private LocalDate ngayLapHDBH;
-    private int giamGia;
+    private int giamGia;       // phần trăm (0 - 100)
     private int diemTL;
     private double chiPhiKhac;
 
-    /**
-     * Khởi tạo một đối tượng HoaDonBanHang với các thông tin được cung cấp.
-     *
-     * @param maHDBH      Mã hóa đơn bán hàng
-     * @param ngayLapHDBH Ngày lập hóa đơn
-     * @param giamGia     Giảm giá áp dụng cho hóa đơn
-     * @param diemTL      Điểm tích lũy của hóa đơn
-     * @param chiPhiKhac  Chi phí khác liên quan đến hóa đơn
-     */
+    // Danh sách chi tiết hóa đơn
+    private List<ChiTietHoaDon> chiTietHoaDonList;
+
+    // Constructor
     public HoaDonBanHang(String maHDBH, LocalDate ngayLapHDBH, int giamGia, int diemTL, double chiPhiKhac) {
         this.maHDBH = maHDBH;
         this.ngayLapHDBH = ngayLapHDBH;
         this.giamGia = giamGia;
         this.diemTL = diemTL;
         this.chiPhiKhac = chiPhiKhac;
+        this.chiTietHoaDonList = new ArrayList<>();
     }
 
-    // Getter và Setter cho maHDBH
+    // Thêm chi tiết hóa đơn
+    public void themChiTiet(ChiTietHoaDon cthd) {
+        chiTietHoaDonList.add(cthd);
+    }
+
+    // Tính tổng tiền hàng (trước khi giảm giá)
+    public double tinhTongTienHang() {
+        double tong = 0;
+        for (ChiTietHoaDon cthd : chiTietHoaDonList) {
+            tong += cthd.getThanhTien();
+        }
+        return tong;
+    }
+
+    // Tính tổng tiền thanh toán cuối cùng
+    public double tinhTongThanhToan() {
+        double tongHang = tinhTongTienHang();
+        double tienSauGiam = tongHang * (1 - giamGia / 100.0);
+        return tienSauGiam + chiPhiKhac;
+    }
+
+    // Getter và Setter
     public String getMaHDBH() {
         return maHDBH;
     }
@@ -40,7 +59,6 @@ public class HoaDonBanHang {
         this.maHDBH = maHDBH;
     }
 
-    // Getter và Setter cho ngayLapHDBH
     public LocalDate getNgayLapHDBH() {
         return ngayLapHDBH;
     }
@@ -49,7 +67,6 @@ public class HoaDonBanHang {
         this.ngayLapHDBH = ngayLapHDBH;
     }
 
-    // Getter và Setter cho giamGia
     public int getGiamGia() {
         return giamGia;
     }
@@ -58,7 +75,6 @@ public class HoaDonBanHang {
         this.giamGia = giamGia;
     }
 
-    // Getter và Setter cho diemTL
     public int getDiemTL() {
         return diemTL;
     }
@@ -67,7 +83,6 @@ public class HoaDonBanHang {
         this.diemTL = diemTL;
     }
 
-    // Getter và Setter cho chiPhiKhac
     public double getChiPhiKhac() {
         return chiPhiKhac;
     }
@@ -76,14 +91,26 @@ public class HoaDonBanHang {
         this.chiPhiKhac = chiPhiKhac;
     }
 
-    /**
-     * Trả về chuỗi biểu diễn thông tin của đối tượng HoaDonBanHang.
-     *
-     * @return Chuỗi chứa thông tin của hóa đơn bán hàng
-     */
+    public List<ChiTietHoaDon> getChiTietHoaDonList() {
+        return chiTietHoaDonList;
+    }
+
+    public void setChiTietHoaDonList(List<ChiTietHoaDon> chiTietHoaDonList) {
+        this.chiTietHoaDonList = chiTietHoaDonList;
+    }
+
+    // In thông tin hóa đơn
     @Override
     public String toString() {
-        return "HoaDonBanHang [maHDBH=" + maHDBH + ", ngayLapHDBH=" + ngayLapHDBH + ", giamGia=" + giamGia
-                + ", diemTL=" + diemTL + ", chiPhiKhac=" + chiPhiKhac + "]";
+        return "HoaDonBanHang [" +
+                "maHDBH=" + maHDBH +
+                ", ngayLap=" + ngayLapHDBH +
+                ", giamGia=" + giamGia + "%" +
+                ", diemTL=" + diemTL +
+                ", chiPhiKhac=" + chiPhiKhac +
+                ", tongTienHang=" + tinhTongTienHang() +
+                ", thanhToan=" + tinhTongThanhToan() +
+                ", soMatHang=" + chiTietHoaDonList.size() +
+                "]";
     }
 }
