@@ -19,9 +19,9 @@ public class DanhSach_KhachHang {
 		return true;
 	}
 	
-	public KhachHang timKHbangMa(String maKH) {
+	public KhachHang timKHbangMa(String sdt) {
 		for(KhachHang kh : list) {
-			if(kh.equals(kh.getMaKH())) {
+			if(sdt.equals(kh.getSoDienThoai)) {
 				return kh;
 			}
 		}
