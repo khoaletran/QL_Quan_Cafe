@@ -27,7 +27,7 @@ public class LoaiKhachHang {
         return maLKH;
     }
 
-    // Có thể set nếu cần gán từ DB ra object
+    // Có thể set nếu cần gán từ DB ra object a
     protected void setMaLKH(String maLKH) {
     	if(maLKH == null || !maLKH.matches("^LKH\\d{6}$")) {
     		throw new IllegalArgumentException("Mã loại khách hàng sai định dạng");
