@@ -10,25 +10,28 @@ import java.util.List;
 public class HoaDonBanHang {
     private String maHDBH;               // định dạng HDXXXX
     private LocalDate ngayLapHDBH;       // ngày hiện tại
-    private int giamGia;                 // >= 0
+    private MaGiamGia giamGia;			// >= 0
     private int diemTL;                  // >= 0
+    private KhachHang khachHang;
 
-    private List<ChiTietHoaDon> chiTietHoaDonList;
+    private ArrayList<ChiTietHoaDon> chiTietHoaDonList;
 
     // constructor nhap
-    public HoaDonBanHang(int giamGia, int diemTL) {
-        setGiamGia(giamGia);
-        setDiemTL(diemTL);
-        this.chiTietHoaDonList = new ArrayList<>();
+    // Mốt làm hàm main phải khai báo dsmagiamgia với dskhachhang để thêm vào đây kho dữ liệu 
+    public HoaDonBanHang(DanhSach_MaGiamGia DSMGG,DanhSach_KhachHang DSKH,String giamGia,String sdt,String mgg) {
+        setGiamGia(DSMGG.LayMa(mgg));
+        setKhachHang(DSKH.timKHbangMa(sdt));
+        DSKH.timKHbangMa(sdt).setDiemTL(DSKH.timKHbangMa(sdt).getDiemTL() + diemTL);
+        this.chiTietHoaDonList = new ArrayList<ChiTietHoaDon>();
     }
 
-    // constructor day du lay du lieu tu sql
-    public HoaDonBanHang(String maHDBH, LocalDate ngayLapHDBH, int giamGia, int diemTL, List<ChiTietHoaDon> chiTietHoaDonList) {
+
+	// constructor day du lay du lieu tu sql
+    public HoaDonBanHang(String maHDBH, LocalDate ngayLapHDBH, int giamGia, int diemTL, ArrayList<ChiTietHoaDon> chiTietHoaDonList) {
         setMaHDBH(maHDBH);
         setNgayLapHDBH(ngayLapHDBH);
-        setGiamGia(giamGia);
         setDiemTL(diemTL);
-        setChiTietHoaDonList(chiTietHoaDonList != null ? chiTietHoaDonList : new ArrayList<>());
+        setChiTietHoaDonList(chiTietHoaDonList != null ? chiTietHoaDonList : new ArrayList<ChiTietHoaDon>());
     }
 
     // ===== Ràng buộc =====
@@ -45,13 +48,6 @@ public class HoaDonBanHang {
         this.ngayLapHDBH = ngayLapHDBH;
     }
 
-    public void setGiamGia(int giamGia) {
-        if (giamGia < 0) {
-            throw new IllegalArgumentException("Giảm giá không được âm");
-        }
-        this.giamGia = giamGia;
-    }
-
     public void setDiemTL(int diemTL) {
         if (diemTL < 0) {
             throw new IllegalArgumentException("Điểm tích lũy không được âm");
@@ -59,7 +55,7 @@ public class HoaDonBanHang {
         this.diemTL = diemTL;
     }
 
-    public void setChiTietHoaDonList(List<ChiTietHoaDon> chiTietHoaDonList) {
+    public void setChiTietHoaDonList(ArrayList<ChiTietHoaDon> chiTietHoaDonList) {
         this.chiTietHoaDonList = chiTietHoaDonList;
     }
 
@@ -72,15 +68,31 @@ public class HoaDonBanHang {
         return ngayLapHDBH;
     }
 
-    public int getGiamGia() {
-        return giamGia;
-    }
-
     public int getDiemTL() {
         return diemTL;
     }
+    
 
-    public List<ChiTietHoaDon> getChiTietHoaDonList() {
+    public MaGiamGia getGiamGia() {
+		return giamGia;
+	}
+
+	public void setGiamGia(MaGiamGia giamGia) {
+		this.giamGia = giamGia;
+	}
+	
+
+    public KhachHang getKhachHang() {
+		return khachHang;
+	}
+
+
+	public void setKhachHang(KhachHang khachHang) {
+		this.khachHang = khachHang;
+	}
+
+
+	public List<ChiTietHoaDon> getChiTietHoaDonList() {
         return chiTietHoaDonList;
     }
 
@@ -101,8 +113,12 @@ public class HoaDonBanHang {
     // ===== Tính tổng thanh toán sau giảm giá =====
     public double tinhTongThanhToan() {
     	double tong = tinhTong();
-        double giam = tong * (giamGia / 100.0);
+        double giam = tong * ( giamGia.getGiamGia() / 100.0);
         return tong - giam;
+    }
+    
+    public int getdiemTL() {
+    	return (int) (tinhTong() * 0.1);
     }
 
     @Override

@@ -11,7 +11,7 @@ public class DanhSach_KhachHang {
 	
 	public boolean themKH(KhachHang KH) {
 		for(KhachHang kh : list) {
-			if(kh.equals(kh.getMaKH())) {
+			if(KH.equals(kh.getMaKH())) {
 				return false;
 			}
 		}
