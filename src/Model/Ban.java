@@ -2,24 +2,21 @@ package Model;
 
 /**
  * Lớp Ban đại diện cho một bàn trong hệ thống.
- * Lớp này chứa các thông tin cơ bản của bàn như mã bàn, tên bàn và thuộc tính.
+ * Lớp này chứa các thông tin cơ bản của bàn như mã bàn và trạng thái bàn (trống hay không).
  */
 public class Ban {
     // Thuộc tính
     private String maBan;
-    private String tenBan;
-    private String thuocTinh;
+    private boolean thuocTinh; // true: Trống, false: Không trống
 
     /**
      * Khởi tạo một đối tượng Ban với các thông tin được cung cấp.
      *
-     * @param maBan     Mã bàn
-     * @param tenBan    Tên bàn
-     * @param thuocTinh Thuộc tính của bàn (ví dụ: "Trống", "Đã đặt")
+     * @param maBan      Mã bàn
+     * @param thuocTinh  Trạng thái bàn (true: Trống, false: Không trống)
      */
-    public Ban(String maBan, String tenBan, String thuocTinh) {
-        this.maBan = maBan;
-        this.tenBan = tenBan;
+    public Ban(String maBan, boolean thuocTinh) {
+        setMaBan(maBan);
         this.thuocTinh = thuocTinh;
     }
 
@@ -28,25 +25,26 @@ public class Ban {
         return maBan;
     }
 
+    /**
+     * Thiết lập mã bàn cho đối tượng.
+     * Mã bàn phải theo định dạng: Bx.xxxx (x là chữ số), ví dụ: B1.1234
+     *
+     * @param maBan Mã bàn cần thiết lập
+     * @throws IllegalArgumentException nếu mã bàn không đúng định dạng
+     */
     public void setMaBan(String maBan) {
+        if (!maBan.matches("^B\\d\\.\\d{4}$")) {
+            throw new IllegalArgumentException("Mã bàn không hợp lệ! Định dạng phải là Bx.xxxx (x là chữ số).");
+        }
         this.maBan = maBan;
     }
 
-    // Getter và Setter cho tenBan
-    public String getTenBan() {
-        return tenBan;
-    }
-
-    public void setTenBan(String tenBan) {
-        this.tenBan = tenBan;
-    }
-
     // Getter và Setter cho thuocTinh
-    public String getThuocTinh() {
+    public boolean isThuocTinh() {
         return thuocTinh;
     }
 
-    public void setThuocTinh(String thuocTinh) {
+    public void setThuocTinh(boolean thuocTinh) {
         this.thuocTinh = thuocTinh;
     }
 
@@ -57,6 +55,6 @@ public class Ban {
      */
     @Override
     public String toString() {
-        return "Ban [maBan=" + maBan + ", tenBan=" + tenBan + ", thuocTinh=" + thuocTinh + "]";
+        return "Ban [maBan=" + maBan + ", thuocTinh=" + thuocTinh + "]";
     }
 }
