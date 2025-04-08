@@ -6,7 +6,7 @@ package Model;
  */
 public class ChiTietHoaDon {
     private int soLuong;
-    private HangHoa hangHoa; // Tham chiếu đến đối tượng HangHoa
+    private HangHoa hangHoa;
 
     /**
      * Khởi tạo một chi tiết hóa đơn với số lượng và hàng hóa.
