@@ -126,7 +126,7 @@ public class HoaDonBanHang {
         return "HoaDonBanHang [" +
                 "maHDBH=" + maHDBH +
                 ", ngayLap=" + ngayLapHDBH +
-                ", giamGia=" + giamGia +
+                ", giamGia=" + giamGia.getGiamGia() +
                 ", diemTL=" + diemTL +
                 ", tongTienHang=" + tinhTong() +
                 ", thanhToan=" + tinhTongThanhToan() +
