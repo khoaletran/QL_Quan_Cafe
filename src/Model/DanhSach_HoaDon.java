@@ -50,4 +50,10 @@ public class DanhSach_HoaDon {
         }
         return sum;
     }
+    public HoaDonBanHang getElementAt(int index) {
+    	if(index < 0 || index >= listHD.size()) {
+    		throw new IllegalArgumentException("Không tìm thấy");
+    	}
+    	return listHD.get(index);
+    }
 }
