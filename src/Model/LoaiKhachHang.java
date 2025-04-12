@@ -23,6 +23,20 @@ public class LoaiKhachHang {
         setGiamGia(giamGia);
     }
 
+    
+    public LoaiKhachHang(String maLKH,String tenLKH, int giamGia) {
+		/**
+		 * Constructor để tạo một loại khách hàng.
+		 * 
+		 * @param maLKH    Mã loại khách hàng
+		 * @param tenLKH   Tên loại khách hàng
+		 * @param giamGia  Phần trăm giảm giá áp dụng cho khách hàng
+		 */
+    	setMaLKH(maLKH);
+        setTenLKH(tenLKH);
+        setGiamGia(giamGia);
+    }
+    
     public String getMaLKH() {
         return maLKH;
     }

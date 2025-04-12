@@ -15,15 +15,18 @@ public class LoaiKhachHang_DAO {
 		try {
 			ConnectDB.getInstance();
 			Connection con = ConnectDB.getConnection();
-			
-			String sql = "SELECT * FROM MAGIAMGIA";
+				
+			String sql = "SELECT * FROM LOAIKHACHHANG";
 			Statement statement = con.createStatement();
 			//Thực thi câu lệnh SQL trả về đối tượng ResultSet.
 			ResultSet rs = statement.executeQuery(sql);
 			//Duyệt trên kết quả trả về
 			while(rs.next()) {
-				String maGiam = rs.getString("MAGIAM");
+				String maLKH = rs.getString("MALKH");
+				String tenKH = rs.getString("TENLKH");
 				int giamGia = rs.getInt("GIAMGIA");
+				LoaiKhachHang LKH = new LoaiKhachHang(maLKH, tenKH, giamGia);
+				dsLoaiKhachHang.add(LKH);
 			}	
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -31,4 +34,5 @@ public class LoaiKhachHang_DAO {
 		return dsLoaiKhachHang;
 		
 	}
+	
 }
