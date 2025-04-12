@@ -813,6 +813,8 @@ public class CoffeeShopUI extends JFrame {
         });
     }
     
+    
+    
     class ButtonRenderer extends JButton implements javax.swing.table.TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);

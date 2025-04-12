@@ -78,6 +78,8 @@ public class KhachHang {
     	this.maKH = maKH;
     }
 
+    
+    
     public String getTenKH() {
         return tenKH;
     }
