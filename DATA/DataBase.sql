@@ -16,6 +16,7 @@ CREATE TABLE LOAIKHACHHANG (
     MALKH VARCHAR(50) PRIMARY KEY,
     TENLKH NVARCHAR(100),
     GIAMGIA INT
+    MUCDIEM INT,
 );
 
 CREATE TABLE KHACHHANG (
@@ -202,3 +203,51 @@ BEGIN
     VALUES (@NEW_MA, @TENLH, @MOTA);
 END;
 GO
+
+INSERT INTO NHANVIEN (TENNV, DIACHI, NGAYVAOLAM, GIOITINH, SDT, MATKHAU)
+VALUES
+(N'Nguyễn Văn A', N'Quận 1, TP.HCM', '2024-01-01', 1, '0909123456', N'passA'),
+(N'Trần Thị B', N'Quận 2, TP.HCM', '2024-02-15', 0, '0909234567', N'passB'),
+(N'Lê Văn C', N'Quận 3, TP.HCM', '2024-03-10', 1, '0909345678', N'passC'),
+(N'Phạm Thị D', N'Quận 4, TP.HCM', '2024-04-20', 0, '0909456789', N'passD'),
+(N'Hoàng Văn E', N'Quận 5, TP.HCM', '2024-05-25', 1, '0909567890', N'passE');
+
+INSERT INTO LOAIKHACHHANG (TENLKH, GIAMGIA, MUCDIEM)
+VALUES
+(N'Thường', 0, 0),
+(N'Thân Thiết', 5, 100),
+(N'Bạc', 10, 300),
+(N'Vàng', 15, 500),
+(N'Kim Cương', 20, 1000);
+
+INSERT INTO KHACHHANG (MALKH, TENKH, SDT, DIEMTL)
+VALUES
+('LKH0001', N'Nguyễn Thị X', '0911123456', 100),
+('LKH0002', N'Trần Văn Y', '0911234567', 200),
+('LKH0003', N'Lê Thị Z', '0911345678', 300),
+('LKH0004', N'Phạm Văn W', '0911456789', 400),
+('LKH0005', N'Hoàng Thị V', '0911567890', 500);
+
+INSERT INTO LOAIHANGHOA (TENLH, MOTA)
+VALUES
+(N'Cà phê', N'Cà phê các loại'),
+(N'Trà', N'Trà các loại'),
+(N'Nước ép', N'Nước ép trái cây'),
+(N'Sinh tố', N'Sinh tố trái cây'),
+(N'Bánh ngọt', N'Các loại bánh ngọt');
+
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP)
+VALUES
+('LH0001', N'Cà phê đen', N'capheden.jpg', 20000),
+('LH0002', N'Trà sữa', N'trasua.jpg', 30000),
+('LH0003', N'Nước cam', N'nuoccam.jpg', 25000),
+('LH0004', N'Sinh tố bơ', N'sinhtobo.jpg', 35000),
+('LH0005', N'Bánh mì', N'banhmi.jpg', 15000);
+
+INSERT INTO MAGIAMGIA (MAGIAM, GIAMGIA)
+VALUES
+('MGG10', 10),
+('MGG20', 20),
+('MGG30', 30),
+('MGG40', 40),
+('MGG50', 50);

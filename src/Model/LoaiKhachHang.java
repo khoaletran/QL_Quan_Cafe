@@ -64,6 +64,7 @@ public class LoaiKhachHang {
         return giamGia;
     }
 
+
     public void setGiamGia(int giamGia) {
         if (giamGia <= 0 || giamGia >= 100) {
             throw new IllegalArgumentException("Giảm giá phải lớn hơn 0% và nhỏ hơn 100%.");
