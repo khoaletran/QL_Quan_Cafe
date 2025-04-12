@@ -4,7 +4,6 @@ public class KhachHang {
 
     private String maKH; // SQL tự tăng – không set từ Java
     private String tenKH;
-    private String diaChi;
     private String soDienThoai;
     private int diemTL;
     private LoaiKhachHang loaiKhachHang;
@@ -15,7 +14,7 @@ public class KhachHang {
     /**
      * Constructor không bao gồm maKH (vì SQL tự tăng).
      */
-    public KhachHang(String tenKH, String diaChi, String soDienThoai, int diemTL, LoaiKhachHang loaiKhachHang) {
+    public KhachHang(String tenKH, String soDienThoai, int diemTL, LoaiKhachHang loaiKhachHang) {
     	 /**
          * Constructor để tạo một khách hàng khi nhân viên cần tạo mới.
          *
@@ -25,26 +24,23 @@ public class KhachHang {
          * @param loaiKhachHang Loại khách hàng (VIP, thường,...)
          */
         setTenKH(tenKH);
-        setDiaChi(diaChi);
         setSoDienThoai(soDienThoai);
         setDiemTL(diemTL);
         setLoaiKhachHang(loaiKhachHang);
     }
     
-    public KhachHang(String maKH,String tenKH, String diaChi, String soDienThoai, int diemTL, LoaiKhachHang loaiKhachHang) {
+    public KhachHang(String maKH,String tenKH, String soDienThoai, int diemTL, LoaiKhachHang loaiKhachHang) {
    	 /**
         * Constructor để tạo một khách hàng với đầy đủ thông tin lấy dữ liệu từ SQL
         *
         * @param maKH          Mã khách hàng
         * @param tenKH         Tên khách hàng
-        * @param diaChi        Địa chỉ khách hàng
         * @param soDienThoai   Số điện thoại khách hàng
         * @param diemTL        Điểm tích lũy của khách hàng
         * @param loaiKhachHang Loại khách hàng (VIP, thường,...)
         */
     	setMaKH(maKH);
     	setTenKH(tenKH);
-    	setDiaChi(diaChi);
     	setSoDienThoai(soDienThoai);
     	setDiemTL(diemTL);
     	setLoaiKhachHang(loaiKhachHang);
@@ -89,16 +85,7 @@ public class KhachHang {
         this.tenKH = tenKH.trim();
     }
 
-    public String getDiaChi() {
-        return diaChi;
-    }
 
-    public void setDiaChi(String diaChi) {
-        if (diaChi == null || diaChi.trim().isEmpty()) {
-            throw new IllegalArgumentException("Địa chỉ không được để trống.");
-        }
-        this.diaChi = diaChi.trim();
-    }
 
     public String getSoDienThoai() {
         return soDienThoai;
@@ -135,7 +122,7 @@ public class KhachHang {
 
     @Override
     public String toString() {
-        return "KhachHang [maKH=" + maKH + ", tenKH=" + tenKH + ", diaChi=" + diaChi + ", soDienThoai=" + soDienThoai
+        return "KhachHang [maKH=" + maKH + ", tenKH=" + tenKH + ", soDienThoai=" + soDienThoai
                 + ", diemTL=" + diemTL + ", loaiKhachHang=" + loaiKhachHang + "]";
     }
 }
