@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectDB {
-	private static Connection con = null;
+	private static Connection con;
 	private static ConnectDB instance = new ConnectDB();
 	
 
