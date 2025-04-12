@@ -422,110 +422,116 @@ public class CoffeeShopUI extends JFrame {
     }
     
     private JPanel createOrderPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        // Tiêu đề và TextField số điện thoại
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        JLabel titleLabel = new JLabel("ĐƠN HÀNG HIỆN TẠI", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        headerPanel.add(titleLabel, BorderLayout.NORTH);
-        
-        JPanel phonePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        phonePanel.add(new JLabel("Số điện thoại:"));
-        phoneField = new JTextField(15);
-        phoneField.setPreferredSize(new Dimension(150, 25));
-        phonePanel.add(phoneField);
-        headerPanel.add(phonePanel, BorderLayout.SOUTH);
-        
-        panel.add(headerPanel, BorderLayout.NORTH);
-        
-        // Bảng đơn hàng
-        String[] columns = {"Sản phẩm", "Số lượng", "Giá", "Tổng", "Xóa"};
-        orderTableModel = new DefaultTableModel(columns, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return column == 4;
-            }
-        };
-        orderTable = new JTable(orderTableModel);
-        orderTable.getColumn("Xóa").setCellRenderer(new ButtonRenderer());
-        orderTable.getColumn("Xóa").setCellEditor(new ButtonEditor(new JCheckBox()));
-        
-        orderTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-        orderTable.getColumnModel().getColumn(1).setPreferredWidth(60);
-        orderTable.getColumnModel().getColumn(2).setPreferredWidth(60);
-        orderTable.getColumnModel().getColumn(3).setPreferredWidth(60);
-        orderTable.getColumnModel().getColumn(4).setPreferredWidth(50);
-        
-        JScrollPane tableScrollPane = new JScrollPane(orderTable);
-        panel.add(tableScrollPane, BorderLayout.CENTER);
-        
-        // Phần tổng kết
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        
-        JPanel summaryPanel = new JPanel();
-        summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.Y_AXIS));
-        
-        JLabel totalLabel = new JLabel("Tổng: 0đ", SwingConstants.RIGHT);
-        totalLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        totalLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        
-        // Mã giảm giá và chiết khấu
-        JPanel discountPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JLabel discountCodeLabel = new JLabel("Mã giảm giá:");
-        discountCodeLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        discountCodeLabel.setForeground(Color.BLUE);
-        discountCodeField = new JTextField(10);
-        discountCodeField.setPreferredSize(new Dimension(100, 25));
-        discountCodeField.getDocument().addDocumentListener(new DocumentListener() {
-            public void changedUpdate(DocumentEvent e) { updateDiscount(); }
-            public void removeUpdate(DocumentEvent e) { updateDiscount(); }
-            public void insertUpdate(DocumentEvent e) { updateDiscount(); }
-            
-            private void updateDiscount() {
-                updateOrderTable();
-            }
-        });
-        discountPanel.add(discountCodeLabel);
-        discountPanel.add(discountCodeField);
-        
-        JLabel discountAmountLabel = new JLabel("Chiết khấu: 0đ", SwingConstants.RIGHT);
-        discountAmountLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        discountAmountLabel.setForeground(Color.BLUE);
-        discountAmountLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        
-        JLabel totalAfterDiscountLabel = new JLabel("Tổng tiền sau giảm giá: 0đ", SwingConstants.RIGHT);
-        totalAfterDiscountLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        totalAfterDiscountLabel.setForeground(Color.RED);
-        totalAfterDiscountLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        
-        summaryPanel.add(totalLabel);
-        summaryPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        summaryPanel.add(discountPanel);
-        summaryPanel.add(discountAmountLabel);
-        summaryPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        summaryPanel.add(totalAfterDiscountLabel);
-        
-        bottomPanel.add(summaryPanel, BorderLayout.NORTH);
-        
-        JButton checkoutButton = new JButton("Thanh Toán");
-        checkoutButton.setBackground(new Color(34, 139, 34));
-        checkoutButton.setForeground(Color.WHITE);
-        checkoutButton.setOpaque(true);
-        checkoutButton.setBorderPainted(false);
-        checkoutButton.setContentAreaFilled(true);
-        checkoutButton.addActionListener(e -> checkout());
-        bottomPanel.add(checkoutButton, BorderLayout.CENTER);
-        
-        panel.add(bottomPanel, BorderLayout.SOUTH);
-        
-        panel.putClientProperty("totalLabel", totalLabel);
-        panel.putClientProperty("discountAmountLabel", discountAmountLabel);
-        panel.putClientProperty("totalAfterDiscountLabel", totalAfterDiscountLabel);
-        
-        return panel;
-    }
+    JPanel panel = new JPanel(new BorderLayout());
+    panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    // Tiêu đề và TextField số điện thoại
+    JPanel headerPanel = new JPanel(new BorderLayout());
+    JLabel titleLabel = new JLabel("ĐƠN HÀNG HIỆN TẠI", SwingConstants.CENTER);
+    titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+    headerPanel.add(titleLabel, BorderLayout.NORTH);
+
+    JPanel phonePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    phonePanel.add(new JLabel("Số điện thoại khách hàng:"));
+    phoneField = new JTextField(10);
+    phoneField.setPreferredSize(new Dimension(150, 25));
+    phonePanel.add(phoneField);
+    headerPanel.add(phonePanel, BorderLayout.SOUTH);
+
+    panel.add(headerPanel, BorderLayout.NORTH);
+
+    // Bảng đơn hàng
+    String[] columns = {"Sản phẩm", "Số lượng", "Giá", "Tổng", "Xóa"};
+    orderTableModel = new DefaultTableModel(columns, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return column == 4;
+        }
+    };
+    orderTable = new JTable(orderTableModel);
+    orderTable.getColumn("Xóa").setCellRenderer(new ButtonRenderer());
+    orderTable.getColumn("Xóa").setCellEditor(new ButtonEditor(new JCheckBox()));
+
+    orderTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+    orderTable.getColumnModel().getColumn(1).setPreferredWidth(60);
+    orderTable.getColumnModel().getColumn(2).setPreferredWidth(60);
+    orderTable.getColumnModel().getColumn(3).setPreferredWidth(60);
+    orderTable.getColumnModel().getColumn(4).setPreferredWidth(50);
+
+    JScrollPane tableScrollPane = new JScrollPane(orderTable);
+    panel.add(tableScrollPane, BorderLayout.CENTER);
+
+    // Phần tổng kết
+    JPanel bottomPanel = new JPanel(new BorderLayout());
+
+    // Panel chứa tổng, mã giảm giá, chiết khấu, thành tiền
+    JPanel summaryPanel = new JPanel();
+    summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.Y_AXIS));
+
+    // Tổng
+    JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    JLabel totalLabel = new JLabel("Tổng: 0đ");
+    totalLabel.setFont(new Font("Arial", Font.BOLD, 16));
+    totalPanel.add(totalLabel);
+    summaryPanel.add(totalPanel);
+
+    // Mã giảm giá
+    JPanel discountPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    JLabel discountCodeLabel = new JLabel("Mã giảm giá:");
+    discountCodeLabel.setFont(new Font("Arial", Font.BOLD, 14));
+    discountCodeLabel.setForeground(Color.BLUE);
+    discountCodeField = new JTextField(10);
+    discountCodeField.setPreferredSize(new Dimension(100, 25));
+    discountCodeField.getDocument().addDocumentListener(new DocumentListener() {
+        public void changedUpdate(DocumentEvent e) { updateDiscount(); }
+        public void removeUpdate(DocumentEvent e) { updateDiscount(); }
+        public void insertUpdate(DocumentEvent e) { updateDiscount(); }
+
+        private void updateDiscount() {
+            updateOrderTable();
+        }
+    });
+    discountPanel.add(discountCodeLabel);
+    discountPanel.add(discountCodeField);
+    summaryPanel.add(discountPanel);
+
+    // Chiết khấu
+    JPanel discountAmountPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    JLabel discountAmountLabel = new JLabel("Chiết khấu: 0đ");
+    discountAmountLabel.setFont(new Font("Arial", Font.BOLD, 14));
+    discountAmountLabel.setForeground(Color.BLUE);
+    discountAmountPanel.add(discountAmountLabel);
+    summaryPanel.add(discountAmountPanel);
+
+    // Thành tiền
+    JPanel totalAfterDiscountPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    JLabel totalAfterDiscountLabel = new JLabel("Thành tiền: 0đ");
+    totalAfterDiscountLabel.setFont(new Font("Arial", Font.BOLD, 16));
+    totalAfterDiscountLabel.setForeground(Color.RED);
+    totalAfterDiscountPanel.add(totalAfterDiscountLabel);
+    summaryPanel.add(totalAfterDiscountPanel);
+
+    bottomPanel.add(summaryPanel, BorderLayout.NORTH);
+
+    // Nút Thanh Toán
+    JButton checkoutButton = new JButton("Thanh Toán");
+    checkoutButton.setBackground(new Color(34, 139, 34));
+    checkoutButton.setForeground(Color.WHITE);
+    checkoutButton.setOpaque(true);
+    checkoutButton.setBorderPainted(false);
+    checkoutButton.setContentAreaFilled(true);
+    checkoutButton.addActionListener(e -> checkout());
+    bottomPanel.add(checkoutButton, BorderLayout.CENTER);
+
+    panel.add(bottomPanel, BorderLayout.SOUTH);
+
+    // Lưu các nhãn vào panel để sử dụng sau
+    panel.putClientProperty("totalLabel", totalLabel);
+    panel.putClientProperty("discountAmountLabel", discountAmountLabel);
+    panel.putClientProperty("totalAfterDiscountLabel", totalAfterDiscountLabel);
+
+    return panel;
+}
     
     private void showProductDetail(String productId) {
         HangHoa product = products.get(productId);

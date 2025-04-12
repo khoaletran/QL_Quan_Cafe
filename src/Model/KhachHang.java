@@ -103,8 +103,8 @@ public class KhachHang {
     }
 
     public void setDiemTL(int diemTL) {
-        if (diemTL <= 0) {
-            throw new IllegalArgumentException("Điểm tích lũy phải lớn hơn 0.");
+        if (diemTL < 0) {
+            throw new IllegalArgumentException("Điểm tích lũy phải lớn hơn hoặc bằng 0.");
         }
         this.diemTL = diemTL;
     }
