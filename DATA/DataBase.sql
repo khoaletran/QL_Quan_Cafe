@@ -77,3 +77,18 @@ create role role_QuanCafe
 grant insert, select, update, delete
 to role_QuanCafe
 exec sp_addrolemember role_QuanCafe, QLQuanCafe;
+
+CREATE FUNCTION FN_LAY_MAGIAMGIA()
+RETURNS TABLE
+AS
+RETURN (
+    SELECT * FROM MAGIAMGIA
+);
+
+
+CREATE FUNCTION FN_LAY_MAGIAMGIA()
+RETURNS TABLE
+AS
+RETURN (
+    SELECT * FROM MAGIAMGIA
+);
