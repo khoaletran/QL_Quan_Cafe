@@ -31,8 +31,8 @@ public class DanhSach_KhachHang {
 	public void capNhatDiemTichLuy(String sdt, int diemTL) {
 		for (KhachHang kh : listKH) {
 			if(kh.getSoDienThoai().equals(sdt)) {
-				int diemBanDau = kh.getDiemTL();
-				kh.setDiemTL(diemBanDau + diemTL);
+				kh.setDiemTL(kh.getDiemTL() + diemTL);
+				kh.setLoaiKhachHang(kh.getDiemTL());
 			}
 		}
 	}

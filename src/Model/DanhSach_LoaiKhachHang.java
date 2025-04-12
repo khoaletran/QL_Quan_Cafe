@@ -10,7 +10,7 @@ public class DanhSach_LoaiKhachHang {
 	}
 	
 	public DanhSach_LoaiKhachHang(ArrayList<LoaiKhachHang> listnew) {
-		list = listnew;
+		listLKH = listnew;
 	}
 	
 	public LoaiKhachHang getLoaiKH(String maLKH) {
