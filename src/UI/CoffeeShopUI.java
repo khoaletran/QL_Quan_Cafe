@@ -764,6 +764,8 @@ public class CoffeeShopUI extends JFrame {
                 formatter.format(item.getThanhTien()) + "đ"));
         }
         
+        //
+        
         receipt.append("----------------------------------\n");
         receipt.append(String.format("%-25s %10s\n", "Tổng tiền:", formatter.format(total) + "đ"));
         receipt.append(String.format("%-25s %10s\n", "Chiết khấu:", formatter.format(discount) + "đ"));
