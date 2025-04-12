@@ -3,29 +3,45 @@ package Model;
 import java.util.ArrayList;
 
 public class DanhSach_KhachHang {
-	private ArrayList<KhachHang> list;
+	private ArrayList<KhachHang> listKH;
 	
 	public DanhSach_KhachHang() {
-		list = new ArrayList<KhachHang>();
+		listKH = new ArrayList<KhachHang>();
 	}
 	
 	public boolean themKH(KhachHang KH) {
-		for(KhachHang kh : list) {
+		for(KhachHang kh : listKH) {
 			if(KH.equals(kh.getMaKH())) {
 				return false;
 			}
 		}
-		list.add(KH);
+		listKH.add(KH);
 		return true;
 	}
 	
 	public KhachHang timKHbangMa(String sdt) {
-		for(KhachHang kh : list) {
+		for(KhachHang kh : listKH) {
 			if(sdt.equals(kh.getSoDienThoai())) {
 				return kh;
 			}
 		}
 		return null;
 	}
+	
+	public void capNhatDiemTichLuy(String sdt, int diemTL) {
+		for (KhachHang kh : listKH) {
+			if(kh.getSoDienThoai().equals(sdt)) {
+				int diemBanDau = kh.getDiemTL();
+				kh.setDiemTL(diemBanDau + diemTL);
+			}
+		}
+	}
+	  public KhachHang getElementAt(int index) {
+	    	if(index < 0 || index >= listKH.size()) {
+	    		throw new IllegalArgumentException("Không tìm thấy");
+	    	}
+	    	return listKH.get(index);
+	    }
+	
 	
 }
