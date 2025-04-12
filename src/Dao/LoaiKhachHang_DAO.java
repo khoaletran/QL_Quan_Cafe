@@ -10,7 +10,7 @@ import Model.LoaiKhachHang;
 import Model.MaGiamGia;
 
 public class LoaiKhachHang_DAO {
-	public ArrayList<LoaiKhachHang> getAllMaGiamGia(){
+	public ArrayList<LoaiKhachHang> getAllLoaiKhachHang(){
 		ArrayList<LoaiKhachHang> dsLoaiKhachHang = new ArrayList<LoaiKhachHang>();
 		try {
 			ConnectDB.getInstance();
@@ -25,7 +25,8 @@ public class LoaiKhachHang_DAO {
 				String maLKH = rs.getString("MALKH");
 				String tenKH = rs.getString("TENLKH");
 				int giamGia = rs.getInt("GIAMGIA");
-				LoaiKhachHang LKH = new LoaiKhachHang(maLKH, tenKH, giamGia);
+				int mucDiem = rs.getInt("MUCDIEM");
+				LoaiKhachHang LKH = new LoaiKhachHang(maLKH, tenKH, giamGia,mucDiem);
 				dsLoaiKhachHang.add(LKH);
 			}	
 		} catch (Exception e) {

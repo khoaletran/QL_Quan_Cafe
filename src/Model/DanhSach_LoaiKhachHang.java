@@ -9,6 +9,10 @@ public class DanhSach_LoaiKhachHang {
 		list = new ArrayList<LoaiKhachHang>();
 	}
 	
+	public DanhSach_LoaiKhachHang(ArrayList<LoaiKhachHang> listnew) {
+		list = listnew;
+	}
+	
 	public LoaiKhachHang getLoaiKH(String maLKH) {
 		for(LoaiKhachHang l : list) {
 			if(l.getMaLKH().equals(maLKH)) {

@@ -4,6 +4,7 @@ public class LoaiKhachHang {
     private String maLKH;          // SQL tự tăng – không set từ bên ngoài
     private String tenLKH;
     private int giamGia;           // Phần trăm giảm giá (1% – 99%)
+    private int mucDiem;
 
     public LoaiKhachHang() {
     }
@@ -24,7 +25,7 @@ public class LoaiKhachHang {
     }
 
     
-    public LoaiKhachHang(String maLKH,String tenLKH, int giamGia) {
+    public LoaiKhachHang(String maLKH,String tenLKH, int giamGia,int mucdiem) {
 		/**
 		 * Constructor để tạo một loại khách hàng.
 		 * 
@@ -35,6 +36,7 @@ public class LoaiKhachHang {
     	setMaLKH(maLKH);
         setTenLKH(tenLKH);
         setGiamGia(giamGia);
+        setMucDiem(mucdiem);
     }
     
     public String getMaLKH() {
@@ -71,8 +73,17 @@ public class LoaiKhachHang {
         }
         this.giamGia = giamGia;
     }
+    
 
-    @Override
+    public int getMucDiem() {
+		return mucDiem;
+	}
+
+	public void setMucDiem(int mucDiem) {
+		this.mucDiem = mucDiem;
+	}
+
+	@Override
     public String toString() {
         return "LoaiKhachHang [maLKH=" + maLKH + ", tenLKH=" + tenLKH + ", giamGia=" + giamGia + "%]";
     }

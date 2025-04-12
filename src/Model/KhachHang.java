@@ -1,5 +1,9 @@
 package Model;
 
+import java.util.ArrayList;
+
+import Dao.LoaiKhachHang_DAO;
+
 public class KhachHang {
 
     private String maKH; // SQL tự tăng – không set từ Java
@@ -114,10 +118,10 @@ public class KhachHang {
     }
 
     public void setLoaiKhachHang(LoaiKhachHang loaiKhachHang) {
-        if (loaiKhachHang == null) {
-            throw new IllegalArgumentException("Loại khách hàng không được null.");
-        }
-        this.loaiKhachHang = loaiKhachHang;
+    	ArrayList<LoaiKhachHang> listLKHD = new LoaiKhachHang_DAO().getAllLoaiKhachHang();
+    	DanhSach_LoaiKhachHang list = new DanhSach_LoaiKhachHang(listLKHD);
+    	
+        if(diemTL > list.))
     }
 
     @Override
