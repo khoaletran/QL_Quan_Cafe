@@ -62,7 +62,6 @@ public class KhachHang {
        	setTenKH(tenKH);
        	setSoDienThoai(soDienThoai);
        	setDiemTL(diemTL);
-       	setLoaiKhachHang(loaiKhachHang);
       }
 
     public String getMaKH() {
@@ -119,11 +118,26 @@ public class KhachHang {
         return loaiKhachHang;
     }
 
-    public void setLoaiKhachHang(LoaiKhachHang loaiKhachHang) {
+    public void setLoaiKhachHang(int diemtl) {
     	ArrayList<LoaiKhachHang> listLKHD = new LoaiKhachHang_DAO().getAllLoaiKhachHang();
     	DanhSach_LoaiKhachHang list = new DanhSach_LoaiKhachHang(listLKHD);
     	
-        if(diemTL > list.))
+        if(diemtl >= list.getElementAt(0).getMucDiem()){
+        	loaiKhachHang = list.getElementAt(0); 
+        }
+        else if(diemtl >= list.getElementAt(1).getMucDiem()) {
+        	loaiKhachHang = list.getElementAt(1);
+        }
+        else if(diemtl >= list.getElementAt(2).getMucDiem()) {
+        	loaiKhachHang = list.getElementAt(2);
+        }
+        else if(diemtl >= list.getElementAt(3).getMucDiem()) {
+        	loaiKhachHang = list.getElementAt(3);
+        }
+    }
+    
+    public void setLoaiKhachHang(LoaiKhachHang loaikhanhhang) {
+    	this.loaiKhachHang = loaikhanhhang;
     }
 
     @Override
