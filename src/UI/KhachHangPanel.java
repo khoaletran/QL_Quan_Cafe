@@ -73,7 +73,7 @@ public class KhachHangPanel extends JPanel {
 //            tableModel.addRow(row);
 //        }
         // đổ dữ liệu từ sql vào
-     // Thay thế đoạn dữ liệu mẫu
+        // thay thế đoạn dữ liệu mẫu
         for (KhachHang kh : dskh) {
             Object[] row = {
                 kh.getMaKH(),

@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class NhanVienPanel extends JPanel {
+	
 	ArrayList<NhanVien> dsnv = NhanVien_DAO.getAllNhanVien();
     public NhanVienPanel() {
         setLayout(new BorderLayout());
