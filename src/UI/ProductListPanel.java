@@ -60,6 +60,15 @@ public class ProductListPanel extends JPanel {
         JLabel imageLabel = new JLabel("No Image", SwingConstants.CENTER);
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         imageLabel.setPreferredSize(new Dimension(150, 150));
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("/Resource/HangHoa/capheden.jpg"));
+            Image scaledImage = icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(scaledImage));
+            imageLabel.setText("");
+        } catch (Exception e) {
+            System.out.println("Không load được ảnh: " + imagePath);
+        }
+
 
         JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 16));

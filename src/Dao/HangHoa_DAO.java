@@ -48,7 +48,7 @@ public class HangHoa_DAO {
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, hh.getMaHH());
             stmt.setString(2, hh.getTenHH());
-            stmt.setString(3, hh.getHinhAnh());
+            stmt.setString(3, hh.getHinhAnh().trim());
             stmt.setDouble(4, hh.getGiaSP());
 
             int rowsInserted = stmt.executeUpdate();
