@@ -34,7 +34,7 @@ public class ProductListPanel extends JPanel {
         headerPanel.add(searchPanel, BorderLayout.SOUTH);
         add(headerPanel, BorderLayout.NORTH);
 
-        JPanel productGridPanel = new JPanel(new GridLayout(0, 2, 15, 15));
+        JPanel productGridPanel = new JPanel(new GridLayout(0, 4, 15, 15));
         productGridPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
         addProduct(productGridPanel);
@@ -62,7 +62,7 @@ public class ProductListPanel extends JPanel {
         imageLabel.setPreferredSize(new Dimension(150, 150));
         try {
             ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(imagePath));
-            Image scaledImage = icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+            Image scaledImage = icon.getImage().getScaledInstance(180, 150, Image.SCALE_SMOOTH);
             imageLabel.setIcon(new ImageIcon(scaledImage));
             imageLabel.setText("");
         } catch (Exception e) {

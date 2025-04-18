@@ -112,20 +112,7 @@ public class CoffeeShopView extends JFrame {
             mainPanel.repaint();
         });
 
-        addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) {
-                int width = getWidth();
-                mainPanel.getComponent(0).setPreferredSize(new Dimension(width / 4, 0));
-                // Điều chỉnh kích thước centerPanel và rightPanel nếu rightPanel hiển thị
-                if (mainPanel.getComponentCount() > 2) {
-                    mainPanel.getComponent(1).setPreferredSize(new Dimension(width / 2, 0));
-                    mainPanel.getComponent(2).setPreferredSize(new Dimension(width / 4, 0));
-                } else {
-                    mainPanel.getComponent(1).setPreferredSize(new Dimension(3 * width / 4, 0));
-                }
-                revalidate();
-            }
-        });
+        
     }
     
     public static void connectDB() {
