@@ -58,14 +58,26 @@ public class KhachHangPanel extends JPanel {
         };
 
         // Dữ liệu mẫu
-        Object[][] sampleData = {
-                {"KH001", "Nguyễn Văn A", "0123456789", 150, "VIP"},
-                {"KH002", "Trần Thị B", "0987654321", 80, "Thường"},
-                {"KH003", "Lê Văn C", "0912345678", 200, "VIP"},
-        };
-        for (Object[] row : sampleData) {
-            tableModel.addRow(row);
-        }
+//        Object[][] sampleData = {
+//                {"KH001", "Nguyễn Văn A", "0123456789", 150, "VIP"},
+//                {"KH002", "Trần Thị B", "0987654321", 80, "Thường"},
+//                {"KH003", "Lê Văn C", "0912345678", 200, "VIP"},
+//        };
+//        for (Object[] row : sampleData) {
+//            tableModel.addRow(row);
+//        }
+        // đổ dữ liệu từ sql vào
+     // Thay thế đoạn dữ liệu mẫu
+//        for (KhachHang kh : getKhachHangFromDatabase()) {
+//            Object[] row = {
+//                kh.getMaKH(),
+//                kh.getTenKH(),
+//                kh.getSoDienThoai(),
+//                kh.getDiemTichLuy(),
+//                kh.getLoaiKH()
+//            };
+//            tableModel.addRow(row);
+//        }
 
         JTable table = new JTable(tableModel);
         table.setFont(new Font("Arial", Font.PLAIN, 14));
