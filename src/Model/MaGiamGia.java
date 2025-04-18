@@ -16,9 +16,6 @@ public class MaGiamGia {
 	}
 
 	public void setMaGiam(String maGiam) {
-		if (maGiam == null || !maGiam.matches("^[a-zA-Z]{10}$")) {
-			throw new IllegalArgumentException("Mã giảm giá sai định dạng. Phải gồm 10 chữ cái.");
-		}
 		this.maGiam = maGiam;
 	}
 
