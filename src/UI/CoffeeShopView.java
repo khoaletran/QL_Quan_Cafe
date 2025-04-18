@@ -57,12 +57,14 @@ public class CoffeeShopView extends JFrame {
         loginDialog.setVisible(true);
     }
     private void initializeMainUI() {
+    	connectDB();
         createUI();
         setVisible(true);
     
     }
     private void createUI() {
         setLayout(new BorderLayout());
+        connectDB();
 
         mainPanel = new JPanel(new BorderLayout());
         LeftMenuPanel leftMenu = new LeftMenuPanel();
@@ -91,6 +93,7 @@ public class CoffeeShopView extends JFrame {
 
         // Thêm sự kiện cho nút "Sản Phẩm"
         leftMenu.setSanPhamButtonListener(() -> {
+        	connectDB();
             mainPanel.remove(centerPanel);
             centerPanel = new ProductListPanel();
             mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -124,13 +127,17 @@ public class CoffeeShopView extends JFrame {
             }
         });
     }
-
-    public static void main(String[] args) {
-        try {
+    
+    public static void connectDB() {
+    	try {
             ConnectDB.getInstance().connect();          
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+    	connectDB();
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
