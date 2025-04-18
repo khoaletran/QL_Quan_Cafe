@@ -5,26 +5,23 @@ public class HangHoa {
    private String tenHH;
    private String hinhAnh;
    private double giaSP;
-   private int giamGia;
    
-	public HangHoa(String maHH, String tenHH, String hinhAnh, double giaSP,int giamGia) {
+	public HangHoa(String maHH, String tenHH, String hinhAnh, double giaSP) {
 		/**
 	     * Constructor để tạo một  hàng hóa
 	     * @param maHH    Mã Hàng Hóa
 	     * @param tenHH   Tên Hàng Hóa
 	     * @param hinhAnh  đường link cho hình ảnh
 	     * @param giaSP   Giá sản phảm
-	     * @param giamGia   giảm giá
 	     */
 		
 		 setMaHH(maHH);	 
 		 setTenHH(tenHH);	
 		 setHinhAnh(hinhAnh);
 		 setGiaSP(giaSP);
-		 setGiamGia(giamGia);
 	}
 	
-	public HangHoa( String tenHH, String hinhAnh, double giaSP,int giamGia) {
+	public HangHoa( String tenHH, String hinhAnh, double giaSP) {
 		/**
 	     * Constructor để tạo một  hàng hóa
 	     * 
@@ -32,7 +29,6 @@ public class HangHoa {
 	     * @param tenHH   Tên Hàng Hóa
 	     * @param hinhAnh  đường link cho hình ảnh
 	     * @param giaSP   Giá sản phảm
-	     * @param giamGia   giảm giá
 	     */
 		 
 		 
@@ -40,8 +36,6 @@ public class HangHoa {
 		setTenHH(tenHH);
 		setHinhAnh(hinhAnh);
 		setGiaSP(giaSP);
-		setGiamGia(giamGia);
-	
 	}
 	
 	
@@ -49,8 +43,8 @@ public class HangHoa {
 		return maHH;
 	}
 	public void setMaHH(String maHH) {
-		 if (maHH == null || !maHH.matches("^H\\d{1,4}$")) {
-			 throw new IllegalArgumentException("Mã hàng hóa không hợp lệ. Phải bắt đầu bằng 'H' và theo sau là tối đa 4 chữ số");
+		 if (maHH == null || !maHH.matches("^HH\\d{4}$")) {
+			 throw new IllegalArgumentException("Mã hàng hóa không hợp lệ. Phải bắt đầu bằng 'HH' và theo sau là tối đa 4 chữ số");
 		 }this.maHH = maHH;
 	}
 	public String getTenHH() {
@@ -76,17 +70,11 @@ public class HangHoa {
 			throw new IllegalArgumentException("Giá sản phẩm không hợp lệ(lớn hơn 0)");
 		}this.giaSP = giaSP;
 	}
-	public int getGiamGia() {
-		return giamGia;
-	}
-	public void setGiamGia(int giamGia) {
-		this.giamGia = giamGia;
-	}
+
 	
 	@Override
 	public String toString() {
-		return "HangHoa [maHH=" + maHH + ", tenHH=" + tenHH + ", hinhAnh=" + hinhAnh + ", giaSP=" + giaSP + ", giamGia="
-				+ giamGia + "]";
+		return "HangHoa [maHH=" + maHH + ", tenHH=" + tenHH + ", hinhAnh=" + hinhAnh + ", giaSP=" + giaSP +"]";
 	}
 	
 	

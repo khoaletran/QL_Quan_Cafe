@@ -1,9 +1,13 @@
 package UI;
 
 import javax.swing.*;
+
+import ConnectDB.ConnectDB;
+
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.sql.SQLException;
 
 public class CoffeeShopView extends JFrame {
     public CoffeeShopView() {
@@ -41,6 +45,11 @@ public class CoffeeShopView extends JFrame {
     }
 
     public static void main(String[] args) {
+        try {
+            ConnectDB.getInstance().connect();          
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

@@ -13,14 +13,14 @@ import Model.HangHoa;
 public class HangHoa_DAO {
 
     // Lấy toàn bộ danh sách hàng hóa
-    public ArrayList<HangHoa> getAllHangHoa() {
+    public static ArrayList<HangHoa> getAllHangHoa() {
         ArrayList<HangHoa> dshh = new ArrayList<HangHoa>();
         ConnectDB.getInstance();
 		Connection con = ConnectDB.getConnection();
 
         try {
             Statement stmt = con.createStatement();
-            String sql = "SELECT MAHH, TENHH, HINHANH, GIASP, GIAMGIA FROM HANGHOA";
+            String sql = "SELECT MAHH, TENHH, HINHANH, GIASP FROM HANGHOA";
             ResultSet rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
@@ -28,9 +28,8 @@ public class HangHoa_DAO {
                 String tenHH = rs.getString("TENHH");
                 String hinhAnh = rs.getString("HINHANH");
                 double giaSP = rs.getDouble("GIASP");
-                int giamGia = rs.getInt("GIAMGIA");
 
-                HangHoa hh = new HangHoa(maHH, tenHH, hinhAnh, giaSP, giamGia);
+                HangHoa hh = new HangHoa(maHH, tenHH, hinhAnh, giaSP);
                 dshh.add(hh);
             }
 
@@ -44,14 +43,13 @@ public class HangHoa_DAO {
     public boolean themHangHoa(HangHoa hh) {
         ConnectDB.getInstance();
 		Connection con = ConnectDB.getConnection();
-        String sql = "INSERT INTO HANGHOA (MAHH, TENHH, HINHANH, GIASP, GIAMGIA) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO HANGHOA (MAHH, TENHH, HINHANH, GIASP) VALUES (?, ?, ?, ?)";
         try {
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, hh.getMaHH());
             stmt.setString(2, hh.getTenHH());
             stmt.setString(3, hh.getHinhAnh());
             stmt.setDouble(4, hh.getGiaSP());
-            stmt.setInt(5, hh.getGiamGia());
 
             int rowsInserted = stmt.executeUpdate();
             return rowsInserted > 0;
@@ -84,13 +82,12 @@ public class HangHoa_DAO {
     public boolean suaHangHoa(HangHoa hh) {
         ConnectDB.getInstance();
 		Connection con = ConnectDB.getConnection();
-        String sql = "UPDATE HANGHOA SET TENHH = ?, HINHANH = ?, GIASP = ?, GIAMGIA = ? WHERE MAHH = ?";
+        String sql = "UPDATE HANGHOA SET TENHH = ?, HINHANH = ?, GIASP = ? WHERE MAHH = ?";
         try {
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, hh.getTenHH());
             stmt.setString(2, hh.getHinhAnh());
             stmt.setDouble(3, hh.getGiaSP());
-            stmt.setInt(4, hh.getGiamGia());
             stmt.setString(5, hh.getMaHH());
 
             int rowsUpdated = stmt.executeUpdate();
