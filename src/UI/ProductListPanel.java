@@ -1,9 +1,17 @@
 package UI;
 
 import javax.swing.*;
+
+import Dao.HangHoa_DAO;
+import Model.HangHoa;
+
 import java.awt.*;
+import java.util.ArrayList;
 
 public class ProductListPanel extends JPanel {
+	
+	ArrayList<HangHoa> dsHH = HangHoa_DAO.getAllHangHoa();
+	
     public ProductListPanel() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -29,26 +37,16 @@ public class ProductListPanel extends JPanel {
         JPanel productGridPanel = new JPanel(new GridLayout(0, 2, 15, 15));
         productGridPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
-        productGridPanel.add(createProductCard("Cafe Đen", "resources/images/OIP.jpg", 25000));
-        productGridPanel.add(createProductCard("Cafe Sữa", "resources/images/cafe_sua.jpg", 30000));
-        productGridPanel.add(createProductCard("Cafe xám", "resources/images/cafe_sua.jpg", 40000));
-        productGridPanel.add(createProductCard("Cafe vàng", "resources/images/cafe_sua.jpg", 50000));
-        productGridPanel.add(createProductCard("Cafe Đen", "resources/images/OIP.jpg", 25000));
-        productGridPanel.add(createProductCard("Cafe Sữa", "resources/images/cafe_sua.jpg", 30000));
-        productGridPanel.add(createProductCard("Cafe xám", "resources/images/cafe_sua.jpg", 40000));
-        productGridPanel.add(createProductCard("Cafe vàng", "resources/images/cafe_sua.jpg", 50000));
-        productGridPanel.add(createProductCard("Cafe Đen", "resources/images/OIP.jpg", 25000));
-        productGridPanel.add(createProductCard("Cafe Sữa", "resources/images/cafe_sua.jpg", 30000));
-        productGridPanel.add(createProductCard("Cafe xám", "resources/images/cafe_sua.jpg", 40000));
-        productGridPanel.add(createProductCard("Cafe vàng", "resources/images/cafe_sua.jpg", 50000));
-        productGridPanel.add(createProductCard("Cafe Đen", "resources/images/OIP.jpg", 25000));
-        productGridPanel.add(createProductCard("Cafe Sữa", "resources/images/cafe_sua.jpg", 30000));
-        productGridPanel.add(createProductCard("Cafe xám", "resources/images/cafe_sua.jpg", 40000));
-        productGridPanel.add(createProductCard("Cafe vàng", "resources/images/cafe_sua.jpg", 50000));
-
+        addProduct(productGridPanel);
         
         JScrollPane scrollPane = new JScrollPane(productGridPanel);
         add(scrollPane, BorderLayout.CENTER);
+    }
+    
+    private void addProduct(JPanel productGridPanel) {
+    	for(HangHoa hh : dsHH) {
+    		productGridPanel.add(createProductCard(hh.getTenHH(), hh.getHinhAnh(), hh.getGiaSP()));
+    	}
     }
 
     private JPanel createProductCard(String name, String imagePath, double price) {
@@ -62,6 +60,15 @@ public class ProductListPanel extends JPanel {
         JLabel imageLabel = new JLabel("No Image", SwingConstants.CENTER);
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         imageLabel.setPreferredSize(new Dimension(150, 150));
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(imagePath));
+            Image scaledImage = icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(scaledImage));
+            imageLabel.setText("");
+        } catch (Exception e) {
+            System.out.println("Không load được ảnh: " + imagePath);
+        }
+
 
         JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 16));

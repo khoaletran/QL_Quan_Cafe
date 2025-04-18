@@ -296,23 +296,23 @@ VALUES
 
 INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP)
 VALUES
-('LH0001', N'Cà phê đen', N'capheden.jpg', 20000);
+('LH0001', N'Cà phê đen', N'Resource/HangHoa/capheden.jpg', 20000);
 
 INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP)
 VALUES
-('LH0002', N'Trà sữa', N'trasua.jpg', 30000);
+('LH0002', N'Trà sữa', N'Resource/HangHoa/TraSua.jpg', 30000);
 
 INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP)
 VALUES
-('LH0003', N'Nước cam', N'nuoccam.jpg', 25000);
+('LH0003', N'Nước cam', N'Resource/HangHoa/NuocCam.jpg', 25000);
 
 INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP)
 VALUES
-('LH0004', N'Sinh tố bơ', N'sinhtobo.jpg', 35000);
+('LH0004', N'Sinh tố bơ', N'Resource/HangHoa/SinhToBo.jpg', 35000);
 
 INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP)
 VALUES
-('LH0005', N'Bánh mì', N'banhmi.jpg', 15000);
+('LH0005', N'Bánh mì', N'Resource/HangHoa/BanhMi.jpg', 15000);
 
 INSERT INTO MAGIAMGIA (MAGIAM, GIAMGIA)
 VALUES
