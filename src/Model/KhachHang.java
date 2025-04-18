@@ -69,7 +69,7 @@ public class KhachHang {
     }
 
     // Không có setter cho maKH – SQL sẽ tự tăng
-    // Nếu thật sự cần, có thể thêm setter nhưng để package-private hoặc protected a
+    // Nếu thật sự cần, có thể thêm setter nhưng để package-private hoặc protected 
     protected void setMaKH(String maKH) {
     	if(maKH == null || !maKH.matches("^KH\\d{6}$")) {
     		throw new IllegalArgumentException("Ma khách hàng sai định dạng.");
@@ -77,6 +77,8 @@ public class KhachHang {
     	this.maKH = maKH;
     }
 
+    
+    
     public String getTenKH() {
         return tenKH;
     }
@@ -106,8 +108,8 @@ public class KhachHang {
     }
 
     public void setDiemTL(int diemTL) {
-        if (diemTL <= 0) {
-            throw new IllegalArgumentException("Điểm tích lũy phải lớn hơn 0.");
+        if (diemTL < 0) {
+            throw new IllegalArgumentException("Điểm tích lũy phải lớn hơn hoặc bằng 0.");
         }
         this.diemTL = diemTL;
     }
