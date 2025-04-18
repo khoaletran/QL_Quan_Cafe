@@ -2,6 +2,8 @@ package UI;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import Dao.KhachHang_DAO;
 import Model.KhachHang;
@@ -10,7 +12,9 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class KhachHangPanel extends JPanel {
-	ArrayList<KhachHang> dskh = KhachHang_DAO.getAllKhachHang();
+    ArrayList<KhachHang> dskh = KhachHang_DAO.getAllKhachHang();
+    private JTextField[] textFields; // Khai báo mảng textFields ở cấp lớp để truy cập trong sự kiện
+
     public KhachHangPanel() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -31,7 +35,7 @@ public class KhachHangPanel extends JPanel {
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         String[] labels = {"Mã Khách Hàng:", "Tên Khách Hàng:", "Số Điện Thoại:", "Điểm Tích Lũy:", "Loại Khách Hàng:"};
-        JTextField[] textFields = new JTextField[5];
+        textFields = new JTextField[5]; // Khởi tạo mảng textFields
         Font labelFont = new Font("Arial", Font.PLAIN, 14);
         Font textFieldFont = new Font("Arial", Font.PLAIN, 14);
 
@@ -63,17 +67,7 @@ public class KhachHangPanel extends JPanel {
             }
         };
 
-        // Dữ liệu mẫu
-//        Object[][] sampleData = {
-//                {"KH001", "Nguyễn Văn A", "0123456789", 150, "VIP"},
-//                {"KH002", "Trần Thị B", "0987654321", 80, "Thường"},
-//                {"KH003", "Lê Văn C", "0912345678", 200, "VIP"},
-//        };
-//        for (Object[] row : sampleData) {
-//            tableModel.addRow(row);
-//        }
-        // đổ dữ liệu từ sql vào
-        // thay thế đoạn dữ liệu mẫu
+        // Dữ liệu từ SQL
         for (KhachHang kh : dskh) {
             Object[] row = {
                 kh.getMaKH(),
@@ -92,6 +86,23 @@ public class KhachHangPanel extends JPanel {
         table.setGridColor(new Color(200, 200, 200));
         table.setShowGrid(true);
 
+        // Thêm sự kiện chọn hàng trong bảng
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) { // Đảm bảo sự kiện chỉ được xử lý một lần khi chọn xong
+                    int selectedRow = table.getSelectedRow();
+                    if (selectedRow >= 0) { // Kiểm tra xem có hàng nào được chọn không
+                        textFields[0].setText((String) table.getValueAt(selectedRow, 0)); // Mã KH
+                        textFields[1].setText((String) table.getValueAt(selectedRow, 1)); // Tên KH
+                        textFields[2].setText((String) table.getValueAt(selectedRow, 2)); // SĐT
+                        textFields[3].setText(String.valueOf(table.getValueAt(selectedRow, 3))); // Điểm tích lũy
+                        textFields[4].setText((String) table.getValueAt(selectedRow, 4)); // Loại KH
+                    }
+                }
+            }
+        });
+
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
@@ -105,7 +116,7 @@ public class KhachHangPanel extends JPanel {
         // Panel chứa các nút
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(new Color(245, 245, 245));
-        String[] buttonLabels = {"Thêm", "Xóa", "Sửa","Tìm"};
+        String[] buttonLabels = {"Thêm", "Xóa", "Sửa", "Tìm"};
         Font buttonFont = new Font("Arial", Font.BOLD, 14);
 
         for (String label : buttonLabels) {

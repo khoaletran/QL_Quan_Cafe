@@ -2,6 +2,8 @@ package UI;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import Dao.NhanVien_DAO;
 import Model.NhanVien;
@@ -12,8 +14,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class NhanVienPanel extends JPanel {
-	
-	ArrayList<NhanVien> dsnv = NhanVien_DAO.getAllNhanVien();
+    ArrayList<NhanVien> dsnv = NhanVien_DAO.getAllNhanVien();
+    private JTextField[] textFields; // Khai báo mảng textFields ở cấp lớp để truy cập trong sự kiện
+
     public NhanVienPanel() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -34,7 +37,7 @@ public class NhanVienPanel extends JPanel {
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         String[] labels = {"Mã Nhân Viên:", "Tên Nhân Viên:", "Ngày Vào Làm:", "Giới Tính:", "Số Điện Thoại:"};
-        JTextField[] textFields = new JTextField[5];
+        textFields = new JTextField[5]; // Khởi tạo mảng textFields
         Font labelFont = new Font("Arial", Font.PLAIN, 14);
         Font textFieldFont = new Font("Arial", Font.PLAIN, 14);
 
@@ -82,6 +85,23 @@ public class NhanVienPanel extends JPanel {
         table.setGridColor(new Color(200, 200, 200));
         table.setShowGrid(true);
 
+        // Thêm sự kiện chọn hàng trong bảng
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) { // Đảm bảo sự kiện chỉ được xử lý một lần khi chọn xong
+                    int selectedRow = table.getSelectedRow();
+                    if (selectedRow >= 0) { // Kiểm tra xem có hàng nào được chọn không
+                        textFields[0].setText((String) table.getValueAt(selectedRow, 0)); // Mã NV
+                        textFields[1].setText((String) table.getValueAt(selectedRow, 1)); // Tên NV
+                        textFields[2].setText((String) table.getValueAt(selectedRow, 2)); // Ngày vào làm
+                        textFields[3].setText((String) table.getValueAt(selectedRow, 3)); // Giới tính
+                        textFields[4].setText((String) table.getValueAt(selectedRow, 4)); // SĐT
+                    }
+                }
+            }
+        });
+
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
@@ -95,7 +115,7 @@ public class NhanVienPanel extends JPanel {
         // Panel chứa các nút
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(new Color(245, 245, 245));
-        String[] buttonLabels = {"Thêm", "Xóa", "Sửa","Tìm"};
+        String[] buttonLabels = {"Thêm", "Xóa", "Sửa", "Tìm"};
         Font buttonFont = new Font("Arial", Font.BOLD, 14);
 
         for (String label : buttonLabels) {
