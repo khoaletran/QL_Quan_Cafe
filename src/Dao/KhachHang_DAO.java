@@ -13,7 +13,7 @@ import Model.LoaiKhachHang;
 public class KhachHang_DAO {
 
     // Lấy tất cả khách hàng
-    public ArrayList<KhachHang> getAllKhachHang() {
+    public static ArrayList<KhachHang> getAllKhachHang() {
         ArrayList<KhachHang> dsKhachHang = new ArrayList<>();
 
         try {

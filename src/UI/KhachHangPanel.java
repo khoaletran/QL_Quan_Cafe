@@ -2,9 +2,15 @@ package UI;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import Dao.KhachHang_DAO;
+import Model.KhachHang;
+
 import java.awt.*;
+import java.util.ArrayList;
 
 public class KhachHangPanel extends JPanel {
+	ArrayList<KhachHang> dskh = KhachHang_DAO.getAllKhachHang();
     public KhachHangPanel() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -68,16 +74,16 @@ public class KhachHangPanel extends JPanel {
 //        }
         // đổ dữ liệu từ sql vào
      // Thay thế đoạn dữ liệu mẫu
-//        for (KhachHang kh : getKhachHangFromDatabase()) {
-//            Object[] row = {
-//                kh.getMaKH(),
-//                kh.getTenKH(),
-//                kh.getSoDienThoai(),
-//                kh.getDiemTichLuy(),
-//                kh.getLoaiKH()
-//            };
-//            tableModel.addRow(row);
-//        }
+        for (KhachHang kh : dskh) {
+            Object[] row = {
+                kh.getMaKH(),
+                kh.getTenKH(),
+                kh.getSoDienThoai(),
+                kh.getDiemTL(),
+                kh.getLoaiKhachHang().getTenLKH()
+            };
+            tableModel.addRow(row);
+        }
 
         JTable table = new JTable(tableModel);
         table.setFont(new Font("Arial", Font.PLAIN, 14));
