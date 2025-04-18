@@ -1,13 +1,21 @@
 package UI;
 
-import javax.swing.*;
-
-import ConnectDB.ConnectDB;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.sql.SQLException;
+
+import javax.swing.BorderFactory;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import ConnectDB.ConnectDB;
 
 public class CoffeeShopView extends JFrame {
     private JPanel centerPanel; // Lưu panel trung tâm hiện tại
@@ -16,13 +24,43 @@ public class CoffeeShopView extends JFrame {
 
     public CoffeeShopView() {
         setTitle("Quản Lý Quán Cafe - Phiên Bản Hoàn Thiện");
-        setSize(1200, 800);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         createUI();
-        setVisible(true);
+        showLoginDialog();
     }
+    private void showLoginDialog() {
+        JDialog loginDialog = new JDialog(this, "Đăng Nhập", true);
+        loginDialog.setSize(400, 300);
+        loginDialog.setLocationRelativeTo(this);
+        loginDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
+        LoginPanel loginPanel = new LoginPanel();
+        loginDialog.add(loginPanel);
+
+        loginPanel.addLoginListener(e -> {
+            String username = loginPanel.getUsername();
+            String password = loginPanel.getPassword();
+
+            // Giả lập kiểm tra đăng nhập (thay bằng logic thật nếu có)
+            if ("admin".equals(username) && "123456".equals(password)) {
+                loginDialog.dispose();
+                initializeMainUI();
+            } else {
+                loginPanel.setMessage("Tên đăng nhập hoặc mật khẩu không đúng!");
+                loginPanel.clearFields();
+            }
+        });
+
+        loginDialog.setVisible(true);
+    }
+    private void initializeMainUI() {
+        createUI();
+        setVisible(true);
+    
+    }
     private void createUI() {
         setLayout(new BorderLayout());
 
