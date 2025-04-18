@@ -13,31 +13,31 @@ import Model.HangHoa;
 public class HangHoa_DAO {
 
     // Lấy toàn bộ danh sách hàng hóa
-    public static ArrayList<HangHoa> getAllHangHoa() {
-        ArrayList<HangHoa> dshh = new ArrayList<HangHoa>();
-        ConnectDB.getInstance();
-		Connection con = ConnectDB.getConnection();
+	public static ArrayList<HangHoa> getAllHangHoa() {
+	    ArrayList<HangHoa> dshh = new ArrayList<HangHoa>();
+	    ConnectDB.getInstance();
 
-        try {
-            Statement stmt = con.createStatement();
-            String sql = "SELECT MAHH, TENHH, HINHANH, GIASP FROM HANGHOA";
-            ResultSet rs = stmt.executeQuery(sql);
+	    try (Connection con = ConnectDB.getConnection();
+	         Statement stmt = con.createStatement();
+	         ResultSet rs = stmt.executeQuery("SELECT MAHH, TENHH, HINHANH, GIASP FROM HANGHOA")) {
 
-            while (rs.next()) {
-                String maHH = rs.getString("MAHH");
-                String tenHH = rs.getString("TENHH");
-                String hinhAnh = rs.getString("HINHANH");
-                double giaSP = rs.getDouble("GIASP");
+	        while (rs.next()) {
+	            String maHH = rs.getString("MAHH");
+	            String tenHH = rs.getString("TENHH");
+	            String hinhAnh = rs.getString("HINHANH");
+	            double giaSP = rs.getDouble("GIASP");
 
-                HangHoa hh = new HangHoa(maHH, tenHH, hinhAnh, giaSP);
-                dshh.add(hh);
-            }
+	            HangHoa hh = new HangHoa(maHH, tenHH, hinhAnh, giaSP);
+	            dshh.add(hh);
+	        }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return dshh;
-    }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return dshh;
+	}
+
 
     // Thêm hàng hóa mới
     public boolean themHangHoa(HangHoa hh) {

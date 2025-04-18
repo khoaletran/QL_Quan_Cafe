@@ -39,8 +39,6 @@ public class NhanVien_DAO {
                 dsNhanVien.add(nv);
             }
 
-            // Đóng kết nối sau khi xong
-            con.close();
 
         } catch (Exception e) {
             e.printStackTrace();
