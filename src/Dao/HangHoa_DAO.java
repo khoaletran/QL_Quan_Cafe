@@ -88,7 +88,7 @@ public class HangHoa_DAO {
             stmt.setString(1, hh.getTenHH());
             stmt.setString(2, hh.getHinhAnh());
             stmt.setDouble(3, hh.getGiaSP());
-            stmt.setString(5, hh.getMaHH());
+            stmt.setString(4, hh.getMaHH());
 
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;

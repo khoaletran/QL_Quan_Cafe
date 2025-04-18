@@ -14,11 +14,15 @@ public class ConnectDB {
 	}
 
 	public void connect() throws SQLException {
-		String url = "jdbc:sqlserver://localhost:1433;databasename=QL_QuanCafe";
-		String user = "QLQuanCafe";
-		String password = "123";
-		con = DriverManager.getConnection(url, user, password);
+		if (con == null || con.isClosed()) {
+			String url = "jdbc:sqlserver://localhost:1433;databasename=QL_QuanCafe;encrypt=true;trustServerCertificate=true";
+			String user = "QLQuanCafe";
+			String password = "123";
+			con = DriverManager.getConnection(url, user, password);
+			System.out.println("✅ Kết nối thành công");
+		}
 	}
+
 
 	public void disconnect() {
 		if (con != null) {
