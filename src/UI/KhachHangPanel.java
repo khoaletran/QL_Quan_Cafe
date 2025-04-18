@@ -2,9 +2,15 @@ package UI;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import Dao.KhachHang_DAO;
+import Model.KhachHang;
+
 import java.awt.*;
+import java.util.ArrayList;
 
 public class KhachHangPanel extends JPanel {
+	ArrayList<KhachHang> dskh = KhachHang_DAO.getAllKhachHang();
     public KhachHangPanel() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -58,12 +64,24 @@ public class KhachHangPanel extends JPanel {
         };
 
         // Dữ liệu mẫu
-        Object[][] sampleData = {
-                {"KH001", "Nguyễn Văn A", "0123456789", 150, "VIP"},
-                {"KH002", "Trần Thị B", "0987654321", 80, "Thường"},
-                {"KH003", "Lê Văn C", "0912345678", 200, "VIP"},
-        };
-        for (Object[] row : sampleData) {
+//        Object[][] sampleData = {
+//                {"KH001", "Nguyễn Văn A", "0123456789", 150, "VIP"},
+//                {"KH002", "Trần Thị B", "0987654321", 80, "Thường"},
+//                {"KH003", "Lê Văn C", "0912345678", 200, "VIP"},
+//        };
+//        for (Object[] row : sampleData) {
+//            tableModel.addRow(row);
+//        }
+        // đổ dữ liệu từ sql vào
+     // Thay thế đoạn dữ liệu mẫu
+        for (KhachHang kh : dskh) {
+            Object[] row = {
+                kh.getMaKH(),
+                kh.getTenKH(),
+                kh.getSoDienThoai(),
+                kh.getDiemTL(),
+                kh.getLoaiKhachHang().getTenLKH()
+            };
             tableModel.addRow(row);
         }
 

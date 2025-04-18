@@ -10,7 +10,7 @@ import ConnectDB.ConnectDB;
 import Model.NhanVien;
 
 public class NhanVien_DAO {
-    public ArrayList<NhanVien> getAllNhanVien() {
+    public static ArrayList<NhanVien> getAllNhanVien() {
         ArrayList<NhanVien> dsNhanVien = new ArrayList<>();
 
         try {

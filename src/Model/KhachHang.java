@@ -71,7 +71,7 @@ public class KhachHang {
     // Không có setter cho maKH – SQL sẽ tự tăng
     // Nếu thật sự cần, có thể thêm setter nhưng để package-private hoặc protected 
     protected void setMaKH(String maKH) {
-    	if(maKH == null || !maKH.matches("^KH\\d{6}$")) {
+    	if(maKH == null || !maKH.matches("^KH\\d{4}$")) {
     		throw new IllegalArgumentException("Ma khách hàng sai định dạng.");
     	}
     	this.maKH = maKH;
