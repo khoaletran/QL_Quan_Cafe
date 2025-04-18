@@ -2,11 +2,17 @@ package UI;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import Dao.NhanVien_DAO;
+import Model.NhanVien;
+
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 public class NhanVienPanel extends JPanel {
+	ArrayList<NhanVien> dsnv = NhanVien_DAO.getAllNhanVien();
     public NhanVienPanel() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -57,12 +63,14 @@ public class NhanVienPanel extends JPanel {
         };
 
         // Dữ liệu mẫu
-        Object[][] sampleData = {
-                {"NV001", "Nguyễn Văn An", "2023-01-15", "Nam", "0123456789"},
-                {"NV002", "Trần Thị Bình", "2022-06-20", "Nữ", "0987654321"},
-                {"NV003", "Lê Văn Cường", "2024-03-10", "Nam", "0912345678"},
-        };
-        for (Object[] row : sampleData) {
+        for (NhanVien nv : dsnv) {
+            Object[] row = {
+                nv.getMaNV(),
+                nv.getTenNV(),
+                nv.getNgayVaoLam().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                nv.isGioiTinh() ? "Nam" : "Nữ",
+                nv.getSdt()
+            };
             tableModel.addRow(row);
         }
 
