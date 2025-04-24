@@ -28,34 +28,34 @@ public class CoffeeShopView extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        showLoginDialog();
+        createUI();
+//        showLoginDialog();
     }
-
-    private void showLoginDialog() {
-        JDialog loginDialog = new JDialog(this, "Đăng Nhập", true);
-        loginDialog.setSize(400, 300);
-        loginDialog.setLocationRelativeTo(this);
-        loginDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-        LoginPanel loginPanel = new LoginPanel();
-        loginDialog.add(loginPanel);
-
-        loginPanel.addLoginListener(e -> {
-            String username = loginPanel.getUsername();
-            String password = loginPanel.getPassword();
-
-            // Giả lập kiểm tra đăng nhập (thay bằng logic thật nếu có)
-            if ("admin".equals(username) && "123456".equals(password)) {
-                loginDialog.dispose();
-                initializeMainUI();
-            } else {
-                loginPanel.setMessage("Tên đăng nhập hoặc mật khẩu không đúng!");
-                loginPanel.clearFields();
-            }
-        });
-
-        loginDialog.setVisible(true);
-    }
+//    private void showLoginDialog() {
+//        JDialog loginDialog = new JDialog(this, "Đăng Nhập", true);
+//        loginDialog.setSize(400, 300);
+//        loginDialog.setLocationRelativeTo(this);
+//        loginDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//
+//        LoginPanel loginPanel = new LoginPanel();
+//        loginDialog.add(loginPanel);
+//
+//        loginPanel.addLoginListener(e -> {
+//            String username = loginPanel.getUsername();
+//            String password = loginPanel.getPassword();
+//
+//            // Giả lập kiểm tra đăng nhập (thay bằng logic thật nếu có)
+//            if ("a".equals(username) && "1".equals(password)) {
+//                loginDialog.dispose();
+//                initializeMainUI();
+//            } else {
+//                loginPanel.setMessage("Tên đăng nhập hoặc mật khẩu không đúng!");
+//                loginPanel.clearFields();
+//            }
+//        });
+//
+//        loginDialog.setVisible(true);
+//    }
 
     private void initializeMainUI() {
         connectDB();
@@ -134,7 +134,7 @@ public class CoffeeShopView extends JFrame {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            new CoffeeShopView();
+            new CoffeeShopView().setVisible(true);
         });
     }
 }

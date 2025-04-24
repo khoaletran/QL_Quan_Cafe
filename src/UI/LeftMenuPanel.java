@@ -44,7 +44,7 @@ public class LeftMenuPanel extends JPanel {
             JLabel emojiLabel = new JLabel(item[0], SwingConstants.CENTER);
             emojiLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 16));
 
-            JLabel textLabel = new JLabel(item[1]);
+            JLabel textLabel = new JLabel(item[1], SwingConstants.LEFT);
             textLabel.setFont(textFont);
 
             button.add(emojiLabel, BorderLayout.WEST);

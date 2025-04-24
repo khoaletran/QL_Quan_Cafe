@@ -7,13 +7,15 @@ import Dao.HangHoa_DAO;
 import Model.HangHoa;
 
 public class ProductListPanel extends JPanel {
-    ArrayList<HangHoa> dsHH = HangHoa_DAO.getAllHangHoa();
+    private ArrayList<HangHoa> dsHH;
     private ProductDetailPanel productDetailPanel; // Tham chiếu đến ProductDetailPanel
+    private JPanel productGridPanel; // Để cập nhật sản phẩm khi tìm kiếm
 
     public ProductListPanel(ProductDetailPanel productDetailPanel) {
         this.productDetailPanel = productDetailPanel;
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setBackground(Color.WHITE);
         createUI();
     }
 
@@ -27,25 +29,56 @@ public class ProductListPanel extends JPanel {
         JTextField searchField = new JTextField();
         searchPanel.add(searchField, BorderLayout.CENTER);
         CustomButton searchButton = new CustomButton("🔍", Color.WHITE, Color.BLACK, 5);
+        searchButton.addActionListener(e -> searchProducts(searchField.getText().trim()));
         searchPanel.add(searchButton, BorderLayout.EAST);
 
         headerPanel.add(titleLabel, BorderLayout.NORTH);
         headerPanel.add(searchPanel, BorderLayout.SOUTH);
         add(headerPanel, BorderLayout.NORTH);
 
-        JPanel productGridPanel = new JPanel(new GridLayout(0, 4, 15, 15));
+        productGridPanel = new JPanel(new GridLayout(0, 4, 15, 15));
         productGridPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
-
-        addProduct(productGridPanel);
+        productGridPanel.setBackground(Color.WHITE);
 
         JScrollPane scrollPane = new JScrollPane(productGridPanel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         add(scrollPane, BorderLayout.CENTER);
+
+        loadProducts(); // Tải sản phẩm sau khi tạo UI
     }
 
-    private void addProduct(JPanel productGridPanel) {
-        for (HangHoa hh : dsHH) {
+    private void loadProducts() {
+        try {
+            dsHH = HangHoa_DAO.getAllHangHoa();
+            addProducts(dsHH);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách sản phẩm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void addProducts(ArrayList<HangHoa> products) {
+        productGridPanel.removeAll();
+        for (HangHoa hh : products) {
             productGridPanel.add(createProductCard(hh));
         }
+        productGridPanel.revalidate();
+        productGridPanel.repaint();
+    }
+
+    private void searchProducts(String keyword) {
+        if (keyword.isEmpty()) {
+            addProducts(dsHH); // Hiển thị tất cả nếu không có từ khóa
+            return;
+        }
+        ArrayList<HangHoa> filteredProducts = new ArrayList<>();
+        for (HangHoa hh : dsHH) {
+            if (hh.getTenHH().toLowerCase().contains(keyword.toLowerCase())) {
+                filteredProducts.add(hh);
+            }
+        }
+        addProducts(filteredProducts);
     }
 
     private JPanel createProductCard(HangHoa hh) {
@@ -55,17 +88,24 @@ public class ProductListPanel extends JPanel {
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
         card.setBackground(Color.WHITE);
+        card.setPreferredSize(new Dimension(200, 250));
 
         JLabel imageLabel = new JLabel("No Image", SwingConstants.CENTER);
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         imageLabel.setPreferredSize(new Dimension(150, 150));
-        try {
-            ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(hh.getHinhAnh()));
-            Image scaledImage = icon.getImage().getScaledInstance(180, 150, Image.SCALE_SMOOTH);
-            imageLabel.setIcon(new ImageIcon(scaledImage));
-            imageLabel.setText("");
-        } catch (Exception e) {
-            System.out.println("Không load được ảnh: " + hh.getHinhAnh());
+        if (hh.getHinhAnh() != null && !hh.getHinhAnh().isEmpty()) {
+            try {
+                ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(hh.getHinhAnh()));
+                if (icon.getImage() != null) {
+                    Image scaledImage = icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+                    imageLabel.setIcon(new ImageIcon(scaledImage));
+                    imageLabel.setText("");
+                } else {
+                    System.out.println("Hình ảnh không tồn tại: " + hh.getHinhAnh());
+                }
+            } catch (Exception e) {
+                System.out.println("Không load được ảnh: " + hh.getHinhAnh());
+            }
         }
 
         JLabel nameLabel = new JLabel(hh.getTenHH(), SwingConstants.CENTER);
@@ -76,9 +116,10 @@ public class ProductListPanel extends JPanel {
         priceLabel.setForeground(Color.RED);
 
         CustomButton selectButton = new CustomButton("Chọn", new Color(70, 130, 180), Color.WHITE, 10);
-        selectButton.addActionListener(e -> productDetailPanel.updateProductDetails(hh)); // Đúng
+        selectButton.addActionListener(e -> productDetailPanel.updateProductDetails(hh));
 
         JPanel infoPanel = new JPanel(new GridLayout(2, 1));
+        infoPanel.setBackground(Color.WHITE);
         infoPanel.add(nameLabel);
         infoPanel.add(priceLabel);
 
