@@ -73,8 +73,8 @@ public class CoffeeShopView extends JFrame {
         // Khởi tạo các panel cần thiết
         OrderPanel orderPanel = new OrderPanel();
         productDetailPanel = new ProductDetailPanel(orderPanel);
-        centerPanel = new ProductListPanel(productDetailPanel);
-        rightPanel = new RightPanel(productDetailPanel, orderPanel);
+        centerPanel = new ProductListPanel(productDetailPanel,orderPanel);
+        rightPanel = new RightPanel(orderPanel);
 
         mainPanel.add(leftMenu, BorderLayout.WEST);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -100,7 +100,7 @@ public class CoffeeShopView extends JFrame {
         leftMenu.setSanPhamButtonListener(() -> {
             connectDB();
             mainPanel.remove(centerPanel);
-            centerPanel = new ProductListPanel(productDetailPanel); // Sửa lỗi: truyền ProductDetailPanel
+            centerPanel = new ProductListPanel(productDetailPanel,orderPanel); // Sửa lỗi: truyền ProductDetailPanel
             mainPanel.add(centerPanel, BorderLayout.CENTER);
             mainPanel.add(rightPanel, BorderLayout.EAST); // Hiển thị lại RightPanel
             mainPanel.revalidate();
