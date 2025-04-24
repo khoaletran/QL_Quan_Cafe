@@ -116,6 +116,16 @@ public class CoffeeShopView extends JFrame {
             mainPanel.revalidate();
             mainPanel.repaint();
         });
+        
+     // Thêm sự kiện cho nút "Thống Kê"
+        leftMenu.setThongKeButtonListener(() -> {
+            mainPanel.remove(centerPanel);
+            mainPanel.remove(rightPanel); // Ẩn RightPanel
+            centerPanel = new ThongKePanel();
+            mainPanel.add(centerPanel, BorderLayout.CENTER);
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        });
     }
 
     public static void connectDB() {

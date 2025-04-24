@@ -7,6 +7,7 @@ public class LeftMenuPanel extends JPanel {
     private JButton khachHangButton; // Lưu nút "Khách Hàng"
     private JButton sanPhamButton; // Lưu nút "Sản Phẩm"
     private JButton nhanVienButton; // Lưu nút "Nhân Viên"
+    private JButton thongKeButton;
 
     public LeftMenuPanel() {
         setLayout(new BorderLayout());
@@ -57,6 +58,8 @@ public class LeftMenuPanel extends JPanel {
                 sanPhamButton = button;
             } else if (item[1].equals("Nhân Viên")) {
                 nhanVienButton = button;
+            }else if (item[1].equals("Thống Kê")) {
+                thongKeButton = button;
             }
 
             menuButtonsPanel.add(button);
@@ -85,6 +88,14 @@ public class LeftMenuPanel extends JPanel {
     public void setNhanVienButtonListener(Runnable action) {
         if (nhanVienButton != null) {
             nhanVienButton.addActionListener(e -> action.run());
+        }
+    }
+    
+    //Phương thức thêm doanh thu
+    // Phương thức để gắn sự kiện cho nút "Nhân Viên"
+    public void setThongKeButtonListener(Runnable action) {
+        if (thongKeButton != null) {
+            thongKeButton.addActionListener(e -> action.run());
         }
     }
 }
