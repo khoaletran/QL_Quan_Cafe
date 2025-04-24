@@ -44,7 +44,7 @@ public class ButtonEditor extends DefaultCellEditor {
                     model.removeRow(row);
                 }
             }
-            
+            //
             orderPanel.updateTotal();
         });
     }
