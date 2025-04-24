@@ -149,14 +149,26 @@ public class KhachHangPanel extends JPanel {
         String tenKH = textFields[1].getText();
         String soDienThoai = textFields[2].getText();
         int diemTL = Integer.parseInt(textFields[3].getText());
-        String loaiKhachHangText = textFields[4].getText();
-
+        String loaiKhachHangText = textFields[4].getText();  // Đây là tên loại khách hàng nhập vào
+        
         ArrayList<LoaiKhachHang> dsLoaiKhachHang = LoaiKhachHang_DAO.getAllLoaiKhachHang();
-        LoaiKhachHang loaiKhachHang = dsLoaiKhachHang.stream()
-            .filter(lkh -> lkh.getTenLKH().equalsIgnoreCase(loaiKhachHangText))
-            .findFirst().orElse(null);
 
-        KhachHang newKH = new KhachHang(null, tenKH, soDienThoai, diemTL, loaiKhachHang);
+        // Duyệt qua danh sách loại khách hàng và tìm loại khách hàng theo tên
+        LoaiKhachHang loaiKhachHang = null;
+        for (LoaiKhachHang lkh : dsLoaiKhachHang) {
+            if (loaiKhachHangText.trim().equals(lkh.getTenLKH())) {  // So sánh theo tên loại khách hàng
+                loaiKhachHang = lkh;
+                break;
+            }
+        }
+
+        if (loaiKhachHang == null) {
+            JOptionPane.showMessageDialog(this, "Loại khách hàng không tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Tạo đối tượng KhachHang mới và lưu vào cơ sở dữ liệu
+        KhachHang newKH = new KhachHang(tenKH, soDienThoai, diemTL, loaiKhachHang);
         boolean result = KhachHang_DAO.themKhachHang(newKH);
 
         if (result) {
@@ -166,6 +178,7 @@ public class KhachHangPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Thêm khách hàng thất bại", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     private void xuLySuKienXoaKhachHang() {
         String maKH = textFields[0].getText();

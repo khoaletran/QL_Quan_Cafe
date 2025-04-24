@@ -94,7 +94,7 @@ public class KhachHang_DAO {
             ConnectDB.getInstance().connect();
             Connection con = ConnectDB.getConnection();
 
-            String sql = "INSERT INTO KHACHHANG(TENKH, SDT, DIEMTL, MALKH) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO KHACHHANG(TENKH, SDT, DIEMTL, MALKH) OUTPUT INSERTED.MAKH VALUES (?, ?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setString(1, kh.getTenKH());
@@ -102,15 +102,19 @@ public class KhachHang_DAO {
             ps.setInt(3, kh.getDiemTL());
             ps.setString(4, kh.getLoaiKhachHang().getMaLKH());
 
-            int rows = ps.executeUpdate();
-            return rows > 0;
-
+            ResultSet rs = ps.executeQuery(); // dùng executeQuery để lấy MAKH trả về
+            if (rs.next()) {
+                String maKH = rs.getString("MAKH");
+                kh.setMaKH(maKH); // gán lại mã vào đối tượng truyền vào
+                return true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return false;
     }
+
+
 
     // Xóa khách hàng theo mã
     public static boolean xoaKhachHang(String maKH) {
