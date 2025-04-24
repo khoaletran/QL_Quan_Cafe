@@ -13,8 +13,6 @@ public class RightPanel extends JPanel {
     }
 
     private void createUI(OrderPanel orderPanel) {
-        JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Đơn Hàng", orderPanel);
-        add(tabbedPane, BorderLayout.CENTER);
+        add(orderPanel, BorderLayout.CENTER);
     }
 }
