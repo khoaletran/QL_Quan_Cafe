@@ -96,8 +96,8 @@ public class CoffeeShopView extends JFrame {
             mainPanel.repaint();
         });
 
-        // Thêm sự kiện cho nút "Sản Phẩm"
-        leftMenu.setSanPhamButtonListener(() -> {
+        // Thêm sự kiện cho nút "Đơn hàng mới"
+        leftMenu.setDonHangMoiButtonListener(() -> {
             connectDB();
             mainPanel.remove(centerPanel);
             centerPanel = new ProductListPanel(productDetailPanel,orderPanel); // Sửa lỗi: truyền ProductDetailPanel

@@ -54,18 +54,17 @@ public class NhanVien_DAO {
             Connection con = ConnectDB.getConnection();
 
             // SQL câu lệnh insert
-            String sql = "INSERT INTO NHANVIEN (MANV, TENNV, DIACHI, NGAYVAOLAM, GIOITINH, SDT, MATKHAU) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO NHANVIEN (TENNV, DIACHI, NGAYVAOLAM, GIOITINH, SDT, MATKHAU) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)";
 
             // Tạo Statement và truyền tham số vào câu lệnh
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, nv.getMaNV());
-            ps.setString(2, nv.getTenNV());
-            ps.setString(3, nv.getDiaChi());
-            ps.setDate(4, Date.valueOf(nv.getNgayVaoLam()));
-            ps.setBoolean(5, nv.isGioiTinh());
-            ps.setString(6, nv.getSdt());
-            ps.setString(7, nv.getMatKhau());
+            ps.setString(1, nv.getTenNV());
+            ps.setString(2, nv.getDiaChi());
+            ps.setDate(3, Date.valueOf(nv.getNgayVaoLam()));
+            ps.setBoolean(4, nv.isGioiTinh());
+            ps.setString(5, nv.getSdt());
+            ps.setString(6, nv.getMatKhau());
 
             // Thực hiện câu lệnh insert
             int rowsAffected = ps.executeUpdate();

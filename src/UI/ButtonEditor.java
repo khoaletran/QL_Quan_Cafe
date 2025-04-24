@@ -45,7 +45,7 @@ public class ButtonEditor extends DefaultCellEditor {
                 }
             }
             //
-            orderPanel.updateTotal();
+            orderPanel.updateTotalWithCustomerDiscount(0.0);;
         });
     }
 
