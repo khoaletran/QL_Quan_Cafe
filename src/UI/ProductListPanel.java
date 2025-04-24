@@ -9,9 +9,11 @@ import Model.HangHoa;
 public class ProductListPanel extends JPanel {
     private ArrayList<HangHoa> dsHH;
     private ProductDetailPanel productDetailPanel; // Tham chiếu đến ProductDetailPanel
-    private JPanel productGridPanel; // Để cập nhật sản phẩm khi tìm kiếm
+    private JPanel productGridPanel; // Để cập nhật sản phẩm khi tìm kiếm 
+    private OrderPanel orderPanel; // Tham chiếu đến OrderPanel    
 
-    public ProductListPanel(ProductDetailPanel productDetailPanel) {
+    public ProductListPanel(ProductDetailPanel productDetailPanel,OrderPanel orderPanel) {
+    	this.orderPanel = orderPanel;
         this.productDetailPanel = productDetailPanel;
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -97,7 +99,7 @@ public class ProductListPanel extends JPanel {
             try {
                 ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(hh.getHinhAnh()));
                 if (icon.getImage() != null) {
-                    Image scaledImage = icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+                    Image scaledImage = icon.getImage().getScaledInstance(200, 150, Image.SCALE_SMOOTH);
                     imageLabel.setIcon(new ImageIcon(scaledImage));
                     imageLabel.setText("");
                 } else {
@@ -116,7 +118,7 @@ public class ProductListPanel extends JPanel {
         priceLabel.setForeground(Color.RED);
 
         CustomButton selectButton = new CustomButton("Chọn", new Color(70, 130, 180), Color.WHITE, 10);
-        selectButton.addActionListener(e -> productDetailPanel.updateProductDetails(hh));
+        selectButton.addActionListener(e -> addToOrder(hh));
 
         JPanel infoPanel = new JPanel(new GridLayout(2, 1));
         infoPanel.setBackground(Color.WHITE);
@@ -127,5 +129,11 @@ public class ProductListPanel extends JPanel {
         card.add(infoPanel, BorderLayout.CENTER);
         card.add(selectButton, BorderLayout.SOUTH);
         return card;
+    }
+    
+    private void addToOrder(HangHoa hh) {
+        if (hh != null) {
+            orderPanel.addOrderItem(hh, 1);
+        }
     }
 }
