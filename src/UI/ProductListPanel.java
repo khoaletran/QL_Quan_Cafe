@@ -1,18 +1,17 @@
 package UI;
 
 import javax.swing.*;
-
+import java.awt.*;
+import java.util.ArrayList;
 import Dao.HangHoa_DAO;
 import Model.HangHoa;
 
-import java.awt.*;
-import java.util.ArrayList;
-
 public class ProductListPanel extends JPanel {
-	
-	ArrayList<HangHoa> dsHH = HangHoa_DAO.getAllHangHoa();
-	
-    public ProductListPanel() {
+    ArrayList<HangHoa> dsHH = HangHoa_DAO.getAllHangHoa();
+    private ProductDetailPanel productDetailPanel; // Tham chiếu đến ProductDetailPanel
+
+    public ProductListPanel(ProductDetailPanel productDetailPanel) {
+        this.productDetailPanel = productDetailPanel;
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         createUI();
@@ -38,18 +37,18 @@ public class ProductListPanel extends JPanel {
         productGridPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
         addProduct(productGridPanel);
-        
+
         JScrollPane scrollPane = new JScrollPane(productGridPanel);
         add(scrollPane, BorderLayout.CENTER);
     }
-    
+
     private void addProduct(JPanel productGridPanel) {
-    	for(HangHoa hh : dsHH) {
-    		productGridPanel.add(createProductCard(hh.getTenHH(), hh.getHinhAnh(), hh.getGiaSP()));
-    	}
+        for (HangHoa hh : dsHH) {
+            productGridPanel.add(createProductCard(hh));
+        }
     }
 
-    private JPanel createProductCard(String name, String imagePath, double price) {
+    private JPanel createProductCard(HangHoa hh) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.LIGHT_GRAY),
@@ -61,23 +60,23 @@ public class ProductListPanel extends JPanel {
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         imageLabel.setPreferredSize(new Dimension(150, 150));
         try {
-            ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(imagePath));
+            ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(hh.getHinhAnh()));
             Image scaledImage = icon.getImage().getScaledInstance(180, 150, Image.SCALE_SMOOTH);
             imageLabel.setIcon(new ImageIcon(scaledImage));
             imageLabel.setText("");
         } catch (Exception e) {
-            System.out.println("Không load được ảnh: " + imagePath);
+            System.out.println("Không load được ảnh: " + hh.getHinhAnh());
         }
 
-
-        JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
+        JLabel nameLabel = new JLabel(hh.getTenHH(), SwingConstants.CENTER);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
 
-        JLabel priceLabel = new JLabel(String.format("%,.0fđ", price), SwingConstants.CENTER);
+        JLabel priceLabel = new JLabel(String.format("%,.0fđ", hh.getGiaSP()), SwingConstants.CENTER);
         priceLabel.setFont(new Font("Arial", Font.BOLD, 14));
         priceLabel.setForeground(Color.RED);
 
         CustomButton selectButton = new CustomButton("Chọn", new Color(70, 130, 180), Color.WHITE, 10);
+        selectButton.addActionListener(e -> productDetailPanel.updateProductDetails(hh)); // Đúng
 
         JPanel infoPanel = new JPanel(new GridLayout(2, 1));
         infoPanel.add(nameLabel);
