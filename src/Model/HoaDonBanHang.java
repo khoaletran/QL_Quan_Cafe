@@ -13,6 +13,7 @@ public class HoaDonBanHang {
     private MaGiamGia giamGia;			// >= 0
     private int diemTL;                  // >= 0
     private KhachHang khachHang;
+    private boolean hinhThucThanhToan;
 
     private ArrayList<ChiTietHoaDon> chiTietHoaDonList;
 
@@ -95,8 +96,18 @@ public class HoaDonBanHang {
 	public List<ChiTietHoaDon> getChiTietHoaDonList() {
         return chiTietHoaDonList;
     }
+	
+    public boolean isHinhThucThanhToan() {
+		return hinhThucThanhToan;
+	}
 
-    // ===== Thêm chi tiết hóa đơn =====
+
+	public void setHinhThucThanhToan(boolean hinhThucThanhToan) {
+		this.hinhThucThanhToan = hinhThucThanhToan;
+	}
+
+
+	// ===== Thêm chi tiết hóa đơn =====
     public void themChiTiet(ChiTietHoaDon cthd) {
         chiTietHoaDonList.add(cthd);
     }
