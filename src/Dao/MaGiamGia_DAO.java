@@ -12,7 +12,7 @@ import Model.MaGiamGia;
 public class MaGiamGia_DAO {
 
     // Lấy toàn bộ mã giảm giá
-    public ArrayList<MaGiamGia> getAllMaGiamGia() {
+    public static ArrayList<MaGiamGia> getAllMaGiamGia() {
         ArrayList<MaGiamGia> dsMaGiamGia = new ArrayList<>();
         try {
             ConnectDB.getInstance();

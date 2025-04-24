@@ -69,6 +69,7 @@ public class OrderPanel extends JPanel {
 		orderTable.getColumnModel().getColumn(3).setPreferredWidth(60);
 		orderTable.getColumnModel().getColumn(4).setPreferredWidth(50);
 
+
 		JScrollPane tableScrollPane = new JScrollPane(orderTable);
 		add(tableScrollPane, BorderLayout.CENTER);
 
@@ -192,4 +193,6 @@ public class OrderPanel extends JPanel {
 		discountAmountLabel.setText("Chiết khấu: 0đ");
 		totalAfterDiscountLabel.setText("Thành tiền: 0đ");
 	}
+	
+
 }
