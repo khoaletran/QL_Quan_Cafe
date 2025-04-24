@@ -80,15 +80,6 @@ public class OrderPanel extends JPanel {
         orderTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
         orderTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox(), this));
 
-<<<<<<< HEAD
-
-		JScrollPane tableScrollPane = new JScrollPane(orderTable);
-		add(tableScrollPane, BorderLayout.CENTER);
-=======
-        JScrollPane tableScrollPane = new JScrollPane(orderTable);
-        add(tableScrollPane, BorderLayout.CENTER);
->>>>>>> 67b1949c77444f01aeb6cef91e0e7452bcd72475
-
         JPanel bottomPanel = new JPanel(new BorderLayout());
         JPanel summaryPanel = new JPanel();
         summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.Y_AXIS));
@@ -253,18 +244,6 @@ public class OrderPanel extends JPanel {
             return false;
         }
 
-<<<<<<< HEAD
-	public void clearOrder() {
-		orderTableModel.setRowCount(0);
-		discountPercentage = 0.0;
-		discountCodeField.setText("");
-		totalLabel.setText("Tổng: 0đ");
-		discountAmountLabel.setText("Chiết khấu: 0đ");
-		totalAfterDiscountLabel.setText("Thành tiền: 0đ");
-	}
-	
-
-=======
         MaGiamGia_DAO dao = new MaGiamGia_DAO();
         MaGiamGia mg = dao.timMaGiamGia(couponCode);
         if (mg != null) {
@@ -407,5 +386,4 @@ public class OrderPanel extends JPanel {
         discountAmountLabel.setText("Chiết khấu: 0đ");
         totalAfterDiscountLabel.setText("Thành tiền: 0đ");
     }
->>>>>>> 67b1949c77444f01aeb6cef91e0e7452bcd72475
 }
