@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import Dao.KhachHang_DAO;
+import Model.KhachHang;
 
 import Model.HangHoa;
 import ConnectDB.ConnectDB;
@@ -155,6 +157,23 @@ public class OrderPanel extends JPanel {
         
         discountPanel.add(discountCodeLabel);
         discountPanel.add(discountCodeField);
+        
+        phoneField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                checkPhoneNumber();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                checkPhoneNumber();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                checkPhoneNumber();
+            }
+        });
 
         add(bottomPanel, BorderLayout.SOUTH);
     }
@@ -170,7 +189,7 @@ public class OrderPanel extends JPanel {
                 int newQuantity = existingQuantity + quantity;
                 orderTableModel.setValueAt(newQuantity, i, 1);
                 orderTableModel.setValueAt(newQuantity * price, i, 3);
-                updateTotal();
+                updateTotalWithCustomerDiscount(0.0);
                 return;
             }
         }
@@ -184,22 +203,38 @@ public class OrderPanel extends JPanel {
             "Xóa"
         };
         orderTableModel.addRow(row);
-        updateTotal();
+        updateTotalWithCustomerDiscount(0.0);
     }
 
-    public void updateTotal() {
+    public void updateTotalWithCustomerDiscount(double customerDiscount) {
         double total = 0.0;
         for (int i = 0; i < orderTableModel.getRowCount(); i++) {
             Double rowTotal = (Double) orderTableModel.getValueAt(i, 3);
             total += rowTotal;
         }
-        
-        double discountAmount = total * (discountPercentage / 100);
+
+        // Tổng phần trăm giảm giá, tối đa 50%
+        double totalDiscountPercentage = discountPercentage + customerDiscount;
+        boolean isLimited = totalDiscountPercentage > 50.0;
+        totalDiscountPercentage = Math.min(totalDiscountPercentage, 50.0);
+
+        double discountAmount = total * (totalDiscountPercentage / 100);
         double finalTotal = total - discountAmount;
 
         totalLabel.setText("Tổng: " + df.format(total));
         discountAmountLabel.setText("Chiết khấu: " + df.format(discountAmount));
         totalAfterDiscountLabel.setText("Thành tiền: " + df.format(finalTotal));
+
+        // Hiển thị thông báo nếu tổng giảm giá bị giới hạn
+        if (isLimited) {
+            discountStatusLabel.setText("Tổng giảm giá được giới hạn ở 50%");
+            discountStatusLabel.setForeground(Color.BLUE);
+            Timer timer = new Timer(10000, e -> {
+                discountStatusLabel.setText(" ");
+            });
+            timer.setRepeats(false);
+            timer.start();
+        }
     }
   
     public DefaultTableModel getOrderTableModel() {
@@ -208,40 +243,62 @@ public class OrderPanel extends JPanel {
     
     private void checkDiscountCode() {
         String discountCode = discountCodeField.getText().trim();
-        
-        // Nếu mã trống, reset discount về 0
+
         if (discountCode.isEmpty()) {
             discountPercentage = 0.0;
             discountStatusLabel.setText(" ");
             discountStatusLabel.setForeground(Color.BLUE);
-            updateTotal();
+            updateTotalWithCustomerDiscount(0.0);
             return;
         }
-        
-        // Kiểm tra mã giảm giá
+
         MaGiamGia_DAO discountDAO = new MaGiamGia_DAO();
         MaGiamGia discount = discountDAO.timMaGiamGia(discountCode);
-        
+
         if (discount != null) {
-            // Áp dụng giảm giá nếu mã hợp lệ
             discountPercentage = discount.getGiamGia();
             discountStatusLabel.setText("Áp dụng thành công: Giảm " + (int)discountPercentage + "%");
-            discountStatusLabel.setForeground(new Color(0, 100, 0)); // Màu xanh lá đậm
+            discountStatusLabel.setForeground(new Color(0, 100, 0));
         } else {
-            // Reset về 0 nếu mã không hợp lệ
             discountPercentage = 0.0;
             discountStatusLabel.setText("Mã giảm giá không hợp lệ");
             discountStatusLabel.setForeground(Color.RED);
         }
-        
-        updateTotal();
-        
-        // Tự động ẩn thông báo sau 3 giây
-        Timer timer = new Timer(3000, e -> {
+
+        Timer timer = new Timer(10000, e -> {
             discountStatusLabel.setText(" ");
         });
         timer.setRepeats(false);
         timer.start();
+
+        updateTotalWithCustomerDiscount(0.0);
+    }
+    
+    private void checkPhoneNumber() {
+        String phoneNumber = phoneField.getText().trim();
+        double customerDiscount = 0.0;
+
+        if (!phoneNumber.isEmpty()) {
+            KhachHang kh = KhachHang_DAO.timKhachHangTheoSDT(phoneNumber);
+            if (kh != null) {
+                customerDiscount = kh.getLoaiKhachHang().getGiamGia();
+                discountStatusLabel.setText("Khách hàng: " + kh.getTenKH() + " - Giảm " + (int)customerDiscount + "%");
+                discountStatusLabel.setForeground(new Color(0, 100, 0));
+            } else {
+                discountStatusLabel.setText("Không tìm thấy khách hàng");
+                discountStatusLabel.setForeground(Color.RED);
+            }
+        } else {
+            discountStatusLabel.setText(" ");
+        }
+
+        Timer timer = new Timer(10000, e -> {
+            discountStatusLabel.setText(" ");
+        });
+        timer.setRepeats(false);
+        timer.start();
+
+        updateTotalWithCustomerDiscount(customerDiscount);
     }
 
     public void clearOrder() {
@@ -249,8 +306,10 @@ public class OrderPanel extends JPanel {
         discountPercentage = 0.0;
         discountCodeField.setText("");
         phoneField.setText("");
+        discountStatusLabel.setText(" ");
         totalLabel.setText("Tổng: 0đ");
         discountAmountLabel.setText("Chiết khấu: 0đ");
         totalAfterDiscountLabel.setText("Thành tiền: 0đ");
+        updateTotalWithCustomerDiscount(0.0);
     }
 }

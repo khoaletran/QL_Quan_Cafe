@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class RightPanel extends JPanel {
+	
     public RightPanel(OrderPanel orderPanel) {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));

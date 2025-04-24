@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class LeftMenuPanel extends JPanel {
     private JButton khachHangButton; // Lưu nút "Khách Hàng"
-    private JButton sanPhamButton; // Lưu nút "Sản Phẩm"
+    private JButton donHangMoiButton; // Lưu nút "Sản Phẩm"
     private JButton nhanVienButton; // Lưu nút "Nhân Viên"
     private JButton thongKeButton;
 
@@ -55,7 +55,7 @@ public class LeftMenuPanel extends JPanel {
             if (item[1].equals("Khách Hàng")) {
                 khachHangButton = button;
             } else if (item[1].equals("Đơn Hàng Mới")) {
-                sanPhamButton = button;
+                donHangMoiButton = button;
             } else if (item[1].equals("Nhân Viên")) {
                 nhanVienButton = button;
             }else if (item[1].equals("Thống Kê")) {
@@ -78,9 +78,9 @@ public class LeftMenuPanel extends JPanel {
     }
 
     // Phương thức để gắn sự kiện cho nút "Sản Phẩm"
-    public void setSanPhamButtonListener(Runnable action) {
-        if (sanPhamButton != null) {
-            sanPhamButton.addActionListener(e -> action.run());
+    public void setDonHangMoiButtonListener(Runnable action) {
+        if (donHangMoiButton != null) {
+            donHangMoiButton.addActionListener(e -> action.run());
         }
     }
 
