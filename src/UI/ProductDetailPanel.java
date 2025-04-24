@@ -1,9 +1,7 @@
 package UI;
 
 import javax.swing.*;
-
 import Model.HangHoa;
-
 import java.awt.*;
 
 public class ProductDetailPanel extends JPanel {
@@ -13,8 +11,8 @@ public class ProductDetailPanel extends JPanel {
     private JLabel categoryLabel;
     private JTextArea descriptionArea;
     private JSpinner quantitySpinner;
-    private HangHoa currentProduct; // Lưu món hàng hiện tại
-    private OrderPanel orderPanel; // Tham chiếu đến OrderPanel
+    private HangHoa currentProduct; 
+    private OrderPanel orderPanel; 
 
     public ProductDetailPanel(OrderPanel orderPanel) {
         this.orderPanel = orderPanel;
@@ -72,6 +70,11 @@ public class ProductDetailPanel extends JPanel {
         CustomButton addButton = new CustomButton("Thêm vào đơn", new Color(70, 130, 180), Color.WHITE, 10);
         addButton.addActionListener(e -> addToOrder());
 
+        // Thêm nút "Thêm vào đơn" vào một JPanel để căn giữa
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.add(addButton);
+
         contentPanel.add(productImage);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         contentPanel.add(nameLabel);
@@ -83,7 +86,7 @@ public class ProductDetailPanel extends JPanel {
         contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         contentPanel.add(quantityPanel);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-        contentPanel.add(addButton);
+        contentPanel.add(buttonPanel); 
 
         add(contentPanel, BorderLayout.CENTER);
     }
@@ -92,8 +95,8 @@ public class ProductDetailPanel extends JPanel {
         this.currentProduct = hh;
         nameLabel.setText(hh.getTenHH());
         priceLabel.setText(String.format("%,.0fđ", hh.getGiaSP()));
-        categoryLabel.setText("Danh mục: " + hh.getLoaiHH()); // Sử dụng getLoaiHH()
-        descriptionArea.setText(hh.getMoTa()); // Sử dụng getMoTa()
+        categoryLabel.setText("Danh mục: " + hh.getLoaiHH()); 
+        descriptionArea.setText(hh.getMoTa()); 
 
         try {
             ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(hh.getHinhAnh()));
