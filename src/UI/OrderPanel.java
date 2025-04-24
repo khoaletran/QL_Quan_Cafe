@@ -307,6 +307,9 @@ public class OrderPanel extends JPanel {
         }
         return null;
     }
+    public DefaultTableModel getOrderTableModel() {
+        return orderTableModel;
+    }
 
     public void clearOrder() {
         orderTableModel.setRowCount(0);
