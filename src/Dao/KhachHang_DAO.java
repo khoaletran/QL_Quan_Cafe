@@ -51,7 +51,7 @@ public class KhachHang_DAO {
     }
     //Tìm khách hàng theo số điện thoại
 
-    public KhachHang timKhachHangTheoSDT(String soDienThoai) {
+    public static KhachHang timKhachHangTheoSDT(String soDienThoai) {
         KhachHang kh = null;
 
         try {
@@ -89,7 +89,7 @@ public class KhachHang_DAO {
     }
 
     // Thêm khách hàng (MAKH được sinh tự động bởi TRIGGER trong SQL)
-    public boolean themKhachHang(KhachHang kh) {
+    public static boolean themKhachHang(KhachHang kh) {
         try {
             ConnectDB.getInstance().connect();
             Connection con = ConnectDB.getConnection();
@@ -113,7 +113,7 @@ public class KhachHang_DAO {
     }
 
     // Xóa khách hàng theo mã
-    public boolean xoaKhachHang(String maKH) {
+    public static boolean xoaKhachHang(String maKH) {
         try {
             ConnectDB.getInstance().connect();
             Connection con = ConnectDB.getConnection();
@@ -133,7 +133,7 @@ public class KhachHang_DAO {
     }
 
     // Sửa thông tin khách hàng
-    public boolean suaKhachHang(KhachHang kh) {
+    public static boolean suaKhachHang(KhachHang kh) {
         try {
             ConnectDB.getInstance().connect();
             Connection con = ConnectDB.getConnection();
