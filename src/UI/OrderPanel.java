@@ -161,9 +161,10 @@ public class OrderPanel extends JPanel {
     public void updateTotal() {
         double total = 0.0;
         for (int i = 0; i < orderTableModel.getRowCount(); i++) {
-            Double rowTotal = (Double) orderTableModel.getValueAt(i, 3); // Cột Tổng
+            Double rowTotal = (Double) orderTableModel.getValueAt(i, 3);
             total += rowTotal;
         }
+        
         double discountAmount = total * (discountPercentage / 100);
         double finalTotal = total - discountAmount;
 

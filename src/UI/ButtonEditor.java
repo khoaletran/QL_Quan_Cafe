@@ -5,7 +5,9 @@ import java.awt.Component;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class ButtonEditor extends DefaultCellEditor {
     private JButton button;
@@ -19,11 +21,31 @@ public class ButtonEditor extends DefaultCellEditor {
         button.setOpaque(true);
         button.addActionListener(e -> {
             fireEditingStopped();
-            // Kiểm tra xem hàng có còn tồn tại không
-            if (row >= 0 && row < orderPanel.getOrderTableModel().getRowCount()) {
-                orderPanel.getOrderTableModel().removeRow(row);
-                orderPanel.updateTotal();
+            DefaultTableModel model = orderPanel.getOrderTableModel();
+            
+            // Lấy số lượng hiện tại
+            int quantity = (Integer) model.getValueAt(row, 1);
+            
+            if (quantity > 1) {
+                // Giảm số lượng nếu > 1
+                model.setValueAt(quantity - 1, row, 1);
+                // Cập nhật tổng
+                double price = (Double) model.getValueAt(row, 2);
+                model.setValueAt((quantity - 1) * price, row, 3);
+            } else {
+                // Hỏi xác nhận nếu số lượng = 1
+                int confirm = JOptionPane.showConfirmDialog(
+                    button, 
+                    "Bạn có chắc muốn xóa sản phẩm này khỏi đơn hàng?", 
+                    "Xác nhận xóa", 
+                    JOptionPane.YES_NO_OPTION);
+                
+                if (confirm == JOptionPane.YES_OPTION) {
+                    model.removeRow(row);
+                }
             }
+            
+            orderPanel.updateTotal();
         });
     }
 
