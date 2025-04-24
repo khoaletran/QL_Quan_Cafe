@@ -15,7 +15,7 @@ public class HoaDon_DAO {
         Connection connection = ConnectDB.getInstance().getConnection();
 
         // Câu lệnh SQL cho bảng HOADONBANHANG
-        String sqlInsertHoaDon = "INSERT INTO HOADONBANHANG (MANV, MAKH, NGAYHDBH, TONGTIEN, DIEMTL, GIAMGIA) VALUES (?, ?, ?, ?, ?, ?)";
+        String sqlInsertHoaDon = "INSERT INTO HOADONBANHANG (MANV, MAKH, NGAYHDBH, TONGTIEN, DIEMTL, GIAMGIA, HINHTHUCTHANHTOAN) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         // Câu lệnh SQL cho bảng CHITIETHOADON
         String sqlInsertChiTiet = "INSERT INTO CHITIETHOADON (MAHDBH, MAHH, SOLUONG, THANHTIEN) VALUES (?, ?, ?, ?)";
@@ -32,6 +32,7 @@ public class HoaDon_DAO {
                 stmtHoaDon.setDouble(4, hoaDon.tinhTongThanhToan());
                 stmtHoaDon.setInt(5, hoaDon.getdiemTL());
                 stmtHoaDon.setInt(6, hoaDon.getGiamGia().getGiamGia());
+                stmtHoaDon.setBoolean(7, hoaDon.isHinhThucThanhToan());
                 stmtHoaDon.executeUpdate();
 
                 // Lấy mã hóa đơn tự sinh từ SQL
