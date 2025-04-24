@@ -80,9 +80,6 @@ public class OrderPanel extends JPanel {
         orderTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
         orderTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox(), this));
 
-        JScrollPane tableScrollPane = new JScrollPane(orderTable);
-        add(tableScrollPane, BorderLayout.CENTER);
-
         JPanel bottomPanel = new JPanel(new BorderLayout());
         JPanel summaryPanel = new JPanel();
         summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.Y_AXIS));
@@ -237,7 +234,145 @@ public class OrderPanel extends JPanel {
         totalAfterDiscountLabel.setText("Thành tiền: " + df.format(finalTotal));
     }
 
+<<<<<<< HEAD
  
+=======
+    private boolean checkCoupon(String couponCode) {
+        if (couponCode == null || couponCode.trim().isEmpty()) {
+            discountPercentage = 0.0;
+            updateTotal();
+            return false;
+        }
+
+        MaGiamGia_DAO dao = new MaGiamGia_DAO();
+        MaGiamGia mg = dao.timMaGiamGia(couponCode);
+        if (mg != null) {
+            discountPercentage = mg.getGiamGia();
+            updateTotal();
+            JOptionPane.showMessageDialog(this, "Áp dụng mã giảm giá thành công! Giảm " + (int) discountPercentage + "%", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            return true;
+        } else {
+            discountPercentage = 0.0;
+            updateTotal();
+            JOptionPane.showMessageDialog(this, "Mã giảm giá không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    private void applyDiscountAndCheckout() {
+        String discountCode = discountCodeField.getText().trim();
+        checkCoupon(discountCode);
+
+        if (orderTableModel.getRowCount() > 0) {
+            createdHoaDon();
+        } else {
+            JOptionPane.showMessageDialog(this, "Đơn hàng trống, không thể thanh toán!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void createdHoaDon() {
+        String maHDBH = generateMaHDBH();
+        String maNV = "NV001"; // Giả định mã nhân viên, thay bằng logic đăng nhập nếu có
+        String maKH = getMaKHFromPhone(phoneField.getText().trim());
+
+        double total = 0.0;
+        for (int i = 0; i < orderTableModel.getRowCount(); i++) {
+            total += (Double) orderTableModel.getValueAt(i, 3);
+        }
+        double discountAmount = total * (discountPercentage / 100);
+        double finalTotal = total - discountAmount;
+
+        // Lưu vào HOADONBANHANG
+        String sqlHDBH = "INSERT INTO HOADONBANHANG (MAHDBH, MANV, MAKH, NGAYHDBH, TONGTIEN, DIEMTL, GIAMGIA, HINHTHUCTHANHTOAN) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection con = ConnectDB.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sqlHDBH)) {
+            stmt.setString(1, maHDBH);
+            stmt.setString(2, maNV);
+            stmt.setString(3, maKH);
+            stmt.setDate(4, java.sql.Date.valueOf(java.time.LocalDate.now()));
+            stmt.setDouble(5, finalTotal);
+            stmt.setInt(6, 0); // DIEMTL mặc định là 0, có thể cập nhật logic tích điểm sau
+            stmt.setInt(7, (int) discountPercentage);
+            stmt.setBoolean(8, bankTransferCheckBox.isSelected()); // HINHTHUCTHANHTOAN từ checkbox
+            stmt.executeUpdate();
+
+            // Lưu vào CHITIETHOADON
+            String sqlCTHD = "INSERT INTO CHITIETHOADON (MAHDBH, MAHH, SOLUONG, THANHTIEN) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement cthdStmt = con.prepareStatement(sqlCTHD)) {
+                for (int i = 0; i < orderTableModel.getRowCount(); i++) {
+                    String tenHH = (String) orderTableModel.getValueAt(i, 0);
+                    String maHH = getMaHHFromTenHH(tenHH);
+                    if (maHH != null) {
+                        cthdStmt.setString(1, maHDBH);
+                        cthdStmt.setString(2, maHH);
+                        cthdStmt.setInt(3, (Integer) orderTableModel.getValueAt(i, 1));
+                        cthdStmt.setDouble(4, (Double) orderTableModel.getValueAt(i, 3));
+                        cthdStmt.executeUpdate();
+                    } else {
+                        System.out.println("Không tìm thấy MAHH cho: " + tenHH);
+                    }
+                }
+            }
+
+            JOptionPane.showMessageDialog(this, "Tạo hóa đơn thành công! Mã hóa đơn: " + maHDBH, "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            clearOrder(); // Đặt lại đơn hàng sau khi tạo hóa đơn
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi tạo hóa đơn: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private String generateMaHDBH() {
+        String sql = "SELECT MAX(MAHDBH) FROM HOADONBANHANG";
+        try (Connection con = ConnectDB.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String maxMaHDBH = rs.getString(1);
+                if (maxMaHDBH != null) {
+                    int num = Integer.parseInt(maxMaHDBH.replace("HDBH", "")) + 1;
+                    return String.format("HDBH%04d", num);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "HDBH0001"; // Mã đầu tiên nếu bảng trống
+    }
+
+    private String getMaKHFromPhone(String phone) {
+        if (phone.isEmpty()) {
+            return "KH0000"; // Mã khách hàng mặc định
+        }
+        String sql = "SELECT MAKH FROM KHACHHANG WHERE SDT = ?";
+        try (Connection con = ConnectDB.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, phone);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("MAKH");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "KH0000"; // Trả về mã mặc định nếu không tìm thấy
+    }
+
+    private String getMaHHFromTenHH(String tenHH) {
+        String sql = "SELECT MAHH FROM HANGHOA WHERE TENHH = ?";
+        try (Connection con = ConnectDB.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, tenHH);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("MAHH");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+>>>>>>> f9f1d9d49f6e45cef6798800bd81335a52e2824c
     public DefaultTableModel getOrderTableModel() {
         return orderTableModel;
     }
