@@ -10,7 +10,7 @@ import Model.LoaiKhachHang;
 import Model.MaGiamGia;
 
 public class LoaiKhachHang_DAO {
-	public ArrayList<LoaiKhachHang> getAllLoaiKhachHang(){
+	public static ArrayList<LoaiKhachHang> getAllLoaiKhachHang(){
 		ArrayList<LoaiKhachHang> dsLoaiKhachHang = new ArrayList<LoaiKhachHang>();
 		try {
 			ConnectDB.getInstance();
