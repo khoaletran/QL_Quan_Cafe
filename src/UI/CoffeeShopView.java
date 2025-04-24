@@ -21,11 +21,11 @@ public class CoffeeShopView extends JFrame {
     private JPanel centerPanel; // Lưu panel trung tâm hiện tại
     private JPanel rightPanel; // Lưu RightPanel
     private JPanel mainPanel; // Lưu mainPanel để quản lý bố cục
+    private ProductDetailPanel productDetailPanel; // Thêm để truyền vào ProductListPanel
 
     public CoffeeShopView() {
         setTitle("Quản Lý Quán Cafe - Phiên Bản Hoàn Thiện");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         createUI();
@@ -56,20 +56,25 @@ public class CoffeeShopView extends JFrame {
 //
 //        loginDialog.setVisible(true);
 //    }
+
     private void initializeMainUI() {
-    	connectDB();
+        connectDB();
         createUI();
         setVisible(true);
-    
     }
+
     private void createUI() {
         setLayout(new BorderLayout());
         connectDB();
 
         mainPanel = new JPanel(new BorderLayout());
         LeftMenuPanel leftMenu = new LeftMenuPanel();
-        centerPanel = new ProductListPanel(); // Panel trung tâm mặc định
-        rightPanel = new RightPanel(); // Khởi tạo RightPanel
+
+        // Khởi tạo các panel cần thiết
+        OrderPanel orderPanel = new OrderPanel();
+        productDetailPanel = new ProductDetailPanel(orderPanel);
+        centerPanel = new ProductListPanel(productDetailPanel);
+        rightPanel = new RightPanel(productDetailPanel, orderPanel);
 
         mainPanel.add(leftMenu, BorderLayout.WEST);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -93,9 +98,9 @@ public class CoffeeShopView extends JFrame {
 
         // Thêm sự kiện cho nút "Sản Phẩm"
         leftMenu.setSanPhamButtonListener(() -> {
-        	connectDB();
+            connectDB();
             mainPanel.remove(centerPanel);
-            centerPanel = new ProductListPanel();
+            centerPanel = new ProductListPanel(productDetailPanel); // Sửa lỗi: truyền ProductDetailPanel
             mainPanel.add(centerPanel, BorderLayout.CENTER);
             mainPanel.add(rightPanel, BorderLayout.EAST); // Hiển thị lại RightPanel
             mainPanel.revalidate();
@@ -111,20 +116,18 @@ public class CoffeeShopView extends JFrame {
             mainPanel.revalidate();
             mainPanel.repaint();
         });
-
-        
     }
-    
+
     public static void connectDB() {
-    	try {
-            ConnectDB.getInstance().connect();          
+        try {
+            ConnectDB.getInstance().connect();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public static void main(String[] args) {
-    	connectDB();
+        connectDB();
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
