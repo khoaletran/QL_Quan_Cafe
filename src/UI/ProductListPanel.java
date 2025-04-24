@@ -62,7 +62,7 @@ public class ProductListPanel extends JPanel {
         imageLabel.setPreferredSize(new Dimension(150, 150));
         try {
             ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(imagePath));
-            Image scaledImage = icon.getImage().getScaledInstance(180, 150, Image.SCALE_SMOOTH);
+            Image scaledImage = icon.getImage().getScaledInstance(200, 150, Image.SCALE_SMOOTH);
             imageLabel.setIcon(new ImageIcon(scaledImage));
             imageLabel.setText("");
         } catch (Exception e) {
