@@ -21,7 +21,7 @@ public class ThongKePanel extends JPanel {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         dataset.addValue(12500000, "Doanh thu", "10/2024");
         dataset.addValue(11000000, "Doanh thu", "11/2024");
-        dataset.addValue(10500000, "Doanh thu", "12/2024");
+        dataset.addValue(9500000, "Doanh thu", "12/2024");
         dataset.addValue(11000000, "Doanh thu", "01/2025");
         dataset.addValue(8500000, "Doanh thu", "02/2025");
         dataset.addValue(9000000, "Doanh thu", "03/2025");
