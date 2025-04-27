@@ -21,7 +21,7 @@ public class CoffeeShopView extends JFrame {
     private JPanel centerPanel; // Lưu panel trung tâm hiện tại
     private JPanel rightPanel; // Lưu RightPanel
     private JPanel mainPanel; // Lưu mainPanel để quản lý bố cục
-    private ProductDetailPanel productDetailPanel; // Thêm để truyền vào ProductListPanel
+    // Thêm để truyền vào ProductListPanel
 
     public CoffeeShopView() {
         setTitle("Quản Lý Quán Cafe - Phiên Bản Hoàn Thiện");
@@ -72,8 +72,8 @@ public class CoffeeShopView extends JFrame {
 
         // Khởi tạo các panel cần thiết
         OrderPanel orderPanel = new OrderPanel();
-        productDetailPanel = new ProductDetailPanel(orderPanel);
-        centerPanel = new ProductListPanel(productDetailPanel,orderPanel);
+        
+        centerPanel = new ProductListPanel(orderPanel);
         rightPanel = new RightPanel(orderPanel);
 
         mainPanel.add(leftMenu, BorderLayout.WEST);
@@ -100,7 +100,7 @@ public class CoffeeShopView extends JFrame {
         leftMenu.setDonHangMoiButtonListener(() -> {
             connectDB();
             mainPanel.remove(centerPanel);
-            centerPanel = new ProductListPanel(productDetailPanel,orderPanel); // Sửa lỗi: truyền ProductDetailPanel
+            centerPanel = new ProductListPanel(orderPanel); // Sửa lỗi: truyền ProductDetailPanel
             mainPanel.add(centerPanel, BorderLayout.CENTER);
             mainPanel.add(rightPanel, BorderLayout.EAST); // Hiển thị lại RightPanel
             mainPanel.revalidate();
@@ -122,6 +122,14 @@ public class CoffeeShopView extends JFrame {
             mainPanel.remove(centerPanel);
             mainPanel.remove(rightPanel); // Ẩn RightPanel
             centerPanel = new ThongKePanel();
+            mainPanel.add(centerPanel, BorderLayout.CENTER);
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        });
+        leftMenu.setSanPhamButtonListener(()->{
+        	mainPanel.remove(centerPanel);
+            mainPanel.remove(rightPanel); // Ẩn RightPanel
+            centerPanel = new SanPhamPanel();
             mainPanel.add(centerPanel, BorderLayout.CENTER);
             mainPanel.revalidate();
             mainPanel.repaint();

@@ -8,6 +8,7 @@ public class LeftMenuPanel extends JPanel {
     private JButton donHangMoiButton; // Lưu nút "Sản Phẩm"
     private JButton nhanVienButton; // Lưu nút "Nhân Viên"
     private JButton thongKeButton;
+    private JButton sanPhamButton;
 
     public LeftMenuPanel() {
         setLayout(new BorderLayout());
@@ -60,6 +61,8 @@ public class LeftMenuPanel extends JPanel {
                 nhanVienButton = button;
             }else if (item[1].equals("Thống Kê")) {
                 thongKeButton = button;
+            }else if (item[1].equals("Sản Phẩm")) {
+                sanPhamButton = button;
             }
 
             menuButtonsPanel.add(button);
@@ -96,6 +99,11 @@ public class LeftMenuPanel extends JPanel {
     public void setThongKeButtonListener(Runnable action) {
         if (thongKeButton != null) {
             thongKeButton.addActionListener(e -> action.run());
+        }
+    }
+    public void setSanPhamButtonListener(Runnable action) {
+        if (sanPhamButton != null) {
+        	sanPhamButton.addActionListener(e -> action.run());
         }
     }
 }

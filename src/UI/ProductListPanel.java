@@ -8,13 +8,11 @@ import Model.HangHoa;
 
 public class ProductListPanel extends JPanel {
     private ArrayList<HangHoa> dsHH;
-    private ProductDetailPanel productDetailPanel; // Tham chiếu đến ProductDetailPanel
     private JPanel productGridPanel; // Để cập nhật sản phẩm khi tìm kiếm 
     private OrderPanel orderPanel; // Tham chiếu đến OrderPanel    
 
-    public ProductListPanel(ProductDetailPanel productDetailPanel,OrderPanel orderPanel) {
+    public ProductListPanel(OrderPanel orderPanel) {
     	this.orderPanel = orderPanel;
-        this.productDetailPanel = productDetailPanel;
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setBackground(Color.WHITE);

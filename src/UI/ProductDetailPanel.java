@@ -12,10 +12,9 @@ public class ProductDetailPanel extends JPanel {
     private JTextArea descriptionArea;
     private JSpinner quantitySpinner;
     private HangHoa currentProduct; 
-    private OrderPanel orderPanel; 
+    
 
-    public ProductDetailPanel(OrderPanel orderPanel) {
-        this.orderPanel = orderPanel;
+    public ProductDetailPanel() {
         setLayout(new BorderLayout());
         createUI();
     }
@@ -68,8 +67,7 @@ public class ProductDetailPanel extends JPanel {
         quantityPanel.add(quantitySpinner);
 
         CustomButton addButton = new CustomButton("Thêm vào đơn", new Color(70, 130, 180), Color.WHITE, 10);
-        addButton.addActionListener(e -> addToOrder());
-
+        
         // Thêm nút "Thêm vào đơn" vào một JPanel để căn giữa
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBackground(Color.WHITE);
@@ -111,11 +109,14 @@ public class ProductDetailPanel extends JPanel {
 
         quantitySpinner.setValue(1); // Reset số lượng về 1
     }
-
-    private void addToOrder() {
-        if (currentProduct != null) {
-            int quantity = (Integer) quantitySpinner.getValue();
-            orderPanel.addOrderItem(currentProduct, quantity);
-        }
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Quản lý Sản phẩm");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setContentPane(new ProductDetailPanel());
+        frame.setVisible(true);
     }
+
+    
 }
