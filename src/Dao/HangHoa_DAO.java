@@ -152,6 +152,40 @@ public class HangHoa_DAO {
 	    } 
 	    return n > 0;
 	}
+	
+	public HangHoa timHangHoaTheoTen(String tenHH) throws SQLException {
+        Connection conn = ConnectDB.getInstance().getConnection();
+        String sql = "SELECT HH.MAHH, HH.MALH, HH.TENHH, HH.HINHANH, HH.GIASP, LH.TENLH, LH.MOTA " +
+                    "FROM HANGHOA HH JOIN LOAIHANGHOA LH ON HH.MALH = LH.MALH " +
+                    "WHERE HH.TENHH = ?";
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        HangHoa hh = null;
+
+        try {
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, tenHH);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                LoaiHangHoa loaiHangHoa = new LoaiHangHoa(
+                    rs.getString("MALH"),
+                    rs.getString("TENLH"),
+                    rs.getString("MOTA")
+                );
+                hh = new HangHoa(
+                    rs.getString("MAHH"),
+                    rs.getString("TENHH"),
+                    rs.getString("HINHANH"),
+                    rs.getDouble("GIASP"),
+                    loaiHangHoa
+                );
+            }
+        } finally {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+        }
+        return hh;
+    }
 
 
 }

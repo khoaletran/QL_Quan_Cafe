@@ -71,7 +71,7 @@ public class CoffeeShopView extends JFrame {
         LeftMenuPanel leftMenu = new LeftMenuPanel();
 
         // Khởi tạo các panel cần thiết
-        OrderPanel orderPanel = new OrderPanel();
+        OrderPanel orderPanel = new OrderPanel("NV0001");
         
         centerPanel = new ProductListPanel(orderPanel);
         rightPanel = new RightPanel(orderPanel);

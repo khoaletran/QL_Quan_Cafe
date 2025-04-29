@@ -7,7 +7,15 @@ public class HangHoa {
     private double giaSP;
     private LoaiHangHoa loaiHangHoa;
 
-    public HangHoa(String maHH, String tenHH, String hinhAnh, double giaSP) {
+    public HangHoa() {
+    	 setMaHH(maHH);
+         setTenHH(tenHH);
+         setHinhAnh(hinhAnh);
+         setGiaSP(giaSP);
+         setLoaiHangHoa(loaiHangHoa);
+	}
+
+	public HangHoa(String maHH, String tenHH, String hinhAnh, double giaSP) {
         setMaHH(maHH);
         setTenHH(tenHH);
         setHinhAnh(hinhAnh);

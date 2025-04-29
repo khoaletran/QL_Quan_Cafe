@@ -1,74 +1,121 @@
 package Dao;
 
+import ConnectDB.ConnectDB;
+import Model.HoaDonBanHang;
+import Model.ChiTietHoaDon;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import ConnectDB.ConnectDB;
-import Model.ChiTietHoaDon;
-import Model.HoaDonBanHang;
+import java.util.List;
+import java.sql.Statement;
 
 public class HoaDon_DAO {
-    public boolean saveOrderWithDetails(HoaDonBanHang hoaDon, String maNhanVien) throws SQLException {
-        Connection connection = ConnectDB.getInstance().getConnection();
+    public void saveOrderWithDetails(HoaDonBanHang hoaDon, String maNhanVien) throws SQLException {
+        // Kiểm tra tham số đầu vào
+        if (hoaDon == null) {
+            throw new IllegalArgumentException("Hóa đơn không được null");
+        }
+        if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
+            throw new IllegalArgumentException("Mã nhân viên không được trống");
+        }
 
-        // Câu lệnh SQL cho bảng HOADONBANHANG
-        String sqlInsertHoaDon = "INSERT INTO HOADONBANHANG (MANV, MAKH, NGAYHDBH, TONGTIEN, DIEMTL, GIAMGIA, HINHTHUCTHANHTOAN) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
-        // Câu lệnh SQL cho bảng CHITIETHOADON
-        String sqlInsertChiTiet = "INSERT INTO CHITIETHOADON (MAHDBH, MAHH, SOLUONG, THANHTIEN) VALUES (?, ?, ?, ?)";
-
+        Connection conn = null;
         try {
-            connection.setAutoCommit(false);
+            conn = ConnectDB.getInstance().getConnection();
+            conn.setAutoCommit(false);
 
-            // Insert vào bảng HOADONBANHANG mà không cần mã hóa đơn (trigger sẽ tự sinh)
-            String maHoaDon = null;
-            try (PreparedStatement stmtHoaDon = connection.prepareStatement(sqlInsertHoaDon, PreparedStatement.RETURN_GENERATED_KEYS)) {
-                stmtHoaDon.setString(1, maNhanVien);
-                stmtHoaDon.setString(2, hoaDon.getKhachHang().getMaKH());
-                stmtHoaDon.setDate(3, Date.valueOf(hoaDon.getNgayLapHDBH()));
-                stmtHoaDon.setDouble(4, hoaDon.tinhTongThanhToan());
-                stmtHoaDon.setInt(5, hoaDon.getdiemTL());
-                stmtHoaDon.setInt(6, hoaDon.getGiamGia().getGiamGia());
-                stmtHoaDon.setBoolean(7, hoaDon.isHinhThucThanhToan());
-                stmtHoaDon.executeUpdate();
-
-                // Lấy mã hóa đơn tự sinh từ SQL
-                ResultSet rs = stmtHoaDon.getGeneratedKeys();
-                if (rs.next()) {
-                    maHoaDon = rs.getString(1);
-                }
+            // 1. Lưu hóa đơn chính và lấy mã mới
+            String maHDBH = insertHoaDon(conn, hoaDon, maNhanVien);
+            
+            // 2. Cập nhật mã hóa đơn vào đối tượng
+            hoaDon.setMaHDBH(maHDBH);
+            
+            // 3. Lưu chi tiết hóa đơn nếu có
+            List<ChiTietHoaDon> chiTietList = hoaDon.getChiTietHoaDonList();
+            if (chiTietList != null && !chiTietList.isEmpty()) {
+                insertChiTietHoaDon(conn, maHDBH, chiTietList);
             }
-
-            // Nếu không lấy được mã hóa đơn, rollback
-            if (maHoaDon == null) {
-                connection.rollback();
-                throw new SQLException("Không lấy được mã hóa đơn từ trigger.");
+            
+            // 4. Cập nhật điểm tích lũy nếu không phải khách lẻ
+            if (!"KH0000".equals(hoaDon.getKhachHang().getMaKH())) {
+                updateDiemTichLuy(conn, hoaDon);
             }
-
-            // Insert vào bảng CHITIETHOADON
-            try (PreparedStatement stmtChiTiet = connection.prepareStatement(sqlInsertChiTiet)) {
-                for (ChiTietHoaDon chiTiet : hoaDon.getChiTietHoaDonList()) {
-                    stmtChiTiet.setString(1, maHoaDon);
-                    stmtChiTiet.setString(2, chiTiet.getHangHoa().getMaHH());
-                    stmtChiTiet.setInt(3, chiTiet.getSoLuong());
-                    stmtChiTiet.setDouble(4, chiTiet.getThanhTien());
-                    stmtChiTiet.addBatch();
-                }
-                stmtChiTiet.executeBatch();
-            }
-
-            // Commit giao dịch
-            connection.commit();
-            return true;
+            
+            conn.commit();
         } catch (SQLException e) {
-            connection.rollback();
-            e.printStackTrace();
-            return false;
+            if (conn != null) {
+                conn.rollback();
+            }
+            throw e;
         } finally {
-            connection.setAutoCommit(true);
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private String insertHoaDon(Connection conn, HoaDonBanHang hoaDon, String maNhanVien) throws SQLException {
+        // Sử dụng Statement.RETURN_GENERATED_KEYS để lấy ID tự sinh
+        String sql = "INSERT INTO HOADONBANHANG (MANV, MAKH, NGAYHDBH, TONGTIEN, DIEMTL, GIAMGIA, HINHTHUCTHANHTOAN) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, maNhanVien);
+            stmt.setString(2, hoaDon.getKhachHang().getMaKH());
+            stmt.setDate(3, java.sql.Date.valueOf(hoaDon.getNgayLapHDBH()));
+            stmt.setDouble(4, hoaDon.tinhTongThanhToan());
+            stmt.setInt(5, hoaDon.getDiemTL());
+            stmt.setInt(6, hoaDon.getGiamGia() != null ? hoaDon.getGiamGia().getGiamGia() : 0);
+            stmt.setBoolean(7, hoaDon.isHinhThucThanhToan());
+            
+            int affectedRows = stmt.executeUpdate();
+            
+            if (affectedRows == 0) {
+                throw new SQLException("Tạo hóa đơn thất bại, không có hàng nào được thêm");
+            }
+            
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    // Lấy ID tự sinh (trigger sẽ chuyển thành mã HDXXXX)
+                    return generatedKeys.getString(1);
+                }
+                throw new SQLException("Tạo hóa đơn thất bại, không lấy được ID");
+            }
+        }
+    }
+
+    private void insertChiTietHoaDon(Connection conn, String maHDBH, List<ChiTietHoaDon> chiTietList) 
+            throws SQLException {
+        String sql = "INSERT INTO CHITIETHOADON (MAHDBH, MAHH, SOLUONG, THANHTIEN) VALUES (?, ?, ?, ?)";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (ChiTietHoaDon cthd : chiTietList) {
+                if (cthd == null || cthd.getHangHoa() == null) {
+                    continue;
+                }
+                
+                stmt.setString(1, maHDBH);
+                stmt.setString(2, cthd.getHangHoa().getMaHH());
+                stmt.setInt(3, cthd.getSoLuong());
+                stmt.setDouble(4, cthd.getThanhTien());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        }
+    }
+
+    private void updateDiemTichLuy(Connection conn, HoaDonBanHang hoaDon) throws SQLException {
+        String sql = "UPDATE KHACHHANG SET DIEMTL = DIEMTL + ? WHERE MAKH = ?";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, hoaDon.getDiemTL());
+            stmt.setString(2, hoaDon.getKhachHang().getMaKH());
+            stmt.executeUpdate();
         }
     }
 }
