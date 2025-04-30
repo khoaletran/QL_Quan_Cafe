@@ -40,7 +40,6 @@ public class NhanVien {
         setSdt(sdt);
         setMatKhau(matKhau);
         setQuanly(quanly);
-
     }
 
     public String getMaNV() {
