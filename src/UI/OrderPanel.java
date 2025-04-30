@@ -182,7 +182,8 @@ public class OrderPanel extends JPanel {
 
     private void handleCheckout() {
         if (orderTableModel.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(this, "Đơn hàng trống! Vui lòng thêm sản phẩm.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Đơn hàng trống! Vui lòng thêm sản phẩm.", 
+                                        "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -197,19 +198,19 @@ public class OrderPanel extends JPanel {
         for (int i = 0; i < orderTableModel.getRowCount(); i++) {
             String tenHH = (String) orderTableModel.getValueAt(i, 0);
             int soLuong = (Integer) orderTableModel.getValueAt(i, 1);
-            double gia = (Double) orderTableModel.getValueAt(i, 2);
 
-            // Tìm HangHoa từ CSDL dựa trên TENHH
             HangHoa hh = null;
             try {
                 hh = hangHoaDAO.timHangHoaTheoTen(tenHH);
             } catch (SQLException e) {
-                e.printStackTrace(); // Ghi log lỗi
-                JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn hàng hóa: " + e.getMessage(), "Lỗi CSDL", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn hàng hóa: " + e.getMessage(), 
+                                            "Lỗi CSDL", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (hh == null) {
-                JOptionPane.showMessageDialog(this, "Hàng hóa '" + tenHH + "' không tồn tại trong CSDL.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Hàng hóa '" + tenHH + "' không tồn tại trong CSDL.", 
+                                            "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -219,39 +220,54 @@ public class OrderPanel extends JPanel {
 
         // Tìm khách hàng
         KhachHang khachHang = null;
+        double customerDiscount = 0;
         if (!phoneNumber.isEmpty()) {
             try {
                 khachHang = KhachHang_DAO.timKhachHangTheoSDT(phoneNumber);
+                if (khachHang != null) {
+                    customerDiscount = khachHang.getLoaiKhachHang().getGiamGia();
+                }
             } catch (Exception e) {
-                e.printStackTrace(); // Ghi log lỗi
-                JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn khách hàng: " + e.getMessage(), "Lỗi CSDL", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn khách hàng: " + e.getMessage(), 
+                                            "Lỗi CSDL", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
         if (khachHang == null) {
-            // Khách lẻ với MAKH cố định
-            khachHang = new KhachHang("KH0000", "Khách lẻ", "0000000000", 0, new LoaiKhachHang("LKH0001", "Thường", 0));
+            khachHang = new KhachHang("KH0000", "Khách lẻ", "0000000000", 0, 
+                                    new LoaiKhachHang("LKH0001", "Thường", 0));
         }
 
         // Tìm mã giảm giá
         MaGiamGia maGiamGia = null;
+        double discountPercentage = 0.0;
         if (!discountCode.isEmpty()) {
             try {
                 MaGiamGia_DAO discountDAO = new MaGiamGia_DAO();
                 maGiamGia = discountDAO.timMaGiamGia(discountCode);
+                if (maGiamGia != null) {
+                    discountPercentage = maGiamGia.getGiamGia();
+                }
             } catch (Exception e) {
-                e.printStackTrace(); // Ghi log lỗi
-                JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn mã giảm giá: " + e.getMessage(), "Lỗi CSDL", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn mã giảm giá: " + e.getMessage(), 
+                                            "Lỗi CSDL", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
 
-        // Tạo hóa đơn (MAHDBH sẽ được trigger sinh)
-        HoaDonBanHang hoaDon = new HoaDonBanHang(null,LocalDate.now(), maGiamGia, khachHang,isBankTransfer);
+        // Tính tổng giảm giá (giới hạn tối đa 50%)
+        double totalDiscountPercentage = discountPercentage + customerDiscount;
+        totalDiscountPercentage = Math.min(totalDiscountPercentage, 50.0);
+
+        // Tạo hóa đơn
+        HoaDonBanHang hoaDon = new HoaDonBanHang(LocalDate.now(), maGiamGia, khachHang, 
+                                                isBankTransfer, totalDiscountPercentage);
         for (ChiTietHoaDon cthd : chiTietList) {
             hoaDon.themChiTiet(cthd);
         }
-        hoaDon.setDiemTL(hoaDon.getdiemTL()); // Cập nhật điểm tích lũy
+        hoaDon.setDiemTL(hoaDon.getdiemTL());
 
         // In hóa đơn ra console
         printHoaDon(hoaDon);
@@ -260,15 +276,14 @@ public class OrderPanel extends JPanel {
         HoaDon_DAO hoaDonDAO = new HoaDon_DAO();
         try {
             hoaDonDAO.saveOrderWithDetails(hoaDon, maNhanVien);
-            JOptionPane.showMessageDialog(this, "Lưu hóa đơn thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Lưu hóa đơn thành công!", 
+                                        "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            clearOrder();
         } catch (SQLException e) {
-            e.printStackTrace(); // Ghi log lỗi
-            JOptionPane.showMessageDialog(this, "Lỗi khi lưu hóa đơn: " + e.getMessage(), "Lỗi CSDL", JOptionPane.ERROR_MESSAGE);
-            return;
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi lưu hóa đơn: " + e.getMessage(), 
+                                        "Lỗi CSDL", JOptionPane.ERROR_MESSAGE);
         }
-
-        // Xóa đơn hàng sau khi thanh toán
-        clearOrder();
     }
 
     private void printHoaDon(HoaDonBanHang hoaDon) {
@@ -335,7 +350,8 @@ public class OrderPanel extends JPanel {
         double finalTotal = total - discountAmount;
 
         totalLabel.setText("Tổng: " + df.format(total));
-        discountAmountLabel.setText("Chiết khấu: " + df.format(discountAmount));
+        discountAmountLabel.setText("Chiết khấu: " + df.format(discountAmount) + 
+                                  " (" + (int)totalDiscountPercentage + "%)");
         totalAfterDiscountLabel.setText("Thành tiền: " + df.format(finalTotal));
 
         if (isLimited) {
