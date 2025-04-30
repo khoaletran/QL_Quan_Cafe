@@ -18,10 +18,11 @@ public class LeftMenuPanel extends JPanel {
     }
 
     private void createUI() {
-        JLabel logoLabel = new JLabel("QUÁN CAFE", SwingConstants.CENTER);
-        logoLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        logoLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 30, 0));
-        add(logoLabel, BorderLayout.NORTH);
+    	ImageIcon logoIcon = new ImageIcon(getClass().getResource("/Resource/main/logo.png"));
+    	Image scaledImage = logoIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+    	JLabel logoLabel = new JLabel(new ImageIcon(scaledImage), SwingConstants.CENTER);
+    	logoLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 30, 0));
+    	add(logoLabel, BorderLayout.NORTH);
 
         JPanel menuButtonsPanel = new JPanel(new GridLayout(0, 1, 0, 5));
         Font textFont = new Font("Arial", Font.PLAIN, 16);

@@ -23,7 +23,7 @@ public class ProductListPanel extends JPanel {
         JPanel headerPanel = new JPanel(new BorderLayout());
         JLabel titleLabel = new JLabel("DANH SÁCH SẢN PHẨM", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
 
         JPanel searchPanel = new JPanel(new BorderLayout(5, 0));
         JTextField searchField = new JTextField();
