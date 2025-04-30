@@ -110,12 +110,11 @@ public class HoaDonBanHang {
         return ngayLapHDBH;
     }
 
-    public int getDiemTL() {
-        return diemTL;
-    }
-
     public MaGiamGia getGiamGia() {
         return giamGia;
+    }
+    public int getdiemTL() {
+        return diemTL;
     }
 
     public KhachHang getKhachHang() {
@@ -151,8 +150,8 @@ public class HoaDonBanHang {
         return tong - giam;
     }
 
-    public int getdiemTL() {
-        return (int) (tinhTong() * 0.1);
+    public int getdiemTL_THD() {
+        return (int) (tinhTong() * 0.0001);
     }
     
     public double getTongGiamGia() {

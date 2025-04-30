@@ -9,7 +9,7 @@ public class KhachHang {
     private String maKH; // SQL tự tăng – không set từ Java
     private String tenKH;
     private String soDienThoai;
-    private int diemTL;
+    private int diemTL = 0;
     private LoaiKhachHang loaiKhachHang;
 
     public KhachHang() {
@@ -120,7 +120,7 @@ public class KhachHang {
         if (diemTL < 0) {
             throw new IllegalArgumentException("Điểm tích lũy phải lớn hơn hoặc bằng 0.");
         }
-        this.diemTL = diemTL;
+        this.diemTL += diemTL ;
     }
 
     public LoaiKhachHang getLoaiKhachHang() {
@@ -152,18 +152,18 @@ public class KhachHang {
     
     public void setLoaiKhachHang(int diemTL) {
         // Giả sử có các loại khách hàng với điểm tích lũy khác nhau
-        if (diemTL < 100) {
-             this.loaiKhachHang = new LoaiKhachHang("LKH0001", "Thường", 0);
-        } else if (diemTL < 200) {
-        	this.loaiKhachHang = new LoaiKhachHang("LKH0002", "Thân thiết", 5);
-        } else if (diemTL < 300) {
-        	this.loaiKhachHang = new LoaiKhachHang("LKH0003", "Bạc", 10);
-       } else if (diemTL < 400) {
-    	   this.loaiKhachHang = new LoaiKhachHang("LKH0004", "Vàng", 15);
-       } else{
-    	   this.loaiKhachHang = new LoaiKhachHang("LKH0005", "Kim Cương", 20);
-     } 
-    }
+	        if (diemTL < 100) {
+	             this.loaiKhachHang = new LoaiKhachHang("LKH0001", "Thường", 0);
+	       } else if (diemTL < 200) {
+	        	this.loaiKhachHang = new LoaiKhachHang("LKH0002", "Thân thiết", 5);
+	       } else if (diemTL < 300) {
+	        	this.loaiKhachHang = new LoaiKhachHang("LKH0003", "Bạc", 10);
+	       } else if (diemTL < 400) {
+	    	   this.loaiKhachHang = new LoaiKhachHang("LKH0004", "Vàng", 15);
+	       } else{
+	    	   this.loaiKhachHang = new LoaiKhachHang("LKH0005", "Kim Cương", 20);
+	    } 
+   }
 
     
     public void setLoaiKhachHang(LoaiKhachHang loaikhanhhang) {

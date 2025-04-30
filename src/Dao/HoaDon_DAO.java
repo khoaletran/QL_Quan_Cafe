@@ -68,7 +68,7 @@ public class HoaDon_DAO {
             stmt.setString(2, hoaDon.getKhachHang().getMaKH());
             stmt.setDate(3, java.sql.Date.valueOf(hoaDon.getNgayLapHDBH()));
             stmt.setDouble(4, hoaDon.tinhTongThanhToan()); // Lưu tổng tiền sau giảm giá
-            stmt.setInt(5, hoaDon.getDiemTL());
+            stmt.setInt(5, hoaDon.getdiemTL());
             stmt.setInt(6, (int) hoaDon.getTongGiamGia()); // Lưu tổng giảm giá (%)
             stmt.setBoolean(7, hoaDon.isHinhThucThanhToan());
             
@@ -111,7 +111,7 @@ public class HoaDon_DAO {
         String sql = "UPDATE KHACHHANG SET DIEMTL = DIEMTL + ? WHERE MAKH = ?";
         
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, hoaDon.getDiemTL());
+            stmt.setInt(1, hoaDon.getdiemTL());
             stmt.setString(2, hoaDon.getKhachHang().getMaKH());
             stmt.executeUpdate();
         }

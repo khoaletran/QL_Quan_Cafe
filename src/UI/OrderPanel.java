@@ -237,8 +237,7 @@ public class OrderPanel extends JPanel {
             }
         }
         if (khachHang == null) {
-            khachHang = new KhachHang("KH0000", "Khách lẻ", "0000000000", 0, 
-                                    new LoaiKhachHang("LKH0001", "Thường", 0));
+            khachHang = new KhachHang("Khách lẻ", phoneNumber, 0);
         }
 
         MaGiamGia maGiamGia = null;
@@ -266,9 +265,22 @@ public class OrderPanel extends JPanel {
         for (ChiTietHoaDon cthd : chiTietList) {
             hoaDon.themChiTiet(cthd);
         }
-        hoaDon.setDiemTL(hoaDon.getdiemTL());
-
+        
+        khachHang.setDiemTL(hoaDon.getdiemTL_THD());
+        
+        if( KhachHang_DAO.timKhachHangTheoSDT_DT(phoneNumber) != null ) {
+        	KhachHang_DAO.suaKhachHang(khachHang);
+        }
+        else {
+        	KhachHang_DAO.themKhachHang(khachHang);
+        }
+        
         HoaDon_DAO hoaDonDAO = new HoaDon_DAO();
+       
+        khachHang = KhachHang_DAO.timKhachHangTheoSDT_DT(phoneNumber);
+        
+        hoaDon.setKhachHang(khachHang);
+        
         String generatedMaHDBH = null;
         try {
             // Lưu hóa đơn vào database
@@ -506,7 +518,7 @@ public class OrderPanel extends JPanel {
         summaryPanel.add(finalAmountLabel, sumGbc);
 
         sumGbc.gridy = 3;
-        JLabel pointsLabel = new JLabel("Điểm tích lũy: " + hoaDon.getDiemTL());
+        JLabel pointsLabel = new JLabel("Điểm tích lũy: " + hoaDon.getdiemTL_THD());
         pointsLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         pointsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         summaryPanel.add(pointsLabel, sumGbc);
