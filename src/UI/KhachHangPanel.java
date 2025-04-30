@@ -2,6 +2,8 @@ package UI;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -101,12 +103,14 @@ public class KhachHangPanel extends JPanel {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(new Color(245, 245, 245));
-        String[] buttonLabels = {"Thêm", "Xóa", "Sửa", "Làm Mới", "Tìm"};
+        String[] buttonLabels = {"Thêm", "Xóa", "Sửa", "Làm Mới"};
         Font buttonFont = new Font("Arial", Font.BOLD, 14);
         
         //
         JLabel lblTimKiem = new JLabel("NHẬP SỐ ĐIỆN THOẠI KHÁCH HÀNG CẦN TÌM:");
         txtTimKiem = new JTextField(20);
+        txtTimKiem.getDocument().addDocumentListener(timKiemDong());
+
         JPanel pTimKiem = new JPanel(new GridLayout(2,1,2,2));
         pTimKiem.add(lblTimKiem);
         pTimKiem.add(txtTimKiem);
@@ -124,7 +128,6 @@ public class KhachHangPanel extends JPanel {
                     case "Xóa" -> xuLySuKienXoaKhachHang();
                     case "Sửa" -> xuLySuKienSuaKhachHang();
                     case "Làm Mới" -> xuLySuKienLamMoi();
-                    case "Tìm" -> xuLySuKienTimKiemKhachHang();
                 }
             });
 
@@ -217,28 +220,40 @@ public class KhachHangPanel extends JPanel {
     	   JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
        }
         
-        
-
-        
         updateTable();
     }
 
-    private void xuLySuKienTimKiemKhachHang() {
-        String soDienThoai = txtTimKiem.getText();
-        KhachHang kh = KhachHang_DAO.timKhachHangTheoSDT(soDienThoai);
-        if (kh != null) {
-            dskh = new ArrayList<>();
-            dskh.add(kh);
-        } else {
-            dskh = new ArrayList<>();
-        }
-        loadDataToTable();
-    }
+    
     private void xuLySuKienLamMoi() {
     	dskh = KhachHang_DAO.getAllKhachHang();
     	loadDataToTable();
     	txtTimKiem.setText("");
     	lamRong();
+    }
+    
+    private DocumentListener timKiemDong() {
+        return new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                thucHienTimKiem();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                thucHienTimKiem();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                thucHienTimKiem();
+            }
+
+            private void thucHienTimKiem() {
+                String soDienThoai = txtTimKiem.getText().trim();
+                dskh = KhachHang_DAO.timKhachHangTheoSDT(soDienThoai);
+                loadDataToTable();
+            }
+        };
     }
     
     private void lamRong(){

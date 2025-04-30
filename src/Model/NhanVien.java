@@ -39,6 +39,8 @@ public class NhanVien {
         setGioiTinh(gioiTinh);
         setSdt(sdt);
         setMatKhau(matKhau);
+        setQuanly(quanly);
+
     }
 
     public String getMaNV() {

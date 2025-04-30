@@ -51,8 +51,8 @@ public class KhachHang_DAO {
     }
     //Tìm khách hàng theo số điện thoại
 
-    public static KhachHang timKhachHangTheoSDT(String soDienThoai) {
-        KhachHang kh = null;
+    public static ArrayList<KhachHang> timKhachHangTheoSDT(String soDienThoai) {
+        ArrayList<KhachHang> dsKhachHang = new ArrayList<>();
 
         try {
             ConnectDB.getInstance().connect();
@@ -61,13 +61,13 @@ public class KhachHang_DAO {
             String sql = "SELECT KH.MAKH, KH.TENKH, KH.SDT, KH.DIEMTL, " +
                          "LKH.MALKH, LKH.TENLKH, LKH.GIAMGIA " +
                          "FROM KHACHHANG KH JOIN LOAIKHACHHANG LKH ON KH.MALKH = LKH.MALKH " +
-                         "WHERE KH.SDT = ?";
+                         "WHERE KH.SDT LIKE ?";
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, soDienThoai);
+            ps.setString(1, "%" + soDienThoai + "%");
 
             ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
+            while (rs.next()) {
                 String maKH = rs.getString("MAKH");
                 String tenKH = rs.getString("TENKH");
                 String sdt = rs.getString("SDT");
@@ -78,14 +78,15 @@ public class KhachHang_DAO {
                 int giamGia = rs.getInt("GIAMGIA");
 
                 LoaiKhachHang loaiKH = new LoaiKhachHang(maLKH, tenLKH, giamGia);
-                kh = new KhachHang(maKH, tenKH, sdt, diemTL, loaiKH);
+                KhachHang kh = new KhachHang(maKH, tenKH, sdt, diemTL, loaiKH);
+                dsKhachHang.add(kh);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return kh;
+        return dsKhachHang;
     }
 
     // Thêm khách hàng (MAKH được sinh tự động bởi TRIGGER trong SQL)
