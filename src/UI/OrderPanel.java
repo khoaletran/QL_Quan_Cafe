@@ -225,7 +225,7 @@ public class OrderPanel extends JPanel {
         double customerDiscount = 0;
         if (!phoneNumber.isEmpty()) {
             try {
-                khachHang = KhachHang_DAO.timKhachHangTheoSDT(phoneNumber);
+                khachHang = KhachHang_DAO.timKhachHangTheoSDT_DT(phoneNumber);
                 if (khachHang != null) {
                     customerDiscount = khachHang.getLoaiKhachHang().getGiamGia();
                 }
@@ -621,7 +621,7 @@ public class OrderPanel extends JPanel {
 
         if (!phoneNumber.isEmpty()) {
             try {
-                KhachHang kh = KhachHang_DAO.timKhachHangTheoSDT(phoneNumber);
+                KhachHang kh = KhachHang_DAO.timKhachHangTheoSDT_DT(phoneNumber);
                 if (kh != null) {
                     customerDiscount = kh.getLoaiKhachHang().getGiamGia();
                     discountStatusLabel.setText("Khách hàng: " + kh.getTenKH() + 

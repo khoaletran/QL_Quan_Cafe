@@ -88,6 +88,43 @@ public class KhachHang_DAO {
 
         return dsKhachHang;
     }
+    
+    public static KhachHang timKhachHangTheoSDT_DT(String soDienThoai) {
+        KhachHang kh = null;
+
+        try {
+            ConnectDB.getInstance().connect();
+            Connection con = ConnectDB.getConnection();
+
+            String sql = "SELECT KH.MAKH, KH.TENKH, KH.SDT, KH.DIEMTL, " +
+                         "LKH.MALKH, LKH.TENLKH, LKH.GIAMGIA " +
+                         "FROM KHACHHANG KH JOIN LOAIKHACHHANG LKH ON KH.MALKH = LKH.MALKH " +
+                         "WHERE KH.SDT = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, soDienThoai);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String maKH = rs.getString("MAKH");
+                String tenKH = rs.getString("TENKH");
+                String sdt = rs.getString("SDT");
+                int diemTL = rs.getInt("DIEMTL");
+
+                String maLKH = rs.getString("MALKH");
+                String tenLKH = rs.getString("TENLKH");
+                int giamGia = rs.getInt("GIAMGIA");
+
+                LoaiKhachHang loaiKH = new LoaiKhachHang(maLKH, tenLKH, giamGia);
+                kh = new KhachHang(maKH, tenKH, sdt, diemTL, loaiKH);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return kh;
+    }
 
     // Thêm khách hàng (MAKH được sinh tự động bởi TRIGGER trong SQL)
     public static boolean themKhachHang(KhachHang kh) {
