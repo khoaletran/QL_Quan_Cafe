@@ -34,9 +34,10 @@ public class NhanVien_DAO {
                 boolean gioiTinh = rs.getBoolean("GIOITINH");
                 String sdt = rs.getString("SDT");
                 String matKhau = rs.getString("MATKHAU");
+                boolean quanli = rs.getBoolean("QUANLY");
 
                 // Tạo đối tượng nhân viên và thêm vào danh sách
-                NhanVien nv = new NhanVien(maNV, tenNV, diaChi, ngayVaoLam.toLocalDate(), gioiTinh, sdt, matKhau);
+                NhanVien nv = new NhanVien(maNV, tenNV, diaChi, ngayVaoLam.toLocalDate(), gioiTinh, sdt, matKhau, quanli);
                 dsNhanVien.add(nv);
             }
 
@@ -55,7 +56,7 @@ public class NhanVien_DAO {
 
             // SQL câu lệnh insert
             String sql = "INSERT INTO NHANVIEN (TENNV, DIACHI, NGAYVAOLAM, GIOITINH, SDT, MATKHAU) "
-                    + "VALUES (?, ?, ?, ?, ?, ?)";
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             // Tạo Statement và truyền tham số vào câu lệnh
             PreparedStatement ps = con.prepareStatement(sql);
@@ -65,6 +66,8 @@ public class NhanVien_DAO {
             ps.setBoolean(4, nv.isGioiTinh());
             ps.setString(5, nv.getSdt());
             ps.setString(6, nv.getMatKhau());
+            ps.setBoolean(4, nv.isGioiTinh());
+            ps.setBoolean(7, nv.isQuanly());
 
             // Thực hiện câu lệnh insert
             int rowsAffected = ps.executeUpdate();
@@ -106,7 +109,7 @@ public class NhanVien_DAO {
             Connection con = ConnectDB.getConnection();
 
             // SQL câu lệnh update
-            String sql = "UPDATE NHANVIEN SET TENNV = ?, DIACHI = ?, NGAYVAOLAM = ?, GIOITINH = ?, SDT = ?, MATKHAU = ? "
+            String sql = "UPDATE NHANVIEN SET TENNV = ?, DIACHI = ?, NGAYVAOLAM = ?, GIOITINH = ?, SDT = ?, MATKHAU = ?, QUANLY = ? "
                     + "WHERE MANV = ?";
 
             // Tạo Statement và truyền tham số vào câu lệnh
@@ -117,8 +120,9 @@ public class NhanVien_DAO {
             ps.setBoolean(4, nv.isGioiTinh());
             ps.setString(5, nv.getSdt());
             ps.setString(6, nv.getMatKhau());
-            ps.setString(7, nv.getMaNV());
-
+            ps.setBoolean(7, nv.isQuanly());
+            ps.setString(8, nv.getMaNV());
+           
             // Thực hiện câu lệnh update
             int rowsAffected = ps.executeUpdate();
 
@@ -156,9 +160,10 @@ public class NhanVien_DAO {
                 boolean gioiTinh = rs.getBoolean("GIOITINH");
                 String sdt = rs.getString("SDT");
                 String matKhau = rs.getString("MATKHAU");
+                Boolean quanli = rs.getBoolean("QUANLY");
 
                 // Tạo đối tượng nhân viên từ dữ liệu
-                nv = new NhanVien(maNV, tenNV, diaChi, ngayVaoLam.toLocalDate(), gioiTinh, sdt, matKhau);
+                nv = new NhanVien(maNV, tenNV, diaChi, ngayVaoLam.toLocalDate(), gioiTinh, sdt, matKhau, quanli);
             }
 
         } catch (Exception e) {

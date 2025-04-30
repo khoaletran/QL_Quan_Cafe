@@ -13,6 +13,7 @@ public class NhanVien {
     private boolean gioiTinh;   // false: Nam, true: Nữ
     private String sdt;         // Regex: 0[2-9]\d{8}
     private String matKhau;     // ≥ 8 ký tự, gồm: 1 số, 1 chữ thường, 1 chữ hoa, 1 ký tự đặc biệt
+    private boolean quanly;
 
     /**
      * Constructor KHÔNG có maNV (dùng khi tạo mới, mã tự tăng trong DB)
@@ -29,7 +30,7 @@ public class NhanVien {
     /**
      * Constructor CÓ maNV (dùng khi lấy từ DB)
      */
-    public NhanVien(String maNV, String tenNV, String diaChi, LocalDate ngayVaoLam, boolean gioiTinh, String sdt, String matKhau) {
+    public NhanVien(String maNV, String tenNV, String diaChi, LocalDate ngayVaoLam, boolean gioiTinh, String sdt, String matKhau,boolean quanly) {
         setMaNV(maNV);
         setTenNV(tenNV);
         setDiaChi(diaChi);
@@ -138,8 +139,18 @@ public class NhanVien {
         }
         this.sdt = sdt;
     }
+    
+    
 
-    public String getMatKhau() {
+    public boolean isQuanly() {
+		return quanly;
+	}
+
+	public void setQuanly(boolean quanly) {
+		this.quanly = quanly;
+	}
+
+	public String getMatKhau() {
         return matKhau;
     }
 
