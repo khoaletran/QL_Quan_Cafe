@@ -7,6 +7,7 @@ import java.awt.event.ComponentEvent;
 import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -24,10 +25,11 @@ public class CoffeeShopView extends JFrame {
     
 
     public CoffeeShopView() {
-        setTitle("Quản Lý Quán Cafe - Phiên Bản Hoàn Thiện");
+        setTitle("ISpace - Coffee & Time");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setIconImage(new ImageIcon(getClass().getResource("/Resource/main/logo.png")).getImage());
         createUI();
 //        showLoginDialog();
     }
