@@ -268,25 +268,39 @@ public class OrderPanel extends JPanel {
         }
         hoaDon.setDiemTL(hoaDon.getdiemTL());
 
-        printHoaDon(hoaDon);
-
         HoaDon_DAO hoaDonDAO = new HoaDon_DAO();
+        String generatedMaHDBH = null;
         try {
+            // Lưu hóa đơn vào database
             hoaDonDAO.saveOrderWithDetails(hoaDon, maNhanVien);
+            
+            // Lấy mã hóa đơn mới nhất từ database
+            generatedMaHDBH = hoaDonDAO.getLatestMaHDBH();
+            if (generatedMaHDBH != null) {
+                hoaDon.setMaHDBH(generatedMaHDBH); // Cập nhật mã hóa đơn vào đối tượng hoaDon
+            } else {
+                throw new SQLException("Không thể lấy mã hóa đơn tự sinh từ database.");
+            }
             JOptionPane.showMessageDialog(this, "Lưu hóa đơn thành công!", 
                                         "Thành công", JOptionPane.INFORMATION_MESSAGE);
-            clearOrder();
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi lưu hóa đơn: " + e.getMessage(), 
                                         "Lỗi CSDL", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        // In hóa đơn sau khi mã hóa đơn đã được gán
+        printHoaDon(hoaDon);
+
+        // Xóa đơn hàng sau khi in
+        clearOrder();
     }
 
     private void printHoaDon(HoaDonBanHang hoaDon) {
         // Tạo JFrame cho hóa đơn
         JFrame invoiceFrame = new JFrame("Hóa Đơn Bán Hàng");
-        invoiceFrame.setSize(500, 600);
+        invoiceFrame.setSize(510, 600);
         invoiceFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         invoiceFrame.setLocationRelativeTo(null);
 
@@ -372,13 +386,6 @@ public class OrderPanel extends JPanel {
         panel.add(Box.createVerticalStrut(10));
 
         // ========== DANH SÁCH SẢN PHẨM ==========
-        JLabel productTitleLabel = new JLabel("Danh sách sản phẩm:");
-        productTitleLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        productTitleLabel.setForeground(new Color(0, 102, 204));
-        productTitleLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-        productTitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panel.add(productTitleLabel);
-
         JPanel productPanel = new JPanel(new GridBagLayout());
         productPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         productPanel.setBackground(Color.WHITE);
