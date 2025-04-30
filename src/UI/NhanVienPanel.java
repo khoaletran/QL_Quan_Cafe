@@ -20,7 +20,7 @@ public class NhanVienPanel extends JPanel {
     private ButtonGroup gioiTinhGroup;
     DefaultTableModel tableModel;
     JTable table;
-
+    private JCheckBox chkQuanLy;
     public NhanVienPanel() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -63,7 +63,12 @@ public class NhanVienPanel extends JPanel {
         Font radioFont = new Font("Arial", Font.PLAIN, 16); // hoặc 18, 20 tùy ý
         radNam.setFont(radioFont);
         radNu.setFont(radioFont);
-
+        
+        //check box quản lý
+        JLabel lblQuanLy = new JLabel("Quản lý:");
+        lblQuanLy.setFont(labelFont);
+        chkQuanLy = new JCheckBox();
+        
         
         gioiTinhGroup = new ButtonGroup();
         gioiTinhGroup.add(radNam);
@@ -74,10 +79,14 @@ public class NhanVienPanel extends JPanel {
         genderPanel.setBackground(new Color(245, 245, 245));
         genderPanel.add(radNam);
         genderPanel.add(radNu);
+        
+        
         inputPanel.add(genderPanel);
+        
+        inputPanel.add(lblQuanLy);
+        inputPanel.add(chkQuanLy);
 
-
-        String[] columnNames = {"Mã Nhân Viên", "Tên Nhân Viên", "Ngày Vào Làm", "Giới Tính", "Số Điện Thoại", "Địa Chỉ", "Mật Khẩu"};
+        String[] columnNames = {"Mã Nhân Viên", "Tên Nhân Viên", "Ngày Vào Làm", "Giới Tính", "Số Điện Thoại", "Địa Chỉ", "Mật Khẩu", "Quản Lý"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -99,6 +108,9 @@ public class NhanVienPanel extends JPanel {
                 textFields[3].setText((String) table.getValueAt(selectedRow, 4));
                 textFields[4].setText((String) table.getValueAt(selectedRow, 5));
                 textFields[5].setText((String) table.getValueAt(selectedRow, 6));
+                String ql = (String) table.getValueAt(selectedRow, 7);
+                chkQuanLy.setSelected(ql.equalsIgnoreCase("Có"));
+
             }
         });
 
@@ -149,7 +161,8 @@ public class NhanVienPanel extends JPanel {
                 nv.isGioiTinh() ? "Nữ" : "Nam",
                 nv.getSdt(),
                 nv.getDiaChi(),
-                nv.getMatKhau()
+                nv.getMatKhau(),
+                nv.isQuanly() ? "Có" : "Không"
             });
         }
     }
@@ -171,8 +184,10 @@ public class NhanVienPanel extends JPanel {
             String matKhau = textFields[5].getText();
             boolean gt = radNu.isSelected();
             LocalDate nvl = LocalDate.parse(ngay, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            boolean ql = chkQuanLy.isSelected();
 
-            NhanVien nv = new NhanVien(ten, diaChi, nvl, gt, sdt, matKhau);
+
+            NhanVien nv = new NhanVien(ten, diaChi, nvl, gt, sdt, matKhau, ql);
             boolean ok = new NhanVien_DAO().themNhanVien(nv);
             if (ok) {
                 JOptionPane.showMessageDialog(this, "Đã thêm nhân viên!");
@@ -216,8 +231,9 @@ public class NhanVienPanel extends JPanel {
             String matKhau = textFields[5].getText();
             boolean gt = radNu.isSelected();
             LocalDate nvl = LocalDate.parse(ngay, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            boolean ql = chkQuanLy.isSelected();
 
-            NhanVien nv = new NhanVien(ma, ten, diaChi, nvl, gt, sdt, matKhau);
+            NhanVien nv = new NhanVien(ma, ten, diaChi, nvl, gt, sdt, matKhau, ql);
             boolean ok = new NhanVien_DAO().suaNhanVien(nv);
             if (ok) {
                 JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
