@@ -116,4 +116,34 @@ public class HoaDon_DAO {
             stmt.executeUpdate();
         }
     }
+    
+    public String getLatestMaHDBH() throws SQLException {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        String latestMaHDBH = null;
+
+        try {
+            conn = ConnectDB.getConnection();
+            if (conn == null) {
+                throw new SQLException("Không thể kết nối tới database.");
+            }
+
+            // Sửa truy vấn: dùng TOP 1 thay vì LIMIT 1
+            String sql = "SELECT TOP 1 maHDBH FROM HoaDonBanHang ORDER BY maHDBH DESC";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+
+            if (rs.next()) {
+                latestMaHDBH = rs.getString("maHDBH");
+            }
+
+            return latestMaHDBH;
+
+        } finally {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        }
+    }
 }

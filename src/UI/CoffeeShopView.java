@@ -18,10 +18,10 @@ import javax.swing.UIManager;
 import ConnectDB.ConnectDB;
 
 public class CoffeeShopView extends JFrame {
-    private JPanel centerPanel; // Lưu panel trung tâm hiện tại
-    private JPanel rightPanel; // Lưu RightPanel
-    private JPanel mainPanel; // Lưu mainPanel để quản lý bố cục
-    // Thêm để truyền vào ProductListPanel
+    private JPanel centerPanel; 
+    private JPanel rightPanel; 
+    private JPanel mainPanel; 
+    
 
     public CoffeeShopView() {
         setTitle("Quản Lý Quán Cafe - Phiên Bản Hoàn Thiện");
