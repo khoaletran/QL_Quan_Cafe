@@ -31,6 +31,7 @@ public class OrderPanel extends JPanel {
     private JTextField phoneField;
     private JCheckBox bankTransferCheckBox;
     private double discountPercentage = 0.0;
+    private double customerDiscount = 0.0;
     private DecimalFormat df = new DecimalFormat("#,##0đ");
     private JLabel discountStatusLabel;
     private String maNhanVien;
@@ -336,6 +337,7 @@ public class OrderPanel extends JPanel {
     }
 
     public void updateTotalWithCustomerDiscount(double customerDiscount) {
+        this.customerDiscount = customerDiscount;
         double total = 0.0;
         for (int i = 0; i < orderTableModel.getRowCount(); i++) {
             Double rowTotal = (Double) orderTableModel.getValueAt(i, 3);
@@ -369,7 +371,7 @@ public class OrderPanel extends JPanel {
             discountPercentage = 0.0;
             discountStatusLabel.setText(" ");
             discountStatusLabel.setForeground(Color.BLUE);
-            updateTotalWithCustomerDiscount(0.0);
+            updateTotalWithCustomerDiscount(customerDiscount); 
             return;
         }
 
@@ -386,7 +388,7 @@ public class OrderPanel extends JPanel {
                 discountStatusLabel.setForeground(Color.RED);
             }
         } catch (Exception e) {
-            e.printStackTrace(); // Ghi log lỗi
+            e.printStackTrace();
             discountStatusLabel.setText("Lỗi truy vấn mã giảm giá: " + e.getMessage());
             discountStatusLabel.setForeground(Color.RED);
         }
@@ -395,26 +397,27 @@ public class OrderPanel extends JPanel {
         timer.setRepeats(false);
         timer.start();
 
-        updateTotalWithCustomerDiscount(0.0);
+        updateTotalWithCustomerDiscount(customerDiscount); 
     }
 
     private void checkPhoneNumber() {
         String phoneNumber = phoneField.getText().trim();
-        double customerDiscount = 0.0;
+        customerDiscount = 0.0; 
 
         if (!phoneNumber.isEmpty()) {
             try {
                 KhachHang kh = KhachHang_DAO.timKhachHangTheoSDT(phoneNumber);
                 if (kh != null) {
                     customerDiscount = kh.getLoaiKhachHang().getGiamGia();
-                    discountStatusLabel.setText("Khách hàng: " + kh.getTenKH() + " - Giảm " + (int)customerDiscount + "%");
+                    discountStatusLabel.setText("Khách hàng: " + kh.getTenKH() + 
+                                              " - Giảm " + (int)customerDiscount + "%");
                     discountStatusLabel.setForeground(new Color(0, 100, 0));
                 } else {
                     discountStatusLabel.setText("Không tìm thấy khách hàng");
                     discountStatusLabel.setForeground(Color.RED);
                 }
             } catch (Exception e) {
-                e.printStackTrace(); // Ghi log lỗi
+                e.printStackTrace();
                 discountStatusLabel.setText("Lỗi truy vấn khách hàng: " + e.getMessage());
                 discountStatusLabel.setForeground(Color.RED);
             }
@@ -432,6 +435,7 @@ public class OrderPanel extends JPanel {
     public void clearOrder() {
         orderTableModel.setRowCount(0);
         discountPercentage = 0.0;
+        customerDiscount = 0.0; 
         discountCodeField.setText("");
         phoneField.setText("");
         discountStatusLabel.setText(" ");
