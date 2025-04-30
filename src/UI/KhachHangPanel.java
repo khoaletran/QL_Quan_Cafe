@@ -43,7 +43,7 @@ public class KhachHangPanel extends JPanel {
         String[] labels = {"Mã Khách Hàng:", "Tên Khách Hàng:", "Số Điện Thoại:", "Điểm Tích Lũy:", "Loại Khách Hàng:"};
         textFields = new JTextField[5];
         Font labelFont = new Font("Arial", Font.PLAIN, 14);
-        Font textFieldFont = new Font("Arial", Font.PLAIN, 20);
+        Font textFieldFont = new Font("Arial", Font.PLAIN, 14);
 
         for (int i = 0; i < labels.length; i++) {
             JLabel label = new JLabel(labels[i]);
