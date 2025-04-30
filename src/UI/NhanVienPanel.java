@@ -57,8 +57,14 @@ public class NhanVienPanel extends JPanel {
 
         // Giới tính radio button
         JLabel lbGioiTinh = new JLabel("Giới Tính:");
+        lbGioiTinh.setFont(labelFont);
         radNam = new JRadioButton("Nam");
         radNu = new JRadioButton("Nữ");
+        Font radioFont = new Font("Arial", Font.PLAIN, 16); // hoặc 18, 20 tùy ý
+        radNam.setFont(radioFont);
+        radNu.setFont(radioFont);
+
+        
         gioiTinhGroup = new ButtonGroup();
         gioiTinhGroup.add(radNam);
         gioiTinhGroup.add(radNu);
