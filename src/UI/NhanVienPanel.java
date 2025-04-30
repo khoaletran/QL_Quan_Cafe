@@ -1,15 +1,35 @@
 package UI;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.event.ListSelectionEvent;
-import Dao.NhanVien_DAO;
-import Model.NhanVien;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+
+import Dao.NhanVien_DAO;
+import Model.NhanVien;
 
 public class NhanVienPanel extends JPanel {
     ArrayList<NhanVien> dsnv = NhanVien_DAO.getAllNhanVien();
@@ -30,197 +50,209 @@ public class NhanVienPanel extends JPanel {
     }
 
     private void createUI() {
-        JLabel titleLabel = new JLabel("Quản Lý Nhân Viên", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
-        add(titleLabel, BorderLayout.NORTH);
+    JLabel titleLabel = new JLabel("Quản Lý Nhân Viên", SwingConstants.CENTER);
+    titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+    titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+    add(titleLabel, BorderLayout.NORTH);
 
-        JPanel inputPanel = new JPanel(new GridLayout(8, 2, 8, 40));
-        inputPanel.setBackground(new Color(245, 245, 245));
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        
-        JPanel inputWrapper = new JPanel(new BorderLayout());
-        inputWrapper.setBackground(new Color(245, 245, 245));
-        inputWrapper.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Thêm padding trái-phải
-        inputWrapper.add(inputPanel, BorderLayout.CENTER);
+    JPanel inputPanel = new JPanel(new GridLayout(8, 2, 8, 35));
+    inputPanel.setBackground(new Color(245, 245, 245));
+    inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        
-        Font labelFont = new Font("Arial", Font.PLAIN, 14);
-        Font textFieldFont = new Font("Arial", Font.PLAIN, 14); // Reduced font size
-        
-        String[] labels = {"Mã Nhân Viên:", "Tên Nhân Viên:", "Ngày Vào Làm:", "Số Điện Thoại:", "Địa Chỉ:", "Mật Khẩu:"};
-        textFields = new JTextField[6];
-        for (int i = 0; i < textFields.length; i++) {
-            JLabel label = new JLabel(labels[i]);
-            label.setFont(labelFont);
-            inputPanel.add(label);
+    Font labelFont = new Font("Arial", Font.PLAIN, 14);
+    Font textFieldFont = new Font("Arial", Font.PLAIN, 14);
 
-            textFields[i] = new JTextField();
-            textFields[i].setFont(textFieldFont);
-            textFields[i].setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
-            textFields[i].setPreferredSize(new Dimension(120, 10)); // Smaller text fields
-            inputPanel.add(textFields[i]);
-        }
-        textFields[0].setEnabled(false);
+    String[] labels = {"Mã Nhân Viên:", "Tên Nhân Viên:", "Ngày Vào Làm:", "Số Điện Thoại:", "Địa Chỉ:", "Mật Khẩu:"};
+    textFields = new JTextField[6];
+    for (int i = 0; i < textFields.length; i++) {
+        JLabel label = new JLabel(labels[i]);
+        label.setFont(labelFont);
+        inputPanel.add(label);
 
-        // Giới tính radio button
-        JLabel lbGioiTinh = new JLabel("Giới Tính:");
-        lbGioiTinh.setFont(labelFont);
-        radNam = new JRadioButton("Nam");
-        radNu = new JRadioButton("Nữ");
-        Font radioFont = new Font("Arial", Font.PLAIN, 14);
-        radNam.setFont(radioFont);
-        radNu.setFont(radioFont);
-        
-        // Checkbox Quản lý
-        JLabel lblQuanLy = new JLabel("Quản Lý:");
-        lblQuanLy.setFont(labelFont);
-        chkQuanLy = new JCheckBox();
-        chkQuanLy.setBackground(new Color(245, 245, 245));
-        
-        gioiTinhGroup = new ButtonGroup();
-        gioiTinhGroup.add(radNam);
-        gioiTinhGroup.add(radNu);
-
-        inputPanel.add(lbGioiTinh);
-        JPanel genderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        genderPanel.setBackground(new Color(245, 245, 245));
-        genderPanel.add(radNam);
-        genderPanel.add(radNu);
-        inputPanel.add(genderPanel);
-        
-        inputPanel.add(lblQuanLy);
-        inputPanel.add(chkQuanLy);
-
-        String[] columnNames = {"Mã Nhân Viên", "Tên Nhân Viên", "Ngày Vào Làm", "Giới Tính", "Số Điện Thoại", "Địa Chỉ", "Mật Khẩu", "Quản Lý"};
-        tableModel = new DefaultTableModel(columnNames, 0) {
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        table = new JTable(tableModel);
-        table.setFont(new Font("Arial", Font.PLAIN, 14));
-        table.setRowHeight(30);
-
-        table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
-            int selectedRow = table.getSelectedRow();
-            if (!e.getValueIsAdjusting() && selectedRow >= 0) {
-                textFields[0].setText((String) table.getValueAt(selectedRow, 0));
-                textFields[1].setText((String) table.getValueAt(selectedRow, 1));
-                textFields[2].setText((String) table.getValueAt(selectedRow, 2));
-                String gt = (String) table.getValueAt(selectedRow, 3);
-                if (gt.equalsIgnoreCase("Nam")) radNam.setSelected(true);
-                else radNu.setSelected(true);
-                textFields[3].setText((String) table.getValueAt(selectedRow, 4));
-                textFields[4].setText((String) table.getValueAt(selectedRow, 5));
-                textFields[5].setText((String) table.getValueAt(selectedRow, 6));
-                String ql = (String) table.getValueAt(selectedRow, 7);
-                chkQuanLy.setSelected(ql.equalsIgnoreCase("Có"));
-            }
-        });
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-
-        // Sử dụng BorderLayout thay vì JSplitPane
-        JPanel centerPanel = new JPanel(new BorderLayout());
-        centerPanel.setBackground(new Color(245, 245, 245));
-        centerPanel.add(inputWrapper, BorderLayout.EAST);
-        centerPanel.add(scrollPane, BorderLayout.CENTER);
-        add(centerPanel, BorderLayout.CENTER);
-
-        // Panel chứa các nút
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        leftPanel.setBackground(new Color(245, 245, 245));
-        leftPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200)),
-            "Chức năng chính",
-            javax.swing.border.TitledBorder.LEFT,
-            javax.swing.border.TitledBorder.TOP,
-            new Font("Arial", Font.BOLD, 12),
-            Color.DARK_GRAY
-        ));
-        Font buttonFont = new Font("Arial", Font.BOLD, 14);
-
-        // Button Thêm
-        JButton btnThem = new JButton("Thêm");
-        btnThem.setFont(buttonFont);
-        btnThem.setBackground(new Color(220, 220, 220));
-        btnThem.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
-        btnThem.setPreferredSize(new Dimension(100, 40));
-        btnThem.addActionListener(e -> themNhanVien());
-        leftPanel.add(btnThem);
-
-        // Button Xóa
-        JButton btnXoa = new JButton("Xóa");
-        btnXoa.setFont(buttonFont);
-        btnXoa.setBackground(new Color(220, 220, 220));
-        btnXoa.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
-        btnXoa.setPreferredSize(new Dimension(100, 40));
-        btnXoa.addActionListener(e -> xoaNhanVien());
-        leftPanel.add(btnXoa);
-
-        // Button Sửa
-        JButton btnSua = new JButton("Sửa");
-        btnSua.setFont(buttonFont);
-        btnSua.setBackground(new Color(220, 220, 220));
-        btnSua.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
-        btnSua.setPreferredSize(new Dimension(100, 40));
-        btnSua.addActionListener(e -> suaNhanVien());
-        leftPanel.add(btnSua);
-
-        // Button Xóa Trắng
-        JButton btnXoaTrang = new JButton("Xóa Trắng");
-        btnXoaTrang.setFont(buttonFont);
-        btnXoaTrang.setBackground(new Color(220, 220, 220));
-        btnXoaTrang.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
-        btnXoaTrang.setPreferredSize(new Dimension(100, 40));
-        btnXoaTrang.addActionListener(e -> xoaTrang());
-        leftPanel.add(btnXoaTrang);
-
-        // Panel chứa combo lọc + nút lọc
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        rightPanel.setBackground(new Color(245, 245, 245));
-        rightPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200)),
-            "Lọc theo giới tính",
-            javax.swing.border.TitledBorder.LEFT,
-            javax.swing.border.TitledBorder.TOP,
-            new Font("Arial", Font.BOLD, 12),
-            Color.DARK_GRAY
-        ));
-
-        chkLocNam = new JCheckBox("Nam");
-        chkLocNam.setFont(new Font("Arial", Font.PLAIN, 15));
-        chkLocNam.setBackground(new Color(245, 245, 245));
-        chkLocNam.addItemListener(e -> {
-            if (chkLocNam.isSelected()) chkLocNu.setSelected(false); // Uncheck Nữ when Nam is checked
-            locTheoGioiTinh();
-        });
-        rightPanel.add(chkLocNam);
-        
-        chkLocNu = new JCheckBox("Nữ");
-        chkLocNu.setFont(new Font("Arial", Font.PLAIN, 15));
-        chkLocNu.setBackground(new Color(245, 245, 245));
-        chkLocNu.addItemListener(e -> {
-            if (chkLocNu.isSelected()) chkLocNam.setSelected(false); // Uncheck Nam when Nữ is checked
-            locTheoGioiTinh();
-        });
-        rightPanel.add(chkLocNu);
-
-        // Tạo JSplitPane để chia trái-phải
-        JSplitPane buttonSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
-        buttonSplitPane.setDividerLocation(850);
-        buttonSplitPane.setBorder(null);
-        
-        JPanel bottomWrapper = new JPanel(new BorderLayout());
-        bottomWrapper.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // cách top 10px
-        bottomWrapper.add(buttonSplitPane, BorderLayout.CENTER);
-        add(bottomWrapper, BorderLayout.SOUTH);
-
-
-        reloadTable();
+        textFields[i] = new JTextField();
+        textFields[i].setFont(textFieldFont);
+        textFields[i].setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+        textFields[i].setPreferredSize(new Dimension(120, 10));
+        inputPanel.add(textFields[i]);
     }
+    textFields[0].setEnabled(false);
+
+    JLabel lbGioiTinh = new JLabel("Giới Tính:");
+    lbGioiTinh.setFont(labelFont);
+    radNam = new JRadioButton("Nam");
+    radNu = new JRadioButton("Nữ");
+    radNam.setFont(labelFont);
+    radNu.setFont(labelFont);
+
+    gioiTinhGroup = new ButtonGroup();
+    gioiTinhGroup.add(radNam);
+    gioiTinhGroup.add(radNu);
+
+    inputPanel.add(lbGioiTinh);
+    JPanel genderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    genderPanel.setBackground(new Color(245, 245, 245));
+    genderPanel.add(radNam);
+    genderPanel.add(radNu);
+    inputPanel.add(genderPanel);
+
+    JLabel lblQuanLy = new JLabel("Quản Lý:");
+    lblQuanLy.setFont(labelFont);
+    chkQuanLy = new JCheckBox();
+    chkQuanLy.setBackground(new Color(245, 245, 245));
+    inputPanel.add(lblQuanLy);
+    inputPanel.add(chkQuanLy);
+
+    // Bọc inputPanel trong panel có tiêu đề
+    JPanel inputWrapperBorder = new JPanel(new BorderLayout());
+    inputWrapperBorder.setBackground(new Color(245, 245, 245));
+    inputWrapperBorder.setBorder(BorderFactory.createTitledBorder(
+        BorderFactory.createLineBorder(new Color(200, 200, 200)),
+        "Thông Tin Nhân Viên",
+        TitledBorder.LEFT, TitledBorder.TOP,
+        new Font("Arial", Font.BOLD, 12),
+        Color.DARK_GRAY
+    ));
+    inputWrapperBorder.add(inputPanel, BorderLayout.CENTER);
+
+    JPanel inputWrapper = new JPanel(new BorderLayout());
+    inputWrapper.setBackground(new Color(245, 245, 245));
+    inputWrapper.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+    inputWrapper.add(inputWrapperBorder, BorderLayout.CENTER);
+
+    String[] columnNames = {"Mã Nhân Viên", "Tên Nhân Viên", "Ngày Vào Làm", "Giới Tính", "Số Điện Thoại", "Địa Chỉ", "Mật Khẩu", "Quản Lý"};
+    tableModel = new DefaultTableModel(columnNames, 0) {
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+    table = new JTable(tableModel);
+    table.setFont(new Font("Arial", Font.PLAIN, 14));
+    table.setRowHeight(30);
+
+    table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
+        int selectedRow = table.getSelectedRow();
+        if (!e.getValueIsAdjusting() && selectedRow >= 0) {
+            textFields[0].setText((String) table.getValueAt(selectedRow, 0));
+            textFields[1].setText((String) table.getValueAt(selectedRow, 1));
+            textFields[2].setText((String) table.getValueAt(selectedRow, 2));
+            String gt = (String) table.getValueAt(selectedRow, 3);
+            if (gt.equalsIgnoreCase("Nam")) radNam.setSelected(true);
+            else radNu.setSelected(true);
+            textFields[3].setText((String) table.getValueAt(selectedRow, 4));
+            textFields[4].setText((String) table.getValueAt(selectedRow, 5));
+            textFields[5].setText((String) table.getValueAt(selectedRow, 6));
+            String ql = (String) table.getValueAt(selectedRow, 7);
+            chkQuanLy.setSelected(ql.equalsIgnoreCase("Có"));
+        }
+    });
+    TableColumn maNVColumn = table.getColumnModel().getColumn(0); 
+    maNVColumn.setPreferredWidth(40);
+    TableColumn gioiTinhColumn = table.getColumnModel().getColumn(3); // cột thứ 4 (index 3)
+    gioiTinhColumn.setPreferredWidth(30);
+    JScrollPane scrollPane = new JScrollPane(table);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+    // Bọc scrollPane trong panel có tiêu đề
+    JPanel tableWrapper = new JPanel(new BorderLayout());
+    tableWrapper.setBackground(new Color(245, 245, 245));
+    tableWrapper.setBorder(BorderFactory.createTitledBorder(
+        BorderFactory.createLineBorder(new Color(200, 200, 200)),
+        "Danh Sách Nhân Viên",
+        TitledBorder.LEFT, TitledBorder.TOP,
+        new Font("Arial", Font.BOLD, 12),
+        Color.DARK_GRAY
+    ));
+    tableWrapper.add(scrollPane, BorderLayout.CENTER);
+
+    JPanel centerPanel = new JPanel(new BorderLayout());
+    centerPanel.setBackground(new Color(245, 245, 245));
+    centerPanel.add(inputWrapper, BorderLayout.EAST);
+    centerPanel.add(tableWrapper, BorderLayout.CENTER);
+    add(centerPanel, BorderLayout.CENTER);
+
+    JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+    leftPanel.setBackground(new Color(245, 245, 245));
+    leftPanel.setBorder(BorderFactory.createTitledBorder(
+        BorderFactory.createLineBorder(new Color(200, 200, 200)),
+        "Chức năng chính",
+        TitledBorder.LEFT, TitledBorder.TOP,
+        new Font("Arial", Font.BOLD, 12),
+        Color.DARK_GRAY
+    ));
+    Font buttonFont = new Font("Arial", Font.BOLD, 14);
+
+    JButton btnThem = new JButton("Thêm");
+    btnThem.setFont(buttonFont);
+    btnThem.setBackground(new Color(220, 220, 220));
+    btnThem.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
+    btnThem.setPreferredSize(new Dimension(100, 40));
+    btnThem.addActionListener(e -> themNhanVien());
+    leftPanel.add(btnThem);
+
+    JButton btnXoa = new JButton("Xóa");
+    btnXoa.setFont(buttonFont);
+    btnXoa.setBackground(new Color(220, 220, 220));
+    btnXoa.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
+    btnXoa.setPreferredSize(new Dimension(100, 40));
+    btnXoa.addActionListener(e -> xoaNhanVien());
+    leftPanel.add(btnXoa);
+
+    JButton btnSua = new JButton("Sửa");
+    btnSua.setFont(buttonFont);
+    btnSua.setBackground(new Color(220, 220, 220));
+    btnSua.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
+    btnSua.setPreferredSize(new Dimension(100, 40));
+    btnSua.addActionListener(e -> suaNhanVien());
+    leftPanel.add(btnSua);
+
+    JButton btnXoaTrang = new JButton("Xóa Trắng");
+    btnXoaTrang.setFont(buttonFont);
+    btnXoaTrang.setBackground(new Color(220, 220, 220));
+    btnXoaTrang.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
+    btnXoaTrang.setPreferredSize(new Dimension(100, 40));
+    btnXoaTrang.addActionListener(e -> xoaTrang());
+    leftPanel.add(btnXoaTrang);
+
+    JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 2));
+    rightPanel.setBackground(new Color(245, 245, 245));
+    rightPanel.setBorder(BorderFactory.createTitledBorder(
+        BorderFactory.createLineBorder(new Color(200, 200, 200)),
+        "Lọc theo giới tính",
+        TitledBorder.LEFT, TitledBorder.TOP,
+        new Font("Arial", Font.BOLD, 12),
+        Color.DARK_GRAY
+    ));
+
+    chkLocNam = new JCheckBox("Nam");
+    chkLocNam.setFont(new Font("Arial", Font.PLAIN, 13));
+    chkLocNam.setBackground(new Color(245, 245, 245));
+    chkLocNam.addItemListener(e -> {
+        if (chkLocNam.isSelected()) chkLocNu.setSelected(false);
+        locTheoGioiTinh();
+    });
+    rightPanel.add(chkLocNam);
+
+    chkLocNu = new JCheckBox("Nữ");
+    chkLocNu.setFont(new Font("Arial", Font.PLAIN, 13));
+    chkLocNu.setBackground(new Color(245, 245, 245));
+    chkLocNu.addItemListener(e -> {
+        if (chkLocNu.isSelected()) chkLocNam.setSelected(false);
+        locTheoGioiTinh();
+    });
+    rightPanel.add(chkLocNu);
+
+    JSplitPane buttonSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
+    buttonSplitPane.setDividerLocation(850);
+    buttonSplitPane.setBorder(null);
+
+    JPanel bottomWrapper = new JPanel(new BorderLayout());
+    bottomWrapper.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+    bottomWrapper.add(buttonSplitPane, BorderLayout.CENTER);
+    add(bottomWrapper, BorderLayout.SOUTH);
+
+    reloadTable();
+}
+
 
     private void reloadTable() {
         tableModel.setRowCount(0);
