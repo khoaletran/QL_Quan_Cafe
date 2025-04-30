@@ -42,13 +42,15 @@ public class HangHoa_DAO {
 	public static ArrayList<HangHoa> getAllHangHoaForSanPhamPanel() {
 		ArrayList<HangHoa> dshh = new ArrayList<HangHoa>();
 		ConnectDB.getInstance();
+		Statement statement = null;
+		ResultSet rs = null;
 		try {
 			Connection con = ConnectDB.getConnection();
 			String sql = "SELECT HH.MAHH, HH.TENHH, HH.HINHANH, HH.GIASP, " + "LH.MALH, LH.TENLH, LH.MOTA "
 					+ "FROM HANGHOA HH JOIN LOAIHANGHOA LH ON HH.MALH = LH.MALH";
 
-			Statement statement = con.createStatement();
-			ResultSet rs = statement.executeQuery(sql);
+			statement = con.createStatement();
+			rs = statement.executeQuery(sql);
 
 			while (rs.next()) {
 				String maHH = rs.getString("MAHH");
@@ -68,6 +70,14 @@ public class HangHoa_DAO {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (statement != null) statement.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return dshh;
 	}
@@ -75,17 +85,27 @@ public class HangHoa_DAO {
 	public String getHinhAnhByMa(String maHH) {
 		ConnectDB.getInstance();
 		String hinhanh = null; // Khai báo ở đây
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
 		try {
 			Connection con = ConnectDB.getConnection();
 			String sql = "select HINHANH from HANGHOA where MAHH = ?";
-			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt = con.prepareStatement(sql);
 			stmt.setString(1, maHH);
-			ResultSet rs = stmt.executeQuery();
+			rs = stmt.executeQuery();
 			while (rs.next()) {
 				hinhanh = rs.getString(1);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (stmt != null) stmt.close();
+			} catch (SQLException e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
 		}
 		return hinhanh;
 	}
@@ -108,7 +128,14 @@ public class HangHoa_DAO {
 	        n = statement.executeUpdate();
 	    } catch (SQLException e) {
 	        e.printStackTrace();
-	    } 
+	    } finally {
+			try {
+				if(statement!=null) statement.close();
+			} catch (SQLException e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+		}
 	    return n > 0;
 	}
 
@@ -117,9 +144,10 @@ public class HangHoa_DAO {
 	public boolean xoaHangHoa(String maHH) {
 		ConnectDB.getInstance();
 		Connection con = ConnectDB.getConnection();
+		PreparedStatement stmt = null;
 		String sql = "DELETE FROM HANGHOA WHERE MAHH = ?";
 		try {
-			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt = con.prepareStatement(sql);
 			stmt.setString(1, maHH);
 
 			int rowsDeleted = stmt.executeUpdate();
@@ -127,6 +155,13 @@ public class HangHoa_DAO {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}finally {
+			try {
+				if(stmt!=null) stmt.close();
+			} catch (SQLException e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}
@@ -149,12 +184,20 @@ public class HangHoa_DAO {
 	        n = stmt.executeUpdate();
 	    } catch (SQLException e) {
 	        e.printStackTrace();
-	    } 
+	    } finally {
+			try {
+				if(stmt!=null) stmt.close();
+			} catch (SQLException e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+		}
 	    return n > 0;
 	}
 	
 	public HangHoa timHangHoaTheoTen(String tenHH) throws SQLException {
-        Connection conn = ConnectDB.getInstance().getConnection();
+		ConnectDB.getInstance();
+	    Connection con = ConnectDB.getConnection();
         String sql = "SELECT HH.MAHH, HH.MALH, HH.TENHH, HH.HINHANH, HH.GIASP, LH.TENLH, LH.MOTA " +
                     "FROM HANGHOA HH JOIN LOAIHANGHOA LH ON HH.MALH = LH.MALH " +
                     "WHERE HH.TENHH = ?";
@@ -163,7 +206,7 @@ public class HangHoa_DAO {
         HangHoa hh = null;
 
         try {
-            stmt = conn.prepareStatement(sql);
+            stmt = con.prepareStatement(sql);
             stmt.setString(1, tenHH);
             rs = stmt.executeQuery();
             if (rs.next()) {
