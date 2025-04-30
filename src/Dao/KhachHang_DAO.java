@@ -94,25 +94,22 @@ public class KhachHang_DAO {
             ConnectDB.getInstance().connect();
             Connection con = ConnectDB.getConnection();
 
-            String sql = "INSERT INTO KHACHHANG(TENKH, SDT, DIEMTL, MALKH) OUTPUT INSERTED.MAKH VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO KHACHHANG (MALKH, TENKH, SDT, DIEMTL) VALUES (?, ?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(sql);
 
-            ps.setString(1, kh.getTenKH());
-            ps.setString(2, kh.getSoDienThoai());
-            ps.setInt(3, kh.getDiemTL());
-            ps.setString(4, kh.getLoaiKhachHang().getMaLKH());
+            ps.setString(1, kh.getLoaiKhachHang().getMaLKH());
+            ps.setString(2, kh.getTenKH());
+            ps.setString(3, kh.getSoDienThoai());
+            ps.setInt(4, kh.getDiemTL());
 
-            ResultSet rs = ps.executeQuery(); // dùng executeQuery để lấy MAKH trả về
-            if (rs.next()) {
-                String maKH = rs.getString("MAKH");
-                kh.setMaKH(maKH); // gán lại mã vào đối tượng truyền vào
-                return true;
-            }
+            int rowsInserted = ps.executeUpdate();
+            return rowsInserted > 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
+
 
 
 

@@ -20,7 +20,7 @@ public class KhachHangPanel extends JPanel {
     private JTextField[] textFields;
     private JTable table;
     private DefaultTableModel tableModel;
-
+    private JTextField txtTimKiem;
     public KhachHangPanel() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -53,7 +53,9 @@ public class KhachHangPanel extends JPanel {
             textFields[i].setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
             inputPanel.add(textFields[i]);
         }
+        //2 dong nay khong cho nhap
         textFields[0].setEditable(false);
+        textFields[4].setEditable(false);
 
         String[] columnNames = {"Mã Khách Hàng", "Tên Khách Hàng", "Số Điện Thoại", "Điểm Tích Lũy", "Loại Khách Hàng"};
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -99,9 +101,16 @@ public class KhachHangPanel extends JPanel {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(new Color(245, 245, 245));
-        String[] buttonLabels = {"Thêm", "Xóa", "Sửa", "Tìm"};
+        String[] buttonLabels = {"Thêm", "Xóa", "Sửa", "Làm Mới", "Tìm"};
         Font buttonFont = new Font("Arial", Font.BOLD, 14);
-
+        
+        //
+        JLabel lblTimKiem = new JLabel("NHẬP SỐ ĐIỆN THOẠI KHÁCH HÀNG CẦN TÌM:");
+        txtTimKiem = new JTextField(20);
+        JPanel pTimKiem = new JPanel(new GridLayout(2,1,2,2));
+        pTimKiem.add(lblTimKiem);
+        pTimKiem.add(txtTimKiem);
+        
         for (String label : buttonLabels) {
             JButton button = new JButton(label);
             button.setFont(buttonFont);
@@ -114,11 +123,13 @@ public class KhachHangPanel extends JPanel {
                     case "Thêm" -> xuLySuKienThemKhachHang();
                     case "Xóa" -> xuLySuKienXoaKhachHang();
                     case "Sửa" -> xuLySuKienSuaKhachHang();
+                    case "Làm Mới" -> xuLySuKienLamMoi();
                     case "Tìm" -> xuLySuKienTimKiemKhachHang();
                 }
             });
 
             buttonPanel.add(button);
+            buttonPanel.add(pTimKiem);
         }
 
         add(buttonPanel, BorderLayout.SOUTH);
@@ -146,47 +157,43 @@ public class KhachHangPanel extends JPanel {
     }
 
     private void xuLySuKienThemKhachHang() {
-        String tenKH = textFields[1].getText();
-        String soDienThoai = textFields[2].getText();
-        int diemTL = Integer.parseInt(textFields[3].getText());
-//        String loaiKhachHangText = textFields[4].getText();  // Đây là tên loại khách hàng nhập vào
-//        
-//        ArrayList<LoaiKhachHang> dsLoaiKhachHang = LoaiKhachHang_DAO.getAllLoaiKhachHang();
-//
-//        // Duyệt qua danh sách loại khách hàng và tìm loại khách hàng theo tên
-//        LoaiKhachHang loaiKhachHang = null;
-//        for (LoaiKhachHang lkh : dsLoaiKhachHang) {
-//            if (loaiKhachHangText.trim().equals(lkh.getTenLKH())) {  // So sánh theo tên loại khách hàng
-//                loaiKhachHang = lkh;
-//                break;
-//            }
-//        }
-//
-//        if (loaiKhachHang == null) {
-//            JOptionPane.showMessageDialog(this, "Loại khách hàng không tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-        
-        // Tạo đối tượng KhachHang mới và lưu vào cơ sở dữ liệu
-        LoaiKhachHang loaiKhachHang = null;
-        KhachHang newKH = new KhachHang(tenKH, soDienThoai, diemTL, loaiKhachHang);
-        boolean result = KhachHang_DAO.themKhachHang(newKH);
+        try {
+            String tenKH = textFields[1].getText();
+            String soDienThoai = textFields[2].getText();
+            int diemTL = Integer.parseInt(textFields[3].getText());
+            KhachHang newKH = new KhachHang(tenKH, soDienThoai, diemTL);
+           
+            
+            if (newKH.getLoaiKhachHang() == null) {
+                JOptionPane.showMessageDialog(this, "Không tìm được loại khách hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            textFields[4].setText(newKH.getLoaiKhachHang().getTenLKH());
+            
+            boolean result = KhachHang_DAO.themKhachHang(newKH);
+            if (result) {
+                dskh.add(newKH);
+                updateTable();
+                lamRong();
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm khách hàng thất bại", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
 
-        if (result) {
-            dskh.add(newKH);
-            updateTable();
-        } else {
-            JOptionPane.showMessageDialog(this, "Thêm khách hàng thất bại", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
 
+
     private void xuLySuKienXoaKhachHang() {
         String maKH = textFields[0].getText();
-        if (JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa khách hàng không?", "Cảnh báo", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa khách hàng này không?", "Cảnh báo", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             KhachHang_DAO.xoaKhachHang(maKH);
             dskh.removeIf(kh -> kh.getMaKH().equals(maKH));
             updateTable();
+            lamRong();
         }
     }
 
@@ -195,29 +202,29 @@ public class KhachHangPanel extends JPanel {
         String tenKH = textFields[1].getText();
         String soDienThoai = textFields[2].getText();
         int diemTL = Integer.parseInt(textFields[3].getText());
-        String loaiKhachHangText = textFields[4].getText();
-
-        ArrayList<LoaiKhachHang> dsLoaiKhachHang = LoaiKhachHang_DAO.getAllLoaiKhachHang();
-        LoaiKhachHang loaiKhachHang = dsLoaiKhachHang.stream()
-            .filter(lkh -> lkh.getTenLKH().equalsIgnoreCase(loaiKhachHangText))
-            .findFirst().orElse(null);
-
-        KhachHang_DAO.suaKhachHang(new KhachHang(maKH, tenKH, soDienThoai, diemTL, loaiKhachHang));
-
-        for (KhachHang kh : dskh) {
-            if (kh.getMaKH().equals(maKH)) {
-                kh.setTenKH(tenKH);
-                kh.setSoDienThoai(soDienThoai);
-                kh.setDiemTL(diemTL);
-                kh.setLoaiKhachHang(loaiKhachHang);
-                break;
-            }
+        KhachHang newKH = new KhachHang(maKH, tenKH, soDienThoai, diemTL);
+        if (newKH.getLoaiKhachHang() == null) {
+            JOptionPane.showMessageDialog(this, "Không tìm được loại khách hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+       boolean ok = KhachHang_DAO.suaKhachHang(newKH);
+       if(ok) {
+    	   JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
+    	   updateTable();
+    	   lamRong();
+       }
+       else {
+    	   JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+       }
+        
+        
+
+        
         updateTable();
     }
 
     private void xuLySuKienTimKiemKhachHang() {
-        String soDienThoai = textFields[2].getText();
+        String soDienThoai = txtTimKiem.getText();
         KhachHang kh = KhachHang_DAO.timKhachHangTheoSDT(soDienThoai);
         if (kh != null) {
             dskh = new ArrayList<>();
@@ -226,5 +233,19 @@ public class KhachHangPanel extends JPanel {
             dskh = new ArrayList<>();
         }
         loadDataToTable();
+    }
+    private void xuLySuKienLamMoi() {
+    	dskh = KhachHang_DAO.getAllKhachHang();
+    	loadDataToTable();
+    	txtTimKiem.setText("");
+    	lamRong();
+    }
+    
+    private void lamRong(){
+    	textFields[0].setText(""); 
+        textFields[1].setText(""); 
+        textFields[2].setText("");
+        textFields[3].setText("");
+        textFields[4].setText("");
     }
 }
