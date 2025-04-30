@@ -15,6 +15,7 @@ public class HoaDonBanHang {
     private KhachHang khachHang;
     private boolean hinhThucThanhToan;
     private ArrayList<ChiTietHoaDon> chiTietHoaDonList;
+    private double tongGiamGia;
 
     // Constructor đầy đủ lấy dữ liệu từ SQL
     public HoaDonBanHang(String maHDBH, LocalDate ngayLapHDBH, int diemTL, ArrayList<ChiTietHoaDon> chiTietHoaDonList) {
@@ -44,6 +45,18 @@ public class HoaDonBanHang {
         this.hinhThucThanhToan = hinhThucThanhToan;
         this.diemTL = 0;
         this.chiTietHoaDonList = new ArrayList<>();
+    }
+    
+    public HoaDonBanHang(LocalDate ngayLapHDBH, MaGiamGia giamGia, KhachHang khachHang, 
+            boolean hinhThucThanhToan, double tongGiamGia) {
+       this.maHDBH = null;
+       setNgayLapHDBH(ngayLapHDBH);
+       setGiamGia(giamGia);
+       setKhachHang(khachHang);
+       setHinhThucThanhToan(hinhThucThanhToan);
+       setTongGiamGia(tongGiamGia);
+       setDiemTL(0);
+       this.chiTietHoaDonList = new ArrayList<>();
     }
 
     // ===== Ràng buộc =====
@@ -134,13 +147,26 @@ public class HoaDonBanHang {
     // ===== Tính tổng thanh toán sau giảm giá =====
     public double tinhTongThanhToan() {
         double tong = tinhTong();
-        double giam = giamGia != null ? tong * (giamGia.getGiamGia() / 100.0) : 0;
+        double giam = tong * (tongGiamGia / 100.0);
         return tong - giam;
     }
 
     public int getdiemTL() {
         return (int) (tinhTong() * 0.1);
     }
+    
+    public double getTongGiamGia() {
+        return tongGiamGia;
+    }
+
+    public void setTongGiamGia(double tongGiamGia) {
+        if (tongGiamGia < 0 || tongGiamGia > 100) {
+            throw new IllegalArgumentException("Tổng giảm giá phải từ 0 đến 100%");
+        }
+        this.tongGiamGia = tongGiamGia;
+    }
+
+   
 
     @Override
     public String toString() {

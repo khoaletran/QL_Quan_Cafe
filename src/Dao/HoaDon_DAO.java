@@ -60,7 +60,6 @@ public class HoaDon_DAO {
     }
 
     private String insertHoaDon(Connection conn, HoaDonBanHang hoaDon, String maNhanVien) throws SQLException {
-        // Sử dụng Statement.RETURN_GENERATED_KEYS để lấy ID tự sinh
         String sql = "INSERT INTO HOADONBANHANG (MANV, MAKH, NGAYHDBH, TONGTIEN, DIEMTL, GIAMGIA, HINHTHUCTHANHTOAN) "
                    + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         
@@ -68,9 +67,9 @@ public class HoaDon_DAO {
             stmt.setString(1, maNhanVien);
             stmt.setString(2, hoaDon.getKhachHang().getMaKH());
             stmt.setDate(3, java.sql.Date.valueOf(hoaDon.getNgayLapHDBH()));
-            stmt.setDouble(4, hoaDon.tinhTongThanhToan());
+            stmt.setDouble(4, hoaDon.tinhTongThanhToan()); // Lưu tổng tiền sau giảm giá
             stmt.setInt(5, hoaDon.getDiemTL());
-            stmt.setInt(6, hoaDon.getGiamGia() != null ? hoaDon.getGiamGia().getGiamGia() : 0);
+            stmt.setInt(6, (int) hoaDon.getTongGiamGia()); // Lưu tổng giảm giá (%)
             stmt.setBoolean(7, hoaDon.isHinhThucThanhToan());
             
             int affectedRows = stmt.executeUpdate();
@@ -81,7 +80,6 @@ public class HoaDon_DAO {
             
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    // Lấy ID tự sinh (trigger sẽ chuyển thành mã HDXXXX)
                     return generatedKeys.getString(1);
                 }
                 throw new SQLException("Tạo hóa đơn thất bại, không lấy được ID");
