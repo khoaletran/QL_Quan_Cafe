@@ -172,12 +172,14 @@ public class NhanVien {
         this.matKhau = matKhau;
     }
 
+	
     /**
      * Trả về chuỗi biểu diễn thông tin nhân viên.
      */
     @Override
-    public String toString() {
-        return "NhanVien [maNV=" + maNV + ", tenNV=" + tenNV + ", diaChi=" + diaChi + ", ngayVaoLam=" + ngayVaoLam
-                + ", gioiTinh=" + gioiTinh + ", sdt=" + sdt + ", matKhau=" + matKhau + "]";
-    }
+	public String toString() {
+		return "NhanVien [maNV=" + maNV + ", tenNV=" + tenNV + ", diaChi=" + diaChi + ", ngayVaoLam=" + ngayVaoLam
+				+ ", gioiTinh=" + gioiTinh + ", sdt=" + sdt + ", matKhau=" + matKhau + ", quanly=" + quanly + "]";
+	}
+
 }
