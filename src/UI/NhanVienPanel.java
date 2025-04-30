@@ -95,6 +95,9 @@ public class NhanVienPanel extends JPanel {
         table = new JTable(tableModel);
         table.setFont(new Font("Arial", Font.PLAIN, 14));
         table.setRowHeight(30);
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+
+
 
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             int selectedRow = table.getSelectedRow();
