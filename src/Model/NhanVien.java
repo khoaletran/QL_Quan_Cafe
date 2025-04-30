@@ -38,6 +38,7 @@ public class NhanVien {
         setGioiTinh(gioiTinh);
         setSdt(sdt);
         setMatKhau(matKhau);
+        this.quanly = quanly;
     }
 
     public String getMaNV() {
