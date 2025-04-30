@@ -18,13 +18,14 @@ public class NhanVien {
     /**
      * Constructor KHÔNG có maNV (dùng khi tạo mới, mã tự tăng trong DB)
      */
-    public NhanVien(String tenNV, String diaChi, LocalDate ngayVaoLam, boolean gioiTinh, String sdt, String matKhau) {
+    public NhanVien(String tenNV, String diaChi, LocalDate ngayVaoLam, boolean gioiTinh, String sdt, String matKhau, boolean quanly) {
         setTenNV(tenNV);
         setDiaChi(diaChi);
         setNgayVaoLam(ngayVaoLam);
         setGioiTinh(gioiTinh);
         setSdt(sdt);
         setMatKhau(matKhau);
+        setQuanly(quanly);
     }
 
     /**
