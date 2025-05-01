@@ -11,6 +11,7 @@ import java.util.List;
 import java.sql.Statement;
 
 public class HoaDon_DAO {
+	
     public void saveOrderWithDetails(HoaDonBanHang hoaDon, String maNhanVien) throws SQLException {
         // Kiểm tra tham số đầu vào
         if (hoaDon == null) {
@@ -68,7 +69,7 @@ public class HoaDon_DAO {
             stmt.setString(2, hoaDon.getKhachHang().getMaKH());
             stmt.setDate(3, java.sql.Date.valueOf(hoaDon.getNgayLapHDBH()));
             stmt.setDouble(4, hoaDon.tinhTongThanhToan()); // Lưu tổng tiền sau giảm giá
-            stmt.setInt(5, hoaDon.getdiemTL());
+            stmt.setInt(5, hoaDon.getdiemTL_THD());
             stmt.setInt(6, (int) hoaDon.getTongGiamGia()); // Lưu tổng giảm giá (%)
             stmt.setBoolean(7, hoaDon.isHinhThucThanhToan());
             
@@ -78,14 +79,24 @@ public class HoaDon_DAO {
                 throw new SQLException("Tạo hóa đơn thất bại, không có hàng nào được thêm");
             }
             
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getString(1);
+            return getMaHoaDonVuaThem(conn, maNhanVien, java.sql.Date.valueOf(hoaDon.getNgayLapHDBH()));
+        }
+    }
+    
+    private String getMaHoaDonVuaThem(Connection conn, String maNV, java.sql.Date ngayHDBH) throws SQLException {
+        String sql = "SELECT TOP 1 maHDBH FROM HOADONBANHANG WHERE MANV = ? AND NGAYHDBH = ? ORDER BY maHDBH DESC";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maNV);
+            stmt.setDate(2, ngayHDBH);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("maHDBH");
                 }
-                throw new SQLException("Tạo hóa đơn thất bại, không lấy được ID");
+                return null;
             }
         }
     }
+
 
     private void insertChiTietHoaDon(Connection conn, String maHDBH, List<ChiTietHoaDon> chiTietList) 
             throws SQLException {
