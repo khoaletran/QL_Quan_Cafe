@@ -14,13 +14,15 @@ public class HangHoa {
          setGiaSP(giaSP);
          setLoaiHangHoa(loaiHangHoa);
 	}
+    
+   
 
 	public HangHoa(String maHH, String tenHH, String hinhAnh, double giaSP) {
         setMaHH(maHH);
         setTenHH(tenHH);
         setHinhAnh(hinhAnh);
         setGiaSP(giaSP);
-        this.loaiHangHoa = null; // Gán null, cần kiểm tra khi sử dụng
+//        this.loaiHangHoa = null; // Gán null, cần kiểm tra khi sử dụng
     }
 
     public HangHoa(String tenHH, String hinhAnh, double giaSP, LoaiHangHoa loaiHangHoa) {

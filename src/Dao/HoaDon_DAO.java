@@ -5,6 +5,8 @@ import Model.HoaDonBanHang;
 import Model.KhachHang;
 import Model.MaGiamGia;
 import Model.ChiTietHoaDon;
+import Model.HangHoa;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -137,6 +139,55 @@ public class HoaDon_DAO {
             
             return getMaHoaDonVuaThem(conn, maNhanVien, java.sql.Date.valueOf(hoaDon.getNgayLapHDBH()));
         }
+    }
+    
+    public List<ChiTietHoaDon> getChiTietSanPhamTheoMaHD(String maHDBH) {
+        List<ChiTietHoaDon> chiTietList = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            ConnectDB.getInstance().connect();
+            conn = ConnectDB.getConnection();
+            if (conn == null) {
+                throw new SQLException("Không thể kết nối tới cơ sở dữ liệu");
+            }
+
+            String sql = "SELECT ct.SOLUONG, ct.THANHTIEN, hh.GIASP, hh.TENHH, hh.MAHH " +
+                         "FROM CHITIETHOADON ct " +
+                         "JOIN HANGHOA hh ON ct.MAHH = hh.MAHH " +
+                         "WHERE ct.MAHDBH = ?";
+            
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, maHDBH);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int soLuong = rs.getInt("SOLUONG");
+                double thanhTien = rs.getDouble("THANHTIEN");
+                double giaSanPham = rs.getDouble("GIASP");
+                String tenHangHoa = rs.getString("TENHH");
+                String maHangHoa = rs.getString("MAHH");
+
+                HangHoa hangHoa = new HangHoa(maHangHoa, tenHangHoa, null, giaSanPham);
+                ChiTietHoaDon chiTiet = new ChiTietHoaDon(soLuong, hangHoa);
+                chiTietList.add(chiTiet);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi lấy chi tiết sản phẩm: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return chiTietList;
     }
     
     private String getMaHoaDonVuaThem(Connection conn, String maNV, java.sql.Date ngayHDBH) throws SQLException {
