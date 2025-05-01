@@ -40,7 +40,7 @@ public class HangHoa_DAO {
 		return dshh;
 	}
 
-	public static ArrayList<HangHoa> getAllHangHoaForSanPhamPanel() {
+	public ArrayList<HangHoa> getAllHangHoaForSanPhamPanel() {
 		ArrayList<HangHoa> dshh = new ArrayList<HangHoa>();
 		ConnectDB.getInstance();
 		Statement statement = null;

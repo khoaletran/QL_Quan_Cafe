@@ -1,21 +1,29 @@
 package UI;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 import Dao.KhachHang_DAO;
-import Dao.LoaiKhachHang_DAO;
 import Model.KhachHang;
-import Model.LoaiKhachHang;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 public class KhachHangPanel extends JPanel {
     private ArrayList<KhachHang> dskh = KhachHang_DAO.getAllKhachHang();
@@ -78,7 +86,15 @@ public class KhachHangPanel extends JPanel {
         table.setRowHeight(30);
         table.setGridColor(new Color(200, 200, 200));
         table.setShowGrid(true);
-
+        
+        // Renderer tùy chỉnh để căn giữa nội dung cho tất cả các cột
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setFont(new Font("Arial", Font.PLAIN, 14));
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER); // Căn giữa nội dung
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+        
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 int selectedRow = table.getSelectedRow();

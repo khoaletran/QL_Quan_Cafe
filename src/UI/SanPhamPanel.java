@@ -11,8 +11,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -37,21 +35,23 @@ import javax.swing.table.TableColumn;
 
 import ConnectDB.ConnectDB;
 import Dao.HangHoa_DAO;
-import Dao.KhachHang_DAO;
 import Dao.LoaiHangHoa_DAO;
 import Model.HangHoa;
 import Model.LoaiHangHoa;
 
 public class SanPhamPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTable table;
 	private DefaultTableModel tableModel;
 	private JTextField txtMaHH, txtTenHH, txtGiaSP, txtTimKiem;
 	private JLabel lblHinhAnh;
 	private JComboBox<String> cbLoaiHH;
-	private JButton btnThem, btnSua, btnXoa, btnTimKiem;
+	private JButton btnThem, btnSua, btnXoa;
 	private HangHoa_DAO hangHoaDAO;
 	private LoaiHangHoa_DAO loaiHangHoaDAO;
-	private ArrayList<LoaiHangHoa> dsLoaiHH;
 	private JButton btnXoaTrang;
 	private List<HangHoa> dsHH;
 	private JTextField txtHinhAnhPath;
