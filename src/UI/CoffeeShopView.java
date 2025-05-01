@@ -27,7 +27,7 @@ public class CoffeeShopView extends JFrame {
     
 
     public CoffeeShopView() {
-        setTitle("ISpace - Coffee & Time");
+        setTitle(BIEN.TENQUAN); 
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
