@@ -91,9 +91,6 @@ public class HoaDonBanHang {
     }
 
     public void setKhachHang(KhachHang khachHang) {
-        if (khachHang == null) {
-            throw new IllegalArgumentException("Khách hàng không được null");
-        }
         this.khachHang = khachHang;
     }
 
@@ -118,6 +115,9 @@ public class HoaDonBanHang {
     }
 
     public KhachHang getKhachHang() {
+    	if(khachHang == null) {
+    		return new KhachHang("Khách Không Cung Cấp SDT","0999999999",0);
+    	}
         return khachHang;
     }
 

@@ -66,7 +66,14 @@ public class HoaDon_DAO {
         
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, maNhanVien);
-            stmt.setString(2, hoaDon.getKhachHang().getMaKH());
+            if(hoaDon.getKhachHang() == null)
+            {
+            	stmt.setNull(2, java.sql.Types.VARCHAR);
+            }
+            else {
+            	stmt.setString(2, hoaDon.getKhachHang().getMaKH());
+            }
+            
             stmt.setDate(3, java.sql.Date.valueOf(hoaDon.getNgayLapHDBH()));
             stmt.setDouble(4, hoaDon.tinhTongThanhToan()); // Lưu tổng tiền sau giảm giá
             stmt.setInt(5, hoaDon.getdiemTL_THD());
