@@ -25,14 +25,14 @@ public class LoaiKhachHang {
     }
     
     //constructor để sử dụng KhachHang_DAO
-    public LoaiKhachHang(String maLKH1, String tenLKH2, int giamGia2) {
-    	this.maLKH = maLKH1;
-    	this.tenLKH = tenLKH2;
-    	this.giamGia = giamGia2;
+    public LoaiKhachHang(String maLKH, String tenLKH, int giamGia) {
+    	setMaLKH(maLKH);
+    	setTenLKH(tenLKH);
+    	setGiamGia(giamGia);
     }
     
     
-    public LoaiKhachHang(String maLKH2,String tenLKH3, int giamGia3,int mucdiem) {
+    public LoaiKhachHang(String maLKH,String tenLKH, int giamGia,int mucdiem) {
 		/**
 		 * Constructor để tạo một loại khách hàng.
 		 * 
@@ -75,9 +75,6 @@ public class LoaiKhachHang {
 
 
     public void setGiamGia(int giamGia) {
-        if (giamGia <= 0 || giamGia >= 100) {
-            throw new IllegalArgumentException("Giảm giá phải lớn hơn 0% và nhỏ hơn 100%.");
-        }
         this.giamGia = giamGia;
     }
     

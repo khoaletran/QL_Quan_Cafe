@@ -69,7 +69,6 @@ public class KhachHang {
        	setTenKH(tenKH);
        	setSoDienThoai(soDienThoai);
        	setDiemTL(diemTL);
-       	
       }
 
     public String getMaKH() {
@@ -84,8 +83,6 @@ public class KhachHang {
     	}
     	this.maKH = maKH;
     }
-
-    
     
     public String getTenKH() {
         return tenKH;
@@ -97,8 +94,6 @@ public class KhachHang {
         }
         this.tenKH = tenKH.trim();
     }
-
-
 
     public String getSoDienThoai() {
         return soDienThoai;
