@@ -281,7 +281,6 @@ BEGIN
     END
 END;
 
-drop trigger trg_UpdateLoaiKH;
 
 --Dữ liệu demo 
 

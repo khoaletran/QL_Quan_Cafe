@@ -4,11 +4,15 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+
+import Bien.BIEN;
+
 import java.awt.*;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.concurrent.Flow;
 
 import Dao.KhachHang_DAO;
 import Dao.LoaiKhachHang_DAO;
@@ -291,8 +295,6 @@ public class OrderPanel extends JPanel {
             } else {
                 throw new SQLException("Không thể lấy mã hóa đơn tự sinh từ database.");
             }
-            JOptionPane.showMessageDialog(this, "Lưu hóa đơn thành công!", 
-                                        "Thành công", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi lưu hóa đơn: " + e.getMessage(), 
@@ -307,236 +309,430 @@ public class OrderPanel extends JPanel {
         clearOrder();
     }
 
+//    private void printHoaDon(HoaDonBanHang hoaDon) {
+//        // Tạo JFrame cho hóa đơn
+//        JFrame invoiceFrame = new JFrame("Hóa Đơn Bán Hàng");
+//        invoiceFrame.setSize(510, 600);
+//        invoiceFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//        invoiceFrame.setLocationRelativeTo(null);
+//
+//        // Tạo JPanel chính với BoxLayout
+//        JPanel panel = new JPanel();
+//        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+//        panel.setBackground(new Color(245, 245, 245));
+//
+//        // ========== PHẦN TIÊU ĐỀ ==========
+//        JPanel titlePanel = new JPanel(new BorderLayout());
+//        titlePanel.setBackground(new Color(245, 245, 245));
+//        JLabel mainTitle = new JLabel("HÓA ĐƠN BÁN HÀNG", SwingConstants.CENTER);
+//        mainTitle.setFont(new Font("Arial", Font.BOLD, 22));
+//        mainTitle.setForeground(new Color(0, 102, 204));
+//        titlePanel.add(mainTitle, BorderLayout.CENTER);
+//
+//        JSeparator separator = new JSeparator();
+//        separator.setForeground(Color.BLACK);
+//        titlePanel.add(separator, BorderLayout.SOUTH);
+//        titlePanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
+//        panel.add(titlePanel);
+//
+//        // ========== THÔNG TIN HÓA ĐƠN ==========
+//        JPanel infoPanel = new JPanel();
+//        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+//        infoPanel.setBackground(new Color(245, 245, 245));
+//        infoPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+//        infoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+//
+//        JLabel maHoaDonLabel = new JLabel("Mã hóa đơn: " + hoaDon.getMaHDBH());
+//        maHoaDonLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+//        maHoaDonLabel.setHorizontalAlignment(SwingConstants.LEFT);
+//        infoPanel.add(maHoaDonLabel);
+//        infoPanel.add(Box.createVerticalStrut(5));
+//
+//        JLabel ngayLapLabel = new JLabel("Ngày lập: " + hoaDon.getNgayLapHDBH());
+//        ngayLapLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+//        ngayLapLabel.setHorizontalAlignment(SwingConstants.LEFT);
+//        infoPanel.add(ngayLapLabel);
+//        infoPanel.add(Box.createVerticalStrut(5));
+//
+//        JLabel nhanVienLabel = new JLabel("Nhân viên: " + maNhanVien);
+//        nhanVienLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+//        nhanVienLabel.setHorizontalAlignment(SwingConstants.LEFT);
+//        infoPanel.add(nhanVienLabel);
+//        infoPanel.add(Box.createVerticalStrut(5));
+//
+//        JLabel khachHangLabel = new JLabel("Khách hàng: " + hoaDon.getKhachHang().getTenKH() +
+//                " (SDT: " + hoaDon.getKhachHang().getSoDienThoai() + ")");
+//        khachHangLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+//        khachHangLabel.setHorizontalAlignment(SwingConstants.LEFT);
+//        infoPanel.add(khachHangLabel);
+//        infoPanel.add(Box.createVerticalStrut(5));
+//
+//        JLabel thanhToanLabel = new JLabel("Hình thức thanh toán: " +
+//                (hoaDon.isHinhThucThanhToan() ? "Chuyển khoản" : "Tiền mặt"));
+//        thanhToanLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+//        thanhToanLabel.setHorizontalAlignment(SwingConstants.LEFT);
+//        infoPanel.add(thanhToanLabel);
+//        infoPanel.add(Box.createVerticalStrut(5));
+//
+//        JLabel maGiamGiaLabel = new JLabel("Mã giảm giá: " +
+//                (hoaDon.getGiamGia() != null ?
+//                        hoaDon.getGiamGia().getMaGiam() + " (" + hoaDon.getGiamGia().getGiamGia() + "%)" : "Không có"));
+//        maGiamGiaLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+//        maGiamGiaLabel.setHorizontalAlignment(SwingConstants.LEFT);
+//        infoPanel.add(maGiamGiaLabel);
+//        infoPanel.add(Box.createVerticalStrut(10));
+//
+//        JPanel separatorPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+//        separatorPanel.setBackground(new Color(245, 245, 245));
+//        JSeparator infoSeparator = new JSeparator();
+//        infoSeparator.setForeground(Color.BLACK);
+//        infoSeparator.setPreferredSize(new Dimension(400, 1));
+//        separatorPanel.add(infoSeparator);
+//        infoPanel.add(separatorPanel);
+//
+//        // Đặt infoPanel vào một container trung gian để ép căn trái
+//        JPanel infoWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+//        infoWrapper.setBackground(new Color(245, 245, 245));
+//        infoWrapper.add(infoPanel);
+//        panel.add(infoWrapper);
+//        panel.add(Box.createVerticalStrut(10));
+//
+//        // ========== DANH SÁCH SẢN PHẨM ==========
+//        JPanel productPanel = new JPanel(new GridBagLayout());
+//        productPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+//        productPanel.setBackground(Color.WHITE);
+//        GridBagConstraints gbc = new GridBagConstraints();
+//        gbc.fill = GridBagConstraints.HORIZONTAL;
+//        gbc.insets = new Insets(1, 10, 1, 10);
+//        gbc.weightx = 1.0;
+//
+//        // Tiêu đề bảng
+//        gbc.gridx = 0;
+//        gbc.gridy = 0;
+//        gbc.weightx = 0.5;
+//        JLabel productHeader = new JLabel("Sản phẩm");
+//        productHeader.setFont(new Font("Arial", Font.BOLD, 14));
+//        productPanel.add(productHeader, gbc);
+//
+//        gbc.gridx = 1;
+//        gbc.weightx = 0.2;
+//        JLabel quantityHeader = new JLabel("Số lượng");
+//        quantityHeader.setFont(new Font("Arial", Font.BOLD, 14));
+//        quantityHeader.setHorizontalAlignment(SwingConstants.CENTER);
+//        productPanel.add(quantityHeader, gbc);
+//
+//        gbc.gridx = 2;
+//        gbc.weightx = 0.3;
+//        JLabel priceHeader = new JLabel("Giá");
+//        priceHeader.setFont(new Font("Arial", Font.BOLD, 14));
+//        priceHeader.setHorizontalAlignment(SwingConstants.RIGHT);
+//        productPanel.add(priceHeader, gbc);
+//
+//        gbc.gridx = 3;
+//        gbc.weightx = 0.3;
+//        JLabel totalHeader = new JLabel("Thành tiền");
+//        totalHeader.setFont(new Font("Arial", Font.BOLD, 14));
+//        totalHeader.setHorizontalAlignment(SwingConstants.RIGHT);
+//        productPanel.add(totalHeader, gbc);
+//
+//        // Phân cách
+//        gbc.gridx = 0;
+//        gbc.gridy = 1;
+//        gbc.gridwidth = 4;
+//        JSeparator productSeparator = new JSeparator(SwingConstants.HORIZONTAL);
+//        productPanel.add(productSeparator, gbc);
+//        gbc.gridwidth = 1;
+//
+//        // Thêm dữ liệu sản phẩm
+//        int row = 2;
+//        for (ChiTietHoaDon cthd : hoaDon.getChiTietHoaDonList()) {
+//            String tenHH = cthd.getHangHoa().getTenHH();
+//            if (tenHH.length() > 20) {
+//                tenHH = tenHH.substring(0, 17) + "...";
+//            }
+//            gbc.gridx = 0;
+//            gbc.gridy = row;
+//            JLabel productNameLabel = new JLabel(tenHH);
+//            productNameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+//            productPanel.add(productNameLabel, gbc);
+//
+//            gbc.gridx = 1;
+//            JLabel quantityLabel = new JLabel(String.valueOf(cthd.getSoLuong()));
+//            quantityLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+//            quantityLabel.setHorizontalAlignment(SwingConstants.CENTER);
+//            productPanel.add(quantityLabel, gbc);
+//
+//            gbc.gridx = 2;
+//            JLabel priceLabel = new JLabel(df.format(cthd.getHangHoa().getGiaSP()));
+//            priceLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+//            priceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+//            productPanel.add(priceLabel, gbc);
+//
+//            gbc.gridx = 3;
+//            JLabel totalLabel = new JLabel(df.format(cthd.getThanhTien()));
+//            totalLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+//            totalLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+//            productPanel.add(totalLabel, gbc);
+//            row++;
+//        }
+//
+//        // Phân cách cuối bảng
+//        gbc.gridx = 0;
+//        gbc.gridy = row;
+//        gbc.gridwidth = 4;
+//        JSeparator productEndSeparator = new JSeparator(SwingConstants.HORIZONTAL);
+//        productPanel.add(productEndSeparator, gbc);
+//        gbc.gridwidth = 1;
+//
+//        panel.add(productPanel);
+//        panel.add(Box.createVerticalStrut(15));
+//
+//        // ========== TỔNG TIỀN VÀ CHIẾT KHẤU ==========
+//        JPanel summaryPanel = new JPanel(new GridBagLayout());
+//        summaryPanel.setBackground(new Color(245, 245, 245));
+//        summaryPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+//        GridBagConstraints sumGbc = new GridBagConstraints();
+//        sumGbc.anchor = GridBagConstraints.EAST;
+//        sumGbc.fill = GridBagConstraints.HORIZONTAL;
+//        sumGbc.weightx = 1.0;
+//        sumGbc.insets = new Insets(2, 0, 2, 10);
+//
+//        sumGbc.gridx = 0;
+//        sumGbc.gridy = 0;
+//        JLabel totalAmountLabel = new JLabel("Tổng tiền: " + df.format(total));
+//        totalAmountLabel.setFont(new Font("Arial", Font.BOLD, 14));
+//        totalAmountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+//        summaryPanel.add(totalAmountLabel, sumGbc);
+//
+//        sumGbc.gridy = 1;
+//        JLabel discountLabel = new JLabel("Chiết khấu: " + df.format(discountAmount) + " (" + (int)totalDiscountPercentage + "%)");
+//        discountLabel.setFont(new Font("Arial", Font.BOLD, 14));
+//        discountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+//        summaryPanel.add(discountLabel, sumGbc);
+//
+//        sumGbc.gridy = 2;
+//        JLabel finalAmountLabel = new JLabel("Thành tiền: " + df.format(finalTotal));
+//        finalAmountLabel.setFont(new Font("Arial", Font.BOLD, 14));
+//        finalAmountLabel.setForeground(new Color(204, 0, 0));
+//        finalAmountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+//        summaryPanel.add(finalAmountLabel, sumGbc);
+//
+//        sumGbc.gridy = 3;
+//        JLabel pointsLabel = new JLabel("Điểm tích lũy: " + hoaDon.getdiemTL_THD());
+//        pointsLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+//        pointsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+//        summaryPanel.add(pointsLabel, sumGbc);
+//
+//        sumGbc.gridy = 4;
+//        JSeparator bottomSeparator = new JSeparator();
+//        bottomSeparator.setForeground(Color.BLACK);
+//        sumGbc.anchor = GridBagConstraints.CENTER;
+//        summaryPanel.add(bottomSeparator, sumGbc);
+//
+//        panel.add(summaryPanel);
+//
+//        // Thêm panel vào scroll pane
+//        JScrollPane mainScrollPane = new JScrollPane(panel);
+//        mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
+//        invoiceFrame.add(mainScrollPane);
+//
+//        // Hiển thị JFrame
+//        invoiceFrame.setVisible(true);
+//    }
+    
     private void printHoaDon(HoaDonBanHang hoaDon) {
-        // Tạo JFrame cho hóa đơn
         JFrame invoiceFrame = new JFrame("Hóa Đơn Bán Hàng");
-        invoiceFrame.setSize(510, 600);
+        invoiceFrame.setSize(520, 650);
         invoiceFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         invoiceFrame.setLocationRelativeTo(null);
+        invoiceFrame.setIconImage(BIEN.LOGO_QUAN.getImage());
 
-        // Tạo JPanel chính với BoxLayout
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(new Color(245, 245, 245));
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
-        // ========== PHẦN TIÊU ĐỀ ==========
-        JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.setBackground(new Color(245, 245, 245));
-        JLabel mainTitle = new JLabel("HÓA ĐƠN BÁN HÀNG", SwingConstants.CENTER);
-        mainTitle.setFont(new Font("Arial", Font.BOLD, 22));
-        mainTitle.setForeground(new Color(0, 102, 204));
-        titlePanel.add(mainTitle, BorderLayout.CENTER);
+        // ===== TIÊU ĐỀ =====
+        JLabel titleLabel = new JLabel("HÓA ĐƠN BÁN HÀNG", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setForeground(new Color(0, 102, 204));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(titleLabel);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(new JSeparator());
 
-        JSeparator separator = new JSeparator();
-        separator.setForeground(Color.BLACK);
-        titlePanel.add(separator, BorderLayout.SOUTH);
-        titlePanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
-        panel.add(titlePanel);
+        // ===== THÔNG TIN CHUNG =====
 
-        // ========== THÔNG TIN HÓA ĐƠN ==========
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setBackground(new Color(245, 245, 245));
-        infoPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-        infoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+	      JPanel infoPanel = new JPanel();
+	      infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+	      infoPanel.setBackground(Color.WHITE);
+	      infoPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+	      infoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+	
+	      Font infoFont = new Font("Arial", Font.PLAIN, 14);
+	      
+	      infoPanel.add(Box.createVerticalStrut(10));
+	      infoPanel.add(createInfoLabel("Mã hóa đơn: " + hoaDon.getMaHDBH(), infoFont));
+	      infoPanel.add(createInfoLabel("Ngày lập: " + hoaDon.getNgayLapHDBH(), infoFont));
+	      infoPanel.add(createInfoLabel("Nhân viên: " + maNhanVien, infoFont));
+	      infoPanel.add(createInfoLabel("Khách hàng: " + hoaDon.getKhachHang().getTenKH() +
+	              " (SDT: " + hoaDon.getKhachHang().getSoDienThoai() + ")", infoFont));
+	      infoPanel.add(createInfoLabel("Hình thức thanh toán: " +
+	              (hoaDon.isHinhThucThanhToan() ? "Chuyển khoản" : "Tiền mặt"), infoFont));
+	      infoPanel.add(createInfoLabel("Mã giảm giá: " +
+	              (hoaDon.getGiamGia() != null ?
+	                      hoaDon.getGiamGia().getMaGiam() + " (" + hoaDon.getGiamGia().getGiamGia() + "%)" : "Không có"),
+	              infoFont));
+	      
+	      JPanel separatorPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+	      separatorPanel.setBackground(new Color(245, 245, 245));
+	      JSeparator infoSeparator = new JSeparator();
+	      infoSeparator.setForeground(Color.BLACK);
+	      infoSeparator.setPreferredSize(new Dimension(4000,2 ));
+	      separatorPanel.add(infoSeparator);
+	      infoPanel.add(separatorPanel);
+	
+	      // Đặt infoPanel vào một container trung gian để ép căn trái
+	      JPanel infoWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+	      infoWrapper.setBackground(new Color(245, 245, 245));
+	      infoWrapper.add(infoPanel);
+	      panel.add(infoWrapper);
+	      panel.add(Box.createVerticalStrut(10));
 
-        JLabel maHoaDonLabel = new JLabel("Mã hóa đơn: " + hoaDon.getMaHDBH());
-        maHoaDonLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        maHoaDonLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        infoPanel.add(maHoaDonLabel);
-        infoPanel.add(Box.createVerticalStrut(5));
-
-        JLabel ngayLapLabel = new JLabel("Ngày lập: " + hoaDon.getNgayLapHDBH());
-        ngayLapLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        ngayLapLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        infoPanel.add(ngayLapLabel);
-        infoPanel.add(Box.createVerticalStrut(5));
-
-        JLabel nhanVienLabel = new JLabel("Nhân viên: " + maNhanVien);
-        nhanVienLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        nhanVienLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        infoPanel.add(nhanVienLabel);
-        infoPanel.add(Box.createVerticalStrut(5));
-
-        JLabel khachHangLabel = new JLabel("Khách hàng: " + hoaDon.getKhachHang().getTenKH() +
-                " (SDT: " + hoaDon.getKhachHang().getSoDienThoai() + ")");
-        khachHangLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        khachHangLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        infoPanel.add(khachHangLabel);
-        infoPanel.add(Box.createVerticalStrut(5));
-
-        JLabel thanhToanLabel = new JLabel("Hình thức thanh toán: " +
-                (hoaDon.isHinhThucThanhToan() ? "Chuyển khoản" : "Tiền mặt"));
-        thanhToanLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        thanhToanLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        infoPanel.add(thanhToanLabel);
-        infoPanel.add(Box.createVerticalStrut(5));
-
-        JLabel maGiamGiaLabel = new JLabel("Mã giảm giá: " +
-                (hoaDon.getGiamGia() != null ?
-                        hoaDon.getGiamGia().getMaGiam() + " (" + hoaDon.getGiamGia().getGiamGia() + "%)" : "Không có"));
-        maGiamGiaLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        maGiamGiaLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        infoPanel.add(maGiamGiaLabel);
-        infoPanel.add(Box.createVerticalStrut(10));
-
-        JPanel separatorPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        separatorPanel.setBackground(new Color(245, 245, 245));
-        JSeparator infoSeparator = new JSeparator();
-        infoSeparator.setForeground(Color.BLACK);
-        infoSeparator.setPreferredSize(new Dimension(400, 1));
-        separatorPanel.add(infoSeparator);
-        infoPanel.add(separatorPanel);
-
-        // Đặt infoPanel vào một container trung gian để ép căn trái
-        JPanel infoWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        infoWrapper.setBackground(new Color(245, 245, 245));
-        infoWrapper.add(infoPanel);
-        panel.add(infoWrapper);
-        panel.add(Box.createVerticalStrut(10));
-
-        // ========== DANH SÁCH SẢN PHẨM ==========
+        // ===== DANH SÁCH SẢN PHẨM =====
         JPanel productPanel = new JPanel(new GridBagLayout());
-        productPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         productPanel.setBackground(Color.WHITE);
+        productPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Chi tiết sản phẩm", 0, 0, new Font("Arial", Font.BOLD, 14)));
+
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(4, 4, 4, 4);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(1, 10, 1, 10);
-        gbc.weightx = 1.0;
 
-        // Tiêu đề bảng
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0.5;
-        JLabel productHeader = new JLabel("Sản phẩm");
-        productHeader.setFont(new Font("Arial", Font.BOLD, 14));
-        productPanel.add(productHeader, gbc);
+        Font headerFont = new Font("Arial", Font.BOLD, 14);
+        Font cellFont = new Font("Arial", Font.PLAIN, 13);
 
-        gbc.gridx = 1;
-        gbc.weightx = 0.2;
-        JLabel quantityHeader = new JLabel("Số lượng");
-        quantityHeader.setFont(new Font("Arial", Font.BOLD, 14));
-        quantityHeader.setHorizontalAlignment(SwingConstants.CENTER);
-        productPanel.add(quantityHeader, gbc);
+        String[] headers = {"Sản phẩm", "Số lượng", "Giá", "Thành tiền"};
+        int[] weights = {3, 1, 2, 2};
+        for (int i = 0; i < headers.length; i++) {
+            gbc.gridx = i;
+            gbc.gridy = 0;
+            gbc.weightx = weights[i];
+            JLabel headerLabel = new JLabel(headers[i]);
+            headerLabel.setFont(headerFont);
+            if (i > 0) headerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            productPanel.add(headerLabel, gbc);
+        }
 
-        gbc.gridx = 2;
-        gbc.weightx = 0.3;
-        JLabel priceHeader = new JLabel("Giá");
-        priceHeader.setFont(new Font("Arial", Font.BOLD, 14));
-        priceHeader.setHorizontalAlignment(SwingConstants.RIGHT);
-        productPanel.add(priceHeader, gbc);
-
-        gbc.gridx = 3;
-        gbc.weightx = 0.3;
-        JLabel totalHeader = new JLabel("Thành tiền");
-        totalHeader.setFont(new Font("Arial", Font.BOLD, 14));
-        totalHeader.setHorizontalAlignment(SwingConstants.RIGHT);
-        productPanel.add(totalHeader, gbc);
-
-        // Phân cách
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 4;
-        JSeparator productSeparator = new JSeparator(SwingConstants.HORIZONTAL);
-        productPanel.add(productSeparator, gbc);
-        gbc.gridwidth = 1;
-
-        // Thêm dữ liệu sản phẩm
-        int row = 2;
+        int row = 1;
         for (ChiTietHoaDon cthd : hoaDon.getChiTietHoaDonList()) {
             String tenHH = cthd.getHangHoa().getTenHH();
-            if (tenHH.length() > 20) {
-                tenHH = tenHH.substring(0, 17) + "...";
-            }
-            gbc.gridx = 0;
+            if (tenHH.length() > 30) tenHH = tenHH.substring(0, 27) + "...";
+
             gbc.gridy = row;
-            JLabel productNameLabel = new JLabel(tenHH);
-            productNameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-            productPanel.add(productNameLabel, gbc);
+
+            gbc.gridx = 0;
+            gbc.weightx = weights[0];
+            productPanel.add(createCellLabel(tenHH, cellFont, SwingConstants.LEFT), gbc);
 
             gbc.gridx = 1;
-            JLabel quantityLabel = new JLabel(String.valueOf(cthd.getSoLuong()));
-            quantityLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-            quantityLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            productPanel.add(quantityLabel, gbc);
+            gbc.weightx = weights[1];
+            productPanel.add(createCellLabel(String.valueOf(cthd.getSoLuong()), cellFont, SwingConstants.CENTER), gbc);
 
             gbc.gridx = 2;
-            JLabel priceLabel = new JLabel(df.format(cthd.getHangHoa().getGiaSP()));
-            priceLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-            priceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-            productPanel.add(priceLabel, gbc);
+            gbc.weightx = weights[2];
+            productPanel.add(createCellLabel(df.format(cthd.getHangHoa().getGiaSP()), cellFont, SwingConstants.RIGHT), gbc);
 
             gbc.gridx = 3;
-            JLabel totalLabel = new JLabel(df.format(cthd.getThanhTien()));
-            totalLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-            totalLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-            productPanel.add(totalLabel, gbc);
+            gbc.weightx = weights[3];
+            productPanel.add(createCellLabel(df.format(cthd.getThanhTien()), cellFont, SwingConstants.RIGHT), gbc);
+
             row++;
         }
 
-        // Phân cách cuối bảng
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.gridwidth = 4;
-        JSeparator productEndSeparator = new JSeparator(SwingConstants.HORIZONTAL);
-        productPanel.add(productEndSeparator, gbc);
-        gbc.gridwidth = 1;
-
         panel.add(productPanel);
-        panel.add(Box.createVerticalStrut(15));
+        panel.add(Box.createVerticalStrut(20));
 
-        // ========== TỔNG TIỀN VÀ CHIẾT KHẤU ==========
-        JPanel summaryPanel = new JPanel(new GridBagLayout());
-        summaryPanel.setBackground(new Color(245, 245, 245));
-        summaryPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-        GridBagConstraints sumGbc = new GridBagConstraints();
-        sumGbc.anchor = GridBagConstraints.EAST;
-        sumGbc.fill = GridBagConstraints.HORIZONTAL;
-        sumGbc.weightx = 1.0;
-        sumGbc.insets = new Insets(2, 0, 2, 10);
 
-        sumGbc.gridx = 0;
-        sumGbc.gridy = 0;
-        JLabel totalAmountLabel = new JLabel("Tổng tiền: " + df.format(total));
-        totalAmountLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        totalAmountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        summaryPanel.add(totalAmountLabel, sumGbc);
+        
+      //========== TỔNG TIỀN VÀ CHIẾT KHẤU ==========
+	      JPanel summaryPanel = new JPanel(new GridBagLayout());
+	      summaryPanel.setBackground(Color.WHITE);
+	      summaryPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+	      GridBagConstraints sumGbc = new GridBagConstraints();
+	      sumGbc.anchor = GridBagConstraints.EAST;
+	      sumGbc.fill = GridBagConstraints.HORIZONTAL;
+	      sumGbc.weightx = 1.0;
+	      sumGbc.insets = new Insets(2, 0, 2, 10);
+	
+	      sumGbc.gridx = 0;
+	      sumGbc.gridy = 0;
+	      JLabel totalAmountLabel = new JLabel("Tổng tiền: " + df.format(total));
+	      totalAmountLabel.setFont(new Font("Arial", Font.BOLD, 14));
+	      totalAmountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+	      summaryPanel.add(totalAmountLabel, sumGbc);
+	
+	      sumGbc.gridy = 1;
+	      JLabel discountLabel = new JLabel("Chiết khấu: " + df.format(discountAmount) + " (" + (int)totalDiscountPercentage + "%)");
+	      discountLabel.setFont(new Font("Arial", Font.BOLD, 14));
+	      discountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+	      summaryPanel.add(discountLabel, sumGbc);
+	
+	      sumGbc.gridy = 2;
+	      JLabel finalAmountLabel = new JLabel("Thành tiền: " + df.format(finalTotal));
+	      finalAmountLabel.setFont(new Font("Arial", Font.BOLD, 14));
+	      finalAmountLabel.setForeground(new Color(204, 0, 0));
+	      finalAmountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+	      summaryPanel.add(finalAmountLabel, sumGbc);
+	
+	      sumGbc.gridy = 3;
+	      JLabel pointsLabel = new JLabel("Điểm tích lũy: " + hoaDon.getdiemTL_THD());
+	      pointsLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+	      pointsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+	      summaryPanel.add(pointsLabel, sumGbc);
+	
+	      sumGbc.gridy = 4;
+	      JSeparator bottomSeparator = new JSeparator();
+	      bottomSeparator.setForeground(Color.BLACK);
+	      sumGbc.anchor = GridBagConstraints.CENTER;
+	      summaryPanel.add(bottomSeparator, sumGbc);
+	
+	      panel.add(summaryPanel);
 
-        sumGbc.gridy = 1;
-        JLabel discountLabel = new JLabel("Chiết khấu: " + df.format(discountAmount) + " (" + (int)totalDiscountPercentage + "%)");
-        discountLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        discountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        summaryPanel.add(discountLabel, sumGbc);
-
-        sumGbc.gridy = 2;
-        JLabel finalAmountLabel = new JLabel("Thành tiền: " + df.format(finalTotal));
-        finalAmountLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        finalAmountLabel.setForeground(new Color(204, 0, 0));
-        finalAmountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        summaryPanel.add(finalAmountLabel, sumGbc);
-
-        sumGbc.gridy = 3;
-        JLabel pointsLabel = new JLabel("Điểm tích lũy: " + hoaDon.getdiemTL_THD());
-        pointsLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        pointsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        summaryPanel.add(pointsLabel, sumGbc);
-
-        sumGbc.gridy = 4;
-        JSeparator bottomSeparator = new JSeparator();
-        bottomSeparator.setForeground(Color.BLACK);
-        sumGbc.anchor = GridBagConstraints.CENTER;
-        summaryPanel.add(bottomSeparator, sumGbc);
-
-        panel.add(summaryPanel);
-
-        // Thêm panel vào scroll pane
-        JScrollPane mainScrollPane = new JScrollPane(panel);
-        mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        invoiceFrame.add(mainScrollPane);
-
-        // Hiển thị JFrame
+        invoiceFrame.add(panel);
         invoiceFrame.setVisible(true);
     }
+
+    // ========== HÀM HỖ TRỢ ==========
+    private JLabel createInfoLabel(String text, Font font) {
+        JLabel label = new JLabel(text);
+        label.setFont(font);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return label;
+    }
+
+    private JLabel createCellLabel(String text, Font font, int alignment) {
+        JLabel label = new JLabel(text);
+        label.setFont(font);
+        label.setHorizontalAlignment(alignment);
+        return label;
+    }
+
+    private JLabel createRightLabel(String text, Font font) {
+        JLabel label = new JLabel(text);
+        label.setFont(font);
+        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        return label;
+    }
+    private JLabel createRightLabel(String text, Font font, Color color) {
+        JLabel label = new JLabel(text);
+        label.setFont(font);
+        label.setForeground(color);
+        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        return label;
+    }
+
 
     public void addOrderItem(HangHoa hh, int quantity) {
         if (hh == null || quantity <= 0) {

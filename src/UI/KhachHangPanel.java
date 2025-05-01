@@ -187,7 +187,7 @@ public class KhachHangPanel extends JPanel {
                 updateTable();
                 lamRong();
             } else {
-                JOptionPane.showMessageDialog(this, "Thêm khách hàng thất bại", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Thất bại! Do Trùng số điện thoại ", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (Exception e) {
