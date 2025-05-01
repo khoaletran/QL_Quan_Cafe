@@ -256,32 +256,45 @@ ON KHACHHANG
 AFTER INSERT, UPDATE
 AS
 BEGIN
-    
+    -- Tạo biến để lấy thông tin từ INSERTED
     DECLARE @DIEMTL INT, @MAKH VARCHAR(10);
 
-    
+    -- Lấy dữ liệu từ INSERTED
     SELECT @DIEMTL = DIEMTL, @MAKH = MAKH FROM INSERTED;
 
-    
+    -- Cập nhật loại khách hàng tương ứng
     IF @DIEMTL < 100
     BEGIN
         UPDATE KHACHHANG
-        SET MALKH = 'Thường'
+        SET MALKH = 'LKH0001' -- Thường
         WHERE MAKH = @MAKH;
     END
-    ELSE IF @DIEMTL >= 1000 AND @DIEMTL < 5000
+    ELSE IF @DIEMTL < 200
     BEGIN
         UPDATE KHACHHANG
-        SET MALKH = 'V.I.P'
+        SET MALKH = 'LKH0002' -- Thân thiết
         WHERE MAKH = @MAKH;
     END
-    ELSE IF @DIEMTL >= 5000
+    ELSE IF @DIEMTL < 300
     BEGIN
         UPDATE KHACHHANG
-        SET MALKH = 'Thượng hạng'
+        SET MALKH = 'LKH0003' -- Bạc
+        WHERE MAKH = @MAKH;
+    END
+    ELSE IF @DIEMTL < 400
+    BEGIN
+        UPDATE KHACHHANG
+        SET MALKH = 'LKH0004' -- Vàng
+        WHERE MAKH = @MAKH;
+    END
+    ELSE
+    BEGIN
+        UPDATE KHACHHANG
+        SET MALKH = 'LKH0005' -- Kim Cương
         WHERE MAKH = @MAKH;
     END
 END;
+
 
 --Dữ liệu demo 
 
