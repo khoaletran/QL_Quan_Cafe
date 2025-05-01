@@ -125,49 +125,42 @@ public class ThongKePanel extends JPanel {
     }
 
     private void createChartPanel() {
-        // Dataset: Sản phẩm bán chạy nhất và ít bán nhất theo tháng
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        // Truy vấn cơ sở dữ liệu để lấy danh sách sản phẩm bán được trong tháng
-        String sql = "SELECT P.TenSP, MONTH(H.NgayHD) AS Thang, SUM(CT.SL) AS SoLuongBan " +
-                     "FROM HoaDon H " +
-                     "JOIN ChiTietHoaDon CT ON H.MaHD = CT.MaHD " +
-                     "JOIN SanPham P ON CT.MaSP = P.MaSP " +
-                     "WHERE H.NgayHD BETWEEN '2024-01-01' AND '2025-12-31' " +
-                     "GROUP BY P.TenSP, MONTH(H.NgayHD) " +
-                     "ORDER BY SoLuongBan DESC";
+        String sql = "SELECT HH.TENHH, MONTH(HDBH.NGAYHDBH) AS THANG, SUM(CTHD.SOLUONG) AS SOLUONGBAN " +
+                "FROM HOADONBANHANG HDBH " +
+                "JOIN CHITIETHOADON CTHD ON HDBH.MAHDBH = CTHD.MAHDBH " +
+                "JOIN HANGHOA HH ON HH.MAHH = CTHD.MAHH " +
+                "WHERE HDBH.NGAYHDBH BETWEEN '2024-01-01' AND '2025-12-31' " +
+                "GROUP BY HH.TENHH, MONTH(HDBH.NGAYHDBH) " +
+                "ORDER BY THANG, SOLUONGBAN DESC";
 
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=your_database", "username", "password");
-             Statement stmt = connection.createStatement();
+        try (Connection conn = DriverManager.getConnection(
+                "jdbc:sqlserver://localhost:1433;databaseName=QL_QuanCafe", "QLQuanCafe", "123");
+             Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
-            // Thêm dữ liệu vào dataset
             while (rs.next()) {
-                String productName = rs.getString("TenSP");
-                int quantitySold = rs.getInt("SoLuongBan");
-                String month = rs.getString("Thang");  // Tháng của sản phẩm bán
-
-                // Chỉ lấy sản phẩm bán chạy và ít bán nhất, ví dụ: chọn 5 sản phẩm bán chạy nhất và 5 sản phẩm ít bán nhất
-                if (quantitySold > 0) {
-                    dataset.addValue(quantitySold, productName, month);
-                }
+                String tenSP = rs.getString("TENHH");
+                int thang = rs.getInt("THANG");
+                int soLuong = rs.getInt("SOLUONGBAN");
+                dataset.addValue(soLuong, tenSP, String.format("%02d/2024", thang));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // Tạo biểu đồ
         JFreeChart chart = ChartFactory.createBarChart(
-                "Thống kê sản phẩm bán chạy và ít bán nhất theo tháng",
+                "Sản phẩm bán ra theo tháng",
                 "Tháng",
-                "Số lượng sản phẩm",
+                "Số lượng",
                 dataset
         );
 
-        // Thêm biểu đồ vào một panel mới
         ChartPanel chartPanel = new ChartPanel(chart);
         add(chartPanel, BorderLayout.CENTER);
     }
+
 }
 
 
