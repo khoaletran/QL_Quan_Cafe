@@ -71,6 +71,7 @@ public class KhachHang {
        	setSoDienThoai(soDienThoai);
        	setDiemTL(diemTL);
        	setLoaiKhachHang(diemTL);
+       	
       }
 
     public String getMaKH() {
@@ -149,9 +150,8 @@ public class KhachHang {
 //        	loaiKhachHang = list.getElementAt(4);
 //        }
 //    }
-    
+    //Loai khach hang chuan
     public void setLoaiKhachHang(int diemTL) {
-        // Giả sử có các loại khách hàng với điểm tích lũy khác nhau
 	        if (diemTL < 100) {
 	             this.loaiKhachHang = new LoaiKhachHang("LKH0001", "Thường", 0);
 	       } else if (diemTL < 200) {

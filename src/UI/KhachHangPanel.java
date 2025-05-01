@@ -192,13 +192,25 @@ public class KhachHangPanel extends JPanel {
 
     private void xuLySuKienXoaKhachHang() {
         String maKH = textFields[0].getText();
-        if (JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa khách hàng này không?", "Cảnh báo", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            KhachHang_DAO.xoaKhachHang(maKH);
-            dskh.removeIf(kh -> kh.getMaKH().equals(maKH));
-            updateTable();
-            lamRong();
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa khách hàng này không?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                boolean daXoa = KhachHang_DAO.xoaKhachHang(maKH);
+                if (daXoa) {
+                    dskh.removeIf(kh -> kh.getMaKH().equals(maKH));
+                    updateTable();
+                    lamRong();
+                    JOptionPane.showMessageDialog(this, "Xóa khách hàng thành công!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Không thể xóa khách hàng vì đã có hóa đơn liên quan!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
+
 
     private void xuLySuKienSuaKhachHang() {
         String maKH = textFields[0].getText();

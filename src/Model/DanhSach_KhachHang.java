@@ -32,7 +32,7 @@ public class DanhSach_KhachHang {
 		for (KhachHang kh : listKH) {
 			if(kh.getSoDienThoai().equals(sdt)) {
 				kh.setDiemTL(kh.getDiemTL() + diemTL);
-				kh.setLoaiKhachHang(kh.getDiemTL());
+//				kh.setLoaiKhachHang(kh.getDiemTL());
 			}
 		}
 	}

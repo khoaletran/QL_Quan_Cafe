@@ -130,7 +130,7 @@ public class HoaDon_DAO {
             }
 
             // Sửa truy vấn: dùng TOP 1 thay vì LIMIT 1
-            String sql = "SELECT TOP 1 maHDBH FROM HoaDonBanHang ORDER BY maHDBH DESC";
+            String sql = "SELECT TOP 1 maHDBH FROM HOADONBANHANG ORDER BY maHDBH DESC";
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
 

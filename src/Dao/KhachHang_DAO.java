@@ -22,7 +22,8 @@ public class KhachHang_DAO {
 
             String sql = "SELECT KH.MAKH, KH.TENKH, KH.SDT, KH.DIEMTL, " +
                          "LKH.MALKH, LKH.TENLKH, LKH.GIAMGIA " +
-                         "FROM KHACHHANG KH JOIN LOAIKHACHHANG LKH ON KH.MALKH = LKH.MALKH";
+                         "FROM KHACHHANG KH JOIN LOAIKHACHHANG LKH ON KH.MALKH = LKH.MALKH "
+                         +"ORDER BY KH.MAKH ASC";
 
             Statement statement = con.createStatement();
             ResultSet rs = statement.executeQuery(sql);
@@ -152,24 +153,18 @@ public class KhachHang_DAO {
 
 
     // Xóa khách hàng theo mã
-    public static boolean xoaKhachHang(String maKH) {
-        try {
-            ConnectDB.getInstance().connect();
-            Connection con = ConnectDB.getConnection();
+    public static boolean xoaKhachHang(String maKH) throws Exception {
+        ConnectDB.getInstance().connect();
+        Connection con = ConnectDB.getConnection();
 
-            String sql = "DELETE FROM KHACHHANG WHERE MAKH = ?";
-            PreparedStatement ps = con.prepareStatement(sql);
+        String sql = "DELETE FROM KHACHHANG WHERE MAKH = ?";
+        PreparedStatement ps = con.prepareStatement(sql);
 
-            ps.setString(1, maKH);
-            int rows = ps.executeUpdate();
-            return rows > 0;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return false;
+        ps.setString(1, maKH);
+        int rows = ps.executeUpdate();
+        return rows > 0;
     }
+
 
     // Sửa thông tin khách hàng
     public static boolean suaKhachHang(KhachHang kh) {

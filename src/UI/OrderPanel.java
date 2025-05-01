@@ -269,6 +269,7 @@ public class OrderPanel extends JPanel {
         khachHang.setDiemTL(hoaDon.getdiemTL_THD());
         khachHang.setLoaiKhachHang(khachHang.getDiemTL());
         
+        
         if( KhachHang_DAO.timKhachHangTheoSDT_DT(phoneNumber) != null ) {
         	KhachHang_DAO.suaKhachHang(khachHang);
         }
