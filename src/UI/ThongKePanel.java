@@ -105,62 +105,146 @@
 
 
 //test lan 2
+//package UI;
+//
+//import org.jfree.chart.ChartFactory;
+//import org.jfree.chart.ChartPanel;
+//import org.jfree.chart.JFreeChart;
+//import org.jfree.data.category.DefaultCategoryDataset;
+//
+//import javax.swing.*;
+//import java.awt.*;
+//import java.sql.*;
+//
+//public class ThongKePanel extends JPanel {
+//
+//    public ThongKePanel() {
+//        setLayout(new BorderLayout());
+//        setBackground(new Color(245, 245, 245));  // Chọn màu nền cho panel
+//        createChartPanel();
+//    }
+//
+//    private void createChartPanel() {
+//        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+//
+//        String sql = "SELECT HH.TENHH, MONTH(HDBH.NGAYHDBH) AS THANG, SUM(CTHD.SOLUONG) AS SOLUONGBAN " +
+//                "FROM HOADONBANHANG HDBH " +
+//                "JOIN CHITIETHOADON CTHD ON HDBH.MAHDBH = CTHD.MAHDBH " +
+//                "JOIN HANGHOA HH ON HH.MAHH = CTHD.MAHH " +
+//                "WHERE HDBH.NGAYHDBH BETWEEN '2024-01-01' AND '2025-12-31' " +
+//                "GROUP BY HH.TENHH, MONTH(HDBH.NGAYHDBH) " +
+//                "ORDER BY THANG, SOLUONGBAN DESC";
+//
+//        try (Connection conn = DriverManager.getConnection(
+//                "jdbc:sqlserver://localhost:1433;databaseName=QL_QuanCafe", "QLQuanCafe", "123");
+//             Statement stmt = conn.createStatement();
+//             ResultSet rs = stmt.executeQuery(sql)) {
+//
+//            while (rs.next()) {
+//                String tenSP = rs.getString("TENHH");
+//                int thang = rs.getInt("THANG");
+//                int soLuong = rs.getInt("SOLUONGBAN");
+//                dataset.addValue(soLuong, tenSP, String.format("%02d/2024", thang));
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        JFreeChart chart = ChartFactory.createBarChart(
+//                "Sản phẩm bán ra theo tháng",
+//                "Tháng",
+//                "Số lượng",
+//                dataset
+//        );
+//
+//        ChartPanel chartPanel = new ChartPanel(chart);
+//        add(chartPanel, BorderLayout.CENTER);
+//    }
+//
+//}
+
+//test lần 3
 package UI;
 
+import ConnectDB.ConnectDB;
+import Dao.ThongKe_DAO;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.util.Map;
 
 public class ThongKePanel extends JPanel {
 
     public ThongKePanel() {
         setLayout(new BorderLayout());
-        setBackground(new Color(245, 245, 245));  // Chọn màu nền cho panel
-        createChartPanel();
+        setBackground(Color.WHITE);
+        initChart();
     }
 
-    private void createChartPanel() {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    private void initChart() {
+        try {
+            ConnectDB.getInstance().connect(); // Đảm bảo đã kết nối
+            Connection conn = ConnectDB.getConnection();
 
-        String sql = "SELECT HH.TENHH, MONTH(HDBH.NGAYHDBH) AS THANG, SUM(CTHD.SOLUONG) AS SOLUONGBAN " +
-                "FROM HOADONBANHANG HDBH " +
-                "JOIN CHITIETHOADON CTHD ON HDBH.MAHDBH = CTHD.MAHDBH " +
-                "JOIN HANGHOA HH ON HH.MAHH = CTHD.MAHH " +
-                "WHERE HDBH.NGAYHDBH BETWEEN '2024-01-01' AND '2025-12-31' " +
-                "GROUP BY HH.TENHH, MONTH(HDBH.NGAYHDBH) " +
-                "ORDER BY THANG, SOLUONGBAN DESC";
-
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:sqlserver://localhost:1433;databaseName=QL_QuanCafe", "QLQuanCafe", "123");
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            while (rs.next()) {
-                String tenSP = rs.getString("TENHH");
-                int thang = rs.getInt("THANG");
-                int soLuong = rs.getInt("SOLUONGBAN");
-                dataset.addValue(soLuong, tenSP, String.format("%02d/2024", thang));
+            if (conn == null) {
+                add(new JLabel("⚠️ Không thể kết nối đến cơ sở dữ liệu"), BorderLayout.CENTER);
+                return;
             }
-        } catch (SQLException e) {
+
+            Map<String, Integer> data = ThongKe_DAO.getSoLuongSanPhamBanRa(conn);
+            if (data.isEmpty()) {
+                add(new JLabel("🔍 Không có dữ liệu để thống kê"), BorderLayout.CENTER);
+                return;
+            }
+
+            // Tạo DefaultPieDataset cho biểu đồ
+            DefaultPieDataset dataset = new DefaultPieDataset();            
+
+            for (Map.Entry<String, Integer> entry : data.entrySet()) {
+                String label = entry.getKey() + " - " + entry.getValue();
+                dataset.setValue(label, entry.getValue());
+            }
+
+            // Tạo biểu đồ pie
+            JFreeChart chart = ChartFactory.createPieChart(
+                    "Tỉ lệ sản phẩm bán ra", dataset, true, true, false
+            );
+
+            // Thêm biểu đồ vào panel
+            ChartPanel chartPanel = new ChartPanel(chart);
+            chartPanel.setPreferredSize(new Dimension(getWidth(), getHeight() - 100)); // Chừa không gian cho ô chú thích
+            add(chartPanel, BorderLayout.CENTER);
+
+            // Tạo JPanel cho ô chú thích
+            JPanel legendPanel = new JPanel();
+            legendPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+
+            // Tạo JLabel cho chú thích
+            JLabel legendLabel = new JLabel("Tên hàng - Số lượng bán được");
+            legendLabel.setPreferredSize(new Dimension(200, 40));  // Kích thước ô vuông
+            legendLabel.setBackground(Color.LIGHT_GRAY);           // Màu nền
+            legendLabel.setOpaque(true);                            // Đảm bảo nền có màu
+            legendLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            legendPanel.add(legendLabel);
+
+            // Thêm ô chú thích vào panel dưới biểu đồ
+            add(legendPanel, BorderLayout.SOUTH);
+
+        } catch (Exception e) {
             e.printStackTrace();
+            add(new JLabel("⚠️ Lỗi khi tải dữ liệu thống kê"), BorderLayout.CENTER);
         }
-
-        JFreeChart chart = ChartFactory.createBarChart(
-                "Sản phẩm bán ra theo tháng",
-                "Tháng",
-                "Số lượng",
-                dataset
-        );
-
-        ChartPanel chartPanel = new ChartPanel(chart);
-        add(chartPanel, BorderLayout.CENTER);
     }
-
 }
+
+
+
+
+
 
 
