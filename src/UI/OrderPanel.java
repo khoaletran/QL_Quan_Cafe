@@ -11,12 +11,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import Dao.KhachHang_DAO;
+import Dao.LoaiKhachHang_DAO;
 import Dao.HangHoa_DAO;
 import Dao.HoaDon_DAO;
 import Dao.MaGiamGia_DAO;
 import Model.KhachHang;
 import Model.HangHoa;
 import Model.ChiTietHoaDon;
+import Model.DanhSach_LoaiKhachHang;
 import Model.HoaDonBanHang;
 import Model.MaGiamGia;
 import Model.LoaiKhachHang;
@@ -39,6 +41,7 @@ public class OrderPanel extends JPanel {
     private DecimalFormat df = new DecimalFormat("#,##0đ");
     private JLabel discountStatusLabel;
     private String maNhanVien;
+    private ArrayList<LoaiKhachHang> dslkh = LoaiKhachHang_DAO.getAllLoaiKhachHang();
 
     public OrderPanel(String maNhanVien) {
         if (maNhanVien == null || maNhanVien.isEmpty()) {
@@ -260,6 +263,7 @@ public class OrderPanel extends JPanel {
         }
         
         khachHang.setDiemTL(hoaDon.getdiemTL_THD());
+        khachHang.setLoaiKhachHang(dslkh.getFirst());
         
         
         if( KhachHang_DAO.timKhachHangTheoSDT_DT(phoneNumber) != null ) {

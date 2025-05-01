@@ -133,13 +133,12 @@ public class KhachHang_DAO {
             ConnectDB.getInstance().connect();
             Connection con = ConnectDB.getConnection();
 
-            String sql = "INSERT INTO KHACHHANG (MALKH, TENKH, SDT, DIEMTL) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO KHACHHANG (TENKH, SDT, DIEMTL) VALUES (?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(sql);
 
-            ps.setString(1, kh.getLoaiKhachHang().getMaLKH());
-            ps.setString(2, kh.getTenKH());
-            ps.setString(3, kh.getSoDienThoai());
-            ps.setInt(4, kh.getDiemTL());
+            ps.setString(1, kh.getTenKH());
+            ps.setString(2, kh.getSoDienThoai());
+            ps.setInt(3, kh.getDiemTL());
 
             int rowsInserted = ps.executeUpdate();
             return rowsInserted > 0;
