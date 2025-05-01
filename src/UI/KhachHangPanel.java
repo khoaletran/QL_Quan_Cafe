@@ -181,14 +181,6 @@ public class KhachHangPanel extends JPanel {
             String soDienThoai = textFields[2].getText();
             int diemTL = Integer.parseInt(textFields[3].getText());
             KhachHang newKH = new KhachHang(tenKH, soDienThoai, diemTL);
-           
-            
-            if (newKH.getLoaiKhachHang() == null) {
-                JOptionPane.showMessageDialog(this, "Không tìm được loại khách hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            textFields[4].setText(newKH.getLoaiKhachHang().getTenLKH());
-            
             boolean result = KhachHang_DAO.themKhachHang(newKH);
             if (result) {
                 dskh.add(newKH);
@@ -234,10 +226,6 @@ public class KhachHangPanel extends JPanel {
         String soDienThoai = textFields[2].getText();
         int diemTL = Integer.parseInt(textFields[3].getText());
         KhachHang newKH = new KhachHang(maKH, tenKH, soDienThoai, diemTL);
-        if (newKH.getLoaiKhachHang() == null) {
-            JOptionPane.showMessageDialog(this, "Không tìm được loại khách hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
        boolean ok = KhachHang_DAO.suaKhachHang(newKH);
        if(ok) {
     	   JOptionPane.showMessageDialog(this, "Cập nhật thành công!");

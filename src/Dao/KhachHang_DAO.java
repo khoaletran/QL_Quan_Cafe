@@ -171,14 +171,14 @@ public class KhachHang_DAO {
             ConnectDB.getInstance().connect();
             Connection con = ConnectDB.getConnection();
 
-            String sql = "UPDATE KHACHHANG SET TENKH = ?, SDT = ?, DIEMTL = ?, MALKH = ? WHERE MAKH = ?";
+            String sql = "UPDATE KHACHHANG SET TENKH = ?, SDT = ?, DIEMTL = ? WHERE MAKH = ?";
             PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setString(1, kh.getTenKH());
             ps.setString(2, kh.getSoDienThoai());
             ps.setInt(3, kh.getDiemTL());
-            ps.setString(4, kh.getLoaiKhachHang().getMaLKH());
-            ps.setString(5, kh.getMaKH());
+//            ps.setString(4, kh.getLoaiKhachHang().getMaLKH());
+            ps.setString(4, kh.getMaKH());
 
             int rows = ps.executeUpdate();
             return rows > 0;
