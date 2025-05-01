@@ -252,51 +252,24 @@ BEGIN
 END;
 GO
 
---CREATE TRIGGER trg_UpdateLoaiKH
---ON KHACHHANG
---AFTER INSERT, UPDATE
---AS
---BEGIN
---    -- Tạo biến để lấy thông tin từ INSERTED
---    DECLARE @DIEMTL INT, @MAKH VARCHAR(10);
+CREATE TRIGGER trg_UpdateLoaiKH
+ON KHACHHANG
+AFTER INSERT, UPDATE
+AS
+BEGIN
+   
+    UPDATE KHACHHANG
+    SET MALKH = (
+        SELECT TOP 1 MALKH 
+        FROM LOAIKHACHHANG LKH
+        WHERE LKH.MUCDIEM <= KHACHHANG.DIEMTL
+        ORDER BY LKH.MUCDIEM DESC  
+    )
+    FROM KHACHHANG
+    JOIN INSERTED I ON KHACHHANG.MAKH = I.MAKH
+    WHERE I.DIEMTL = KHACHHANG.DIEMTL;  
 
---    -- Lấy dữ liệu từ INSERTED
---    SELECT @DIEMTL = DIEMTL, @MAKH = MAKH FROM INSERTED;
-
---    -- Cập nhật loại khách hàng tương ứng
---    IF @DIEMTL < 100
---    BEGIN
---        UPDATE KHACHHANG
---        SET MALKH = 'LKH0001' -- Thường
---        WHERE MAKH = @MAKH;
---    END
---    ELSE IF @DIEMTL < 200
---    BEGIN
---        UPDATE KHACHHANG
---        SET MALKH = 'LKH0002' -- Thân thiết
---        WHERE MAKH = @MAKH;
---    END
---    ELSE IF @DIEMTL < 300
---    BEGIN
---        UPDATE KHACHHANG
---        SET MALKH = 'LKH0003' -- Bạc
---        WHERE MAKH = @MAKH;
---    END
---    ELSE IF @DIEMTL < 400
---    BEGIN
---        UPDATE KHACHHANG
---        SET MALKH = 'LKH0004' -- Vàng
---        WHERE MAKH = @MAKH;
---    END
---    ELSE
---    BEGIN
---        UPDATE KHACHHANG
---        SET MALKH = 'LKH0005' -- Kim Cương
---        WHERE MAKH = @MAKH;
---    END
---END;
-
---DROP TRIGGER trg_UpdateLoaiKH
+END;
 
 --Dữ liệu demo 
 

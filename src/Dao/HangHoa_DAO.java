@@ -246,7 +246,7 @@ public class HangHoa_DAO {
 	        String sql = "SELECT HH.MAHH, HH.MALH, HH.TENHH, HH.HINHANH, HH.GIASP, " +
 	                     "LH.TENLH, LH.MOTA " +
 	                     "FROM HANGHOA HH JOIN LOAIHANGHOA LH ON HH.MALH = LH.MALH " +
-	                     "WHERE HH.TENHH LIKE ?";
+	                     "WHERE HH.TENHH COLLATE Vietnamese_CI_AI LIKE ?";
 
 	        PreparedStatement ps = con.prepareStatement(sql);
 	        ps.setString(1, "%" + tuKhoa + "%");
@@ -275,6 +275,5 @@ public class HangHoa_DAO {
 	    return list;
 	}
 
-	
 
 }

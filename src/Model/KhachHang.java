@@ -56,7 +56,6 @@ public class KhachHang {
        	setTenKH(tenKH);
        	setSoDienThoai(soDienThoai);
        	setDiemTL(diemTL);
-       	setLoaiKhachHang(diemTL);
        }
     public KhachHang(String tenKH ,String soDienThoai,int diemTL) {
       	 /**
@@ -70,7 +69,6 @@ public class KhachHang {
        	setTenKH(tenKH);
        	setSoDienThoai(soDienThoai);
        	setDiemTL(diemTL);
-       	setLoaiKhachHang(diemTL);
        	
       }
 
@@ -150,20 +148,20 @@ public class KhachHang {
 //        	loaiKhachHang = list.getElementAt(4);
 //        }
 //    }
-    //Loai khach hang chuan
-    public void setLoaiKhachHang(int diemTL) {
-	        if (diemTL < 100) {
-	             this.loaiKhachHang = new LoaiKhachHang("LKH0001", "Thường", 0);
-	       } else if (diemTL < 200) {
-	        	this.loaiKhachHang = new LoaiKhachHang("LKH0002", "Thân thiết", 5);
-	       } else if (diemTL < 300) {
-	        	this.loaiKhachHang = new LoaiKhachHang("LKH0003", "Bạc", 10);
-	       } else if (diemTL < 400) {
-	    	   this.loaiKhachHang = new LoaiKhachHang("LKH0004", "Vàng", 15);
-	       } else{
-	    	   this.loaiKhachHang = new LoaiKhachHang("LKH0005", "Kim Cương", 20);
-	    } 
-   }
+//    Loai khach hang chuan
+//    public void setLoaiKhachHang(int diemTL) {
+//	        if (diemTL < 100) {
+//	             this.loaiKhachHang = new LoaiKhachHang("LKH0001", "Thường", 0);
+//	       } else if (diemTL < 200) {
+//	        	this.loaiKhachHang = new LoaiKhachHang("LKH0002", "Thân thiết", 5);
+//	       } else if (diemTL < 300) {
+//	        	this.loaiKhachHang = new LoaiKhachHang("LKH0003", "Bạc", 10);
+//	       } else if (diemTL < 400) {
+//	    	   this.loaiKhachHang = new LoaiKhachHang("LKH0004", "Vàng", 15);
+//	       } else{
+//	    	   this.loaiKhachHang = new LoaiKhachHang("LKH0005", "Kim Cương", 20);
+//	    } 
+//   }
 
     
     public void setLoaiKhachHang(LoaiKhachHang loaikhanhhang) {

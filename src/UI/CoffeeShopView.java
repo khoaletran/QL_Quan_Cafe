@@ -16,6 +16,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import Bien.BIEN;
+
 import ConnectDB.ConnectDB;
 
 public class CoffeeShopView extends JFrame {
@@ -29,7 +31,7 @@ public class CoffeeShopView extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setIconImage(new ImageIcon(getClass().getResource("/Resource/main/logo.png")).getImage());
+        setIconImage(BIEN.LOGO_QUAN.getImage());
         createUI();
 //        showLoginDialog();
     }

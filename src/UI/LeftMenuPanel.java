@@ -1,6 +1,9 @@
 package UI;
 
 import javax.swing.*;
+
+import Bien.BIEN;
+
 import java.awt.*;
 
 public class LeftMenuPanel extends JPanel {
@@ -18,7 +21,7 @@ public class LeftMenuPanel extends JPanel {
     }
 
     private void createUI() {
-    	ImageIcon logoIcon = new ImageIcon(getClass().getResource("/Resource/main/logo.png"));
+    	ImageIcon logoIcon = new ImageIcon(BIEN.LOGO_QUAN.getImage());
     	Image scaledImage = logoIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
     	JLabel logoLabel = new JLabel(new ImageIcon(scaledImage), SwingConstants.CENTER);
     	logoLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 30, 0));
@@ -28,14 +31,13 @@ public class LeftMenuPanel extends JPanel {
         Font textFont = new Font("Arial", Font.PLAIN, 16);
 
         String[][] menuItems = {
-                {"🏘️", "Bảng Điều Khiển"},
+//                {"🏘️", "Bảng Điều Khiển"},
                 {"📝", "Đơn Hàng Mới"},
                 {"🛒", "Quản Lý Đơn"},
                 {"☕", "Sản Phẩm"},
                 {"👥", "Khách Hàng"},
                 {"👨‍💼", "Nhân Viên"},
                 {"📊", "Thống Kê"},
-                {"⚙️", "Cài Đặt"}
         };
 
         for (String[] item : menuItems) {
