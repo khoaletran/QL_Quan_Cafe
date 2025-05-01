@@ -55,7 +55,7 @@ public class NhanVien_DAO {
             Connection con = ConnectDB.getConnection();
 
             // SQL câu lệnh insert
-            String sql = "INSERT INTO NHANVIEN (TENNV, DIACHI, NGAYVAOLAM, GIOITINH, SDT, MATKHAU) "
+            String sql = "INSERT INTO NHANVIEN (TENNV, DIACHI, NGAYVAOLAM, GIOITINH, SDT, MATKHAU, QUANLY) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             // Tạo Statement và truyền tham số vào câu lệnh
@@ -66,7 +66,7 @@ public class NhanVien_DAO {
             ps.setBoolean(4, nv.isGioiTinh());
             ps.setString(5, nv.getSdt());
             ps.setString(6, nv.getMatKhau());
-            ps.setBoolean(4, nv.isGioiTinh());
+            
             ps.setBoolean(7, nv.isQuanly());
 
             // Thực hiện câu lệnh insert

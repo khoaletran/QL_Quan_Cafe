@@ -316,9 +316,9 @@ public class NhanVienPanel extends JPanel {
             boolean gt = radNu.isSelected();
             LocalDate nvl = LocalDate.parse(ngay, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             boolean ql = chkQuanLy.isSelected();
-
-
+            
             NhanVien nv = new NhanVien(ten, diaChi, nvl, gt, sdt, matKhau, ql);
+            
             boolean ok = new NhanVien_DAO().themNhanVien(nv);
             if (ok) {
                 JOptionPane.showMessageDialog(this, "Đã thêm nhân viên!");
