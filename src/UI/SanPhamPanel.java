@@ -11,7 +11,9 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -25,6 +27,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -33,6 +37,7 @@ import javax.swing.table.TableColumn;
 
 import ConnectDB.ConnectDB;
 import Dao.HangHoa_DAO;
+import Dao.KhachHang_DAO;
 import Dao.LoaiHangHoa_DAO;
 import Model.HangHoa;
 import Model.LoaiHangHoa;
@@ -48,6 +53,7 @@ public class SanPhamPanel extends JPanel {
 	private LoaiHangHoa_DAO loaiHangHoaDAO;
 	private ArrayList<LoaiHangHoa> dsLoaiHH;
 	private JButton btnXoaTrang;
+	private List<HangHoa> dsHH;
 	private JTextField txtHinhAnhPath;
 
 	public SanPhamPanel() {
@@ -247,12 +253,9 @@ public class SanPhamPanel extends JPanel {
 		JLabel lblTimKiem = new JLabel("Tìm kiếm:");
 		lblTimKiem.setFont(formFont);
 		searchPanel.add(lblTimKiem);
-		txtTimKiem = new JTextField(8); // Giảm từ 10 xuống 8 cột
+		txtTimKiem = new JTextField(15); // Giảm từ 10 xuống 8 cột
 		txtTimKiem.setFont(formFont);
 		searchPanel.add(txtTimKiem);
-		btnTimKiem = new JButton("Tìm kiếm");
-		btnTimKiem.setFont(formFont);
-		searchPanel.add(btnTimKiem);
 
 		// Panel nút
 		JPanel buttonPanel = new JPanel(new FlowLayout());
@@ -281,13 +284,23 @@ public class SanPhamPanel extends JPanel {
 		btnThem.addActionListener(e -> themHangHoa());
 		btnXoa.addActionListener(e -> xoaHangHoa());
 		btnSua.addActionListener(e -> suaHangHoa());
-		btnTimKiem.addActionListener(e -> timKiemHangHoa());
 		btnXoaTrang.addActionListener(e -> clearForm());
+		txtTimKiem.getDocument().addDocumentListener(timKiemDong());
 	}
 
 	private void loadData() {
 		tableModel.setRowCount(0);
-		ArrayList<HangHoa> dsHH = hangHoaDAO.getAllHangHoaForSanPhamPanel();
+		dsHH = hangHoaDAO.getAllHangHoaForSanPhamPanel();
+		for (HangHoa hh : dsHH) {
+			ImageIcon imageIcon = createImageIcon(hh.getHinhAnh(), 150, 100);
+			tableModel
+					.addRow(new Object[] { hh.getMaHH(), hh.getTenHH(), imageIcon != null ? imageIcon : hh.getHinhAnh(),
+							hh.getGiaSP(), hh.getLoaiHangHoa().getTenLoaiHang() });
+		}
+	}
+	
+	private void reloadData() {
+		tableModel.setRowCount(0);
 		for (HangHoa hh : dsHH) {
 			ImageIcon imageIcon = createImageIcon(hh.getHinhAnh(), 150, 100);
 			tableModel
@@ -403,25 +416,51 @@ public class SanPhamPanel extends JPanel {
 		}
 	}
 
-	private void timKiemHangHoa() {
-	    String keyword = txtTimKiem.getText().trim();
-	    tableModel.setRowCount(0);
-	    ArrayList<HangHoa> dsHH = hangHoaDAO.getAllHangHoaForSanPhamPanel();
-	    for (HangHoa hh : dsHH) {
-	        if (hh.getMaHH().toLowerCase().contains(keyword.toLowerCase())
-	                || hh.getTenHH().toLowerCase().contains(keyword.toLowerCase())
-	                || hh.getLoaiHangHoa().getTenLoaiHang().toLowerCase().contains(keyword.toLowerCase())) {
-	            ImageIcon imageIcon = createImageIcon(hh.getHinhAnh(), 80, 80);
-	            tableModel.addRow(new Object[] { 
-	                hh.getMaHH(), 
-	                hh.getTenHH(), 
-	                imageIcon != null ? imageIcon : hh.getHinhAnh(),
-	                hh.getGiaSP(), 
-	                hh.getLoaiHangHoa().getTenLoaiHang()
-	            });
-	        }
-	    }
-	}
+//	private void timKiemHangHoa() {
+//	    String keyword = txtTimKiem.getText().trim();
+//	    tableModel.setRowCount(0);
+//	    ArrayList<HangHoa> dsHH = hangHoaDAO.getAllHangHoaForSanPhamPanel();
+//	    for (HangHoa hh : dsHH) {
+//	        if (hh.getMaHH().toLowerCase().contains(keyword.toLowerCase())
+//	                || hh.getTenHH().toLowerCase().contains(keyword.toLowerCase())
+//	                || hh.getLoaiHangHoa().getTenLoaiHang().toLowerCase().contains(keyword.toLowerCase())) {
+//	            ImageIcon imageIcon = createImageIcon(hh.getHinhAnh(), 80, 80);
+//	            tableModel.addRow(new Object[] { 
+//	                hh.getMaHH(), 
+//	                hh.getTenHH(), 
+//	                imageIcon != null ? imageIcon : hh.getHinhAnh(),
+//	                hh.getGiaSP(), 
+//	                hh.getLoaiHangHoa().getTenLoaiHang()
+//	            });
+//	        }
+//	    }
+//	}
+	
+    private DocumentListener timKiemDong() {
+        return new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+				thucHienTimKiem();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+				thucHienTimKiem();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            	thucHienTimKiem();
+            }
+
+            private void thucHienTimKiem() {
+            	String tuKhoa = txtTimKiem.getText().trim();
+				dsHH = hangHoaDAO.timKiemHangHoa(tuKhoa);
+				reloadData();
+            }
+        };
+    }
+    
 
 
 	private void clearForm() {

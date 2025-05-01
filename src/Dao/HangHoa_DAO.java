@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import ConnectDB.ConnectDB;
 import Model.HangHoa;
@@ -195,40 +196,85 @@ public class HangHoa_DAO {
 	    return n > 0;
 	}
 	
-	public HangHoa timHangHoaTheoTen(String tenHH) throws SQLException {
-		ConnectDB.getInstance();
-	    Connection con = ConnectDB.getConnection();
-        String sql = "SELECT HH.MAHH, HH.MALH, HH.TENHH, HH.HINHANH, HH.GIASP, LH.TENLH, LH.MOTA " +
-                    "FROM HANGHOA HH JOIN LOAIHANGHOA LH ON HH.MALH = LH.MALH " +
-                    "WHERE HH.TENHH = ?";
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        HangHoa hh = null;
+	public static HangHoa timHangHoaTheoTen(String ten){
 
-        try {
-            stmt = con.prepareStatement(sql);
-            stmt.setString(1, tenHH);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                LoaiHangHoa loaiHangHoa = new LoaiHangHoa(
-                    rs.getString("MALH"),
-                    rs.getString("TENLH"),
-                    rs.getString("MOTA")
-                );
-                hh = new HangHoa(
-                    rs.getString("MAHH"),
-                    rs.getString("TENHH"),
-                    rs.getString("HINHANH"),
-                    rs.getDouble("GIASP"),
-                    loaiHangHoa
-                );
-            }
-        } finally {
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
-        }
-        return hh;
-    }
+			HangHoa hh = null;
+		    try {
+		        ConnectDB.getInstance().connect();
+		        Connection con = ConnectDB.getConnection();
 
+		        String sql = "SELECT HH.MAHH, HH.MALH, HH.TENHH, HH.HINHANH, HH.GIASP, " +
+		                     "LH.TENLH, LH.MOTA " +
+		                     "FROM HANGHOA HH JOIN LOAIHANGHOA LH ON HH.MALH = LH.MALH " +
+		                     "WHERE HH.TENHH = ?";
+
+		        PreparedStatement ps = con.prepareStatement(sql);
+		        ps.setString(1,ten);
+
+		        ResultSet rs = ps.executeQuery();
+
+		        while (rs.next()) {
+		            String maHH = rs.getString("MAHH");
+		            String tenHH = rs.getString("TENHH");
+		            String hinhAnh = rs.getString("HINHANH");
+		            double giaSP = rs.getDouble("GIASP");
+
+		            String maLH = rs.getString("MALH");
+		            String tenLH = rs.getString("TENLH");
+		            String moTa = rs.getString("MOTA");
+
+		            LoaiHangHoa loai = new LoaiHangHoa(maLH, tenLH, moTa);
+		            hh = new HangHoa(maHH, tenHH, hinhAnh, giaSP, loai);
+		        }
+
+		    } catch (Exception e) {
+		        e.printStackTrace(); // Có thể thay bằng log nếu cần
+		    }
+
+		    return hh;
+		}
+
+	
+	
+	public List<HangHoa> timKiemHangHoa(String tuKhoa) {
+	    List<HangHoa> list = new ArrayList<>();
+
+	    try {
+	        ConnectDB.getInstance().connect();
+	        Connection con = ConnectDB.getConnection();
+
+	        String sql = "SELECT HH.MAHH, HH.MALH, HH.TENHH, HH.HINHANH, HH.GIASP, " +
+	                     "LH.TENLH, LH.MOTA " +
+	                     "FROM HANGHOA HH JOIN LOAIHANGHOA LH ON HH.MALH = LH.MALH " +
+	                     "WHERE HH.TENHH LIKE ?";
+
+	        PreparedStatement ps = con.prepareStatement(sql);
+	        ps.setString(1, "%" + tuKhoa + "%");
+
+	        ResultSet rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            String maHH = rs.getString("MAHH");
+	            String tenHH = rs.getString("TENHH");
+	            String hinhAnh = rs.getString("HINHANH");
+	            double giaSP = rs.getDouble("GIASP");
+
+	            String maLH = rs.getString("MALH");
+	            String tenLH = rs.getString("TENLH");
+	            String moTa = rs.getString("MOTA");
+
+	            LoaiHangHoa loai = new LoaiHangHoa(maLH, tenLH, moTa);
+	            HangHoa hh = new HangHoa(maHH, tenHH, hinhAnh, giaSP, loai);
+	            list.add(hh);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Có thể thay bằng log nếu cần
+	    }
+
+	    return list;
+	}
+
+	
 
 }

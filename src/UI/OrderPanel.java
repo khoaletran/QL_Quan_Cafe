@@ -203,14 +203,7 @@ public class OrderPanel extends JPanel {
             int soLuong = (Integer) orderTableModel.getValueAt(i, 1);
 
             HangHoa hh = null;
-            try {
-                hh = hangHoaDAO.timHangHoaTheoTen(tenHH);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn hàng hóa: " + e.getMessage(), 
-                                            "Lỗi CSDL", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+            hh = hangHoaDAO.timHangHoaTheoTen(tenHH);
             if (hh == null) {
                 JOptionPane.showMessageDialog(this, "Hàng hóa '" + tenHH + "' không tồn tại trong CSDL.", 
                                             "Lỗi", JOptionPane.ERROR_MESSAGE);
