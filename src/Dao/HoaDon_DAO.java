@@ -2,15 +2,64 @@ package Dao;
 
 import ConnectDB.ConnectDB;
 import Model.HoaDonBanHang;
+import Model.KhachHang;
+import Model.MaGiamGia;
 import Model.ChiTietHoaDon;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.sql.Statement;
+import java.time.LocalDate;
 
 public class HoaDon_DAO {
+	
+	public ArrayList<HoaDonBanHang> getAllHoaDon() {
+        ArrayList<HoaDonBanHang> dsHoaDon = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+            ConnectDB.getInstance().connect();
+            con = ConnectDB.getConnection();
+            if (con == null) {
+                System.err.println("Không thể kết nối đến cơ sở dữ liệu");
+                return dsHoaDon;
+            }
+            String sql = "select MAHDBH,MANV,MAKH,NGAYHDBH,TONGTIEN,DIEMTL,GIAMGIA,HINHTHUCTHANHTOAN FROM HOADONBANHANG";
+            stmt = con.prepareStatement(sql);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+            	String maHDBH = rs.getString("MAHDBH");
+            	String maNV = rs.getString("MANV");
+            	String maKH = rs.getString("MAKH");
+                LocalDate ngayLap = rs.getDate("NGAYHDBH").toLocalDate();
+                double tongTien = rs.getDouble("TONGTIEN");
+                int diemTL = rs.getInt("DIEMTL");
+                int giamGia = rs.getInt("GIAMGIA");
+                boolean hinhThucTT = rs.getBoolean("HINHTHUCTHANHTOAN");
+                HoaDonBanHang hoaDon = new HoaDonBanHang(maHDBH, ngayLap, diemTL, hinhThucTT, maKH, maNV, giamGia, tongTien);
+                dsHoaDon.add(hoaDon);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi truy vấn hóa đơn: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return dsHoaDon;
+    }
 	
     public void saveOrderWithDetails(HoaDonBanHang hoaDon, String maNhanVien) throws SQLException {
         // Kiểm tra tham số đầu vào

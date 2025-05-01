@@ -121,6 +121,8 @@ public class CoffeeShopView extends JFrame {
             mainPanel.repaint();
         });
         
+       
+        
      // Thêm sự kiện cho nút "Thống Kê"
         leftMenu.setThongKeButtonListener(() -> {
             mainPanel.remove(centerPanel);
@@ -138,7 +140,17 @@ public class CoffeeShopView extends JFrame {
             mainPanel.revalidate();
             mainPanel.repaint();
         });
+        leftMenu.setQuanLyDonButtonListener(()->{
+        	mainPanel.remove(centerPanel);
+            mainPanel.remove(rightPanel); // Ẩn RightPanel
+            centerPanel = new QuanLyDonPanel();
+            mainPanel.add(centerPanel, BorderLayout.CENTER);
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        });
     }
+    
+    
 
     public static void connectDB() {
         try {

@@ -16,8 +16,26 @@ public class HoaDonBanHang {
     private boolean hinhThucThanhToan;
     private ArrayList<ChiTietHoaDon> chiTietHoaDonList;
     private double tongGiamGia;
+    private String maKHGia; //dùng chứa maKH cho QuanLyDonPanel
+    private String maNVGia; //dùng chứa maNV cho QuanLyDonPanel
+    private int phanTramGiamGia; //dùng chứa phần trăm gg cho QuanLyDonPanel
+    private double tongtienGia; //dùng chứa phần tổng tiền cho QuanLyDonPanel
 
-    // Constructor đầy đủ lấy dữ liệu từ SQL
+    
+  //const để lấy dl từ bảng HoaDonBanHang
+	public HoaDonBanHang(String maHDBH, LocalDate ngayLapHDBH, int diemTL, boolean hinhThucThanhToan, String maKHGia,
+			String maNVGia, int phanTramGiamGia,double tongtienGia) {
+		this.maHDBH = maHDBH;
+		this.ngayLapHDBH = ngayLapHDBH;
+		this.diemTL = diemTL;
+		this.hinhThucThanhToan = hinhThucThanhToan;
+		this.maKHGia = maKHGia;
+		this.maNVGia = maNVGia;
+		this.phanTramGiamGia = phanTramGiamGia;
+		this.tongtienGia = tongtienGia;
+	}
+
+	// Constructor đầy đủ lấy dữ liệu từ SQL
     public HoaDonBanHang(String maHDBH, LocalDate ngayLapHDBH, int diemTL, ArrayList<ChiTietHoaDon> chiTietHoaDonList) {
         setMaHDBH(maHDBH);
         setNgayLapHDBH(ngayLapHDBH);
@@ -164,6 +182,42 @@ public class HoaDonBanHang {
         }
         this.tongGiamGia = tongGiamGia;
     }
+    
+	public String getMaKHGia() {
+		return maKHGia;
+	}
+
+	public void setMaKHGia(String maKHGia) {
+		this.maKHGia = maKHGia;
+	}
+
+	public String getMaNVGia() {
+		return maNVGia;
+	}
+
+	public void setMaNVGia(String maNVGia) {
+		this.maNVGia = maNVGia;
+	}
+
+	public int getPhanTramGiamGia() {
+		return phanTramGiamGia;
+	}
+
+	public void setPhanTramGiamGia(int phanTramGiamGia) {
+		this.phanTramGiamGia = phanTramGiamGia;
+	}
+
+	public double getTongtienGia() {
+		return tongtienGia;
+	}
+
+	public void setTongtienGia(double tongtienGia) {
+		this.tongtienGia = tongtienGia;
+	}
+
+	public int getDiemTL() {
+		return diemTL;
+	}
 
    
 
