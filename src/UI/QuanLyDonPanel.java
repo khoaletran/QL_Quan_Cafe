@@ -9,16 +9,19 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -27,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -69,13 +73,13 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     private JLabel lblMaKH;
     private JLabel lblHinhThucThanhToan;
     private JLabel lblMaGiamGia;
-	private JPanel productPanel;
-	private JLabel lBl_TongTien;
-	private JLabel lBl_chietKhau;
-	private JLabel lBl_thanhTien;
-	private JLabel lBl_diemTL;
-	private double tongTienBanDauValue;
-	private double thanhTienValue;
+    private JPanel productPanel;
+    private JLabel lBl_TongTien;
+    private JLabel lBl_chietKhau;
+    private JLabel lBl_thanhTien;
+    private JLabel lBl_diemTL;
+    private double tongTienBanDauValue;
+    private double thanhTienValue;
 
     public QuanLyDonPanel() {
         try {
@@ -105,7 +109,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         tablePanel.add(lblTitle, BorderLayout.NORTH);
 
         // Bảng hiển thị hóa đơn
-        String[] columns = { "Mã Hóa Đơn", "Mã NV", "Mã KH", "Ngày Lập", "Giảm Giá(%)", "Hình Thức Thanh Toán" };
+        String[] columns = { "Mã Hóa Đơn", "Mã NV", "SDT Khách Hàng", "Ngày Lập", "Tổng Tiền", "Thanh Toán" };
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -120,7 +124,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Arial", Font.BOLD, 14));
         
-        //căn giữa tên collumn
+        // Căn giữa tên cột
         DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
         headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         
@@ -135,11 +139,10 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         // Set chiều rộng cho từng cột
         table.getColumnModel().getColumn(0).setPreferredWidth(100); // Mã Hóa Đơn
         table.getColumnModel().getColumn(1).setPreferredWidth(80);  // Mã NV
-        table.getColumnModel().getColumn(2).setPreferredWidth(80);  // Mã KH
+        table.getColumnModel().getColumn(2).setPreferredWidth(120); // SDT Khách Hàng
         table.getColumnModel().getColumn(3).setPreferredWidth(100); // Ngày Lập
-        table.getColumnModel().getColumn(4).setPreferredWidth(80);  // Giảm Giá
-        table.getColumnModel().getColumn(5).setPreferredWidth(120); // Hình Thức Thanh Toán
-        
+        table.getColumnModel().getColumn(4).setPreferredWidth(100); // Tổng Tiền
+        table.getColumnModel().getColumn(5).setPreferredWidth(120); // Thanh Toán
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -260,28 +263,28 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
 
         sumGbc.gridx = 0;
         sumGbc.gridy = 0;
-         lBl_TongTien = new JLabel("Tổng tiền: "+tongTienBanDau);
-         lBl_TongTien.setFont(new Font("Arial", Font.BOLD, 14));
-         lBl_TongTien.setHorizontalAlignment(SwingConstants.RIGHT);
+        lBl_TongTien = new JLabel("Tổng tiền: "+tongTienBanDau);
+        lBl_TongTien.setFont(new Font("Arial", Font.BOLD, 14));
+        lBl_TongTien.setHorizontalAlignment(SwingConstants.RIGHT);
         summaryPanel.add(lBl_TongTien, sumGbc);
 
         sumGbc.gridy = 1;
-         lBl_chietKhau = new JLabel("Chiết khấu: "+chietKhau+"("+phanTramGiamGia+")");
-         lBl_chietKhau.setFont(new Font("Arial", Font.BOLD, 14));
-         lBl_chietKhau.setHorizontalAlignment(SwingConstants.RIGHT);
+        lBl_chietKhau = new JLabel("Chiết khấu: "+chietKhau+"("+phanTramGiamGia+")");
+        lBl_chietKhau.setFont(new Font("Arial", Font.BOLD, 14));
+        lBl_chietKhau.setHorizontalAlignment(SwingConstants.RIGHT);
         summaryPanel.add(lBl_chietKhau, sumGbc);
 
         sumGbc.gridy = 2;
-         lBl_thanhTien = new JLabel("Thành tiền: "+thanhTien);
-         lBl_thanhTien.setFont(new Font("Arial", Font.BOLD, 14));
-         lBl_thanhTien.setForeground(new Color(204, 0, 0));
-         lBl_thanhTien.setHorizontalAlignment(SwingConstants.RIGHT);
+        lBl_thanhTien = new JLabel("Thành tiền: "+thanhTien);
+        lBl_thanhTien.setFont(new Font("Arial", Font.BOLD, 14));
+        lBl_thanhTien.setForeground(new Color(204, 0, 0));
+        lBl_thanhTien.setHorizontalAlignment(SwingConstants.RIGHT);
         summaryPanel.add(lBl_thanhTien, sumGbc);
 
         sumGbc.gridy = 3;
-         lBl_diemTL = new JLabel("Điểm tích lũy: "+diemTL);
-         lBl_diemTL.setFont(new Font("Arial", Font.PLAIN, 14));
-         lBl_diemTL.setHorizontalAlignment(SwingConstants.RIGHT);
+        lBl_diemTL = new JLabel("Điểm tích lũy: "+diemTL);
+        lBl_diemTL.setFont(new Font("Arial", Font.PLAIN, 14));
+        lBl_diemTL.setHorizontalAlignment(SwingConstants.RIGHT);
         summaryPanel.add(lBl_diemTL, sumGbc);
 
         sumGbc.gridy = 4;
@@ -331,6 +334,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         searchGbc.weightx = 0;
         JButton btnInHoaDon = new JButton("In Hóa Đơn");
         btnInHoaDon.setFont(new Font("Arial", Font.PLAIN, 14));
+        btnInHoaDon.setToolTipText("Ctrl + P để in");
         searchPanel.add(btnInHoaDon, searchGbc);
         btnInHoaDon.addActionListener(e -> printHoaDon());
 
@@ -338,6 +342,16 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
 
         inputPanel.add(invoicePanel, BorderLayout.CENTER);
         add(inputPanel, BorderLayout.EAST);
+
+        // Thêm Key Binding cho Ctrl + P
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+            KeyStroke.getKeyStroke("control P"), "printInvoice");
+        getActionMap().put("printInvoice", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                printHoaDon();
+            }
+        });
     }
 
     // Hàm hỗ trợ
@@ -375,13 +389,24 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     public void DocDuLieuDatabaseVaoTable() {
         List<HoaDonBanHang> list = hoaDon_dao.getAllHoaDon();
         tableModel.setRowCount(0);
+        DecimalFormat df = new DecimalFormat("#,##0đ");
         for (HoaDonBanHang hd : list) {
+            String sdtKH = "---";
+            KhachHang kh = khachHang_dao.getKhachHangTheoMaKH(hd.getMaKHGia());
+            if (kh != null && !BIEN.SDTMAU.equals(kh.getSoDienThoai())) {
+                sdtKH = kh.getSoDienThoai();
+            }
+
+            double thanhTienValue = hd.getTongtienGia();
+            double phanTramGiam = hd.getPhanTramGiamGia() / 100.0;
+            double tongTienBanDauValue = thanhTienValue / (1 - phanTramGiam);
+
             tableModel.addRow(new Object[] {
                 hd.getMaHDBH(),
                 hd.getMaNVGia(),
-                hd.getMaKHGia(),
+                sdtKH,
                 hd.getNgayLapHDBH(),
-                hd.getPhanTramGiamGia(),
+                df.format(tongTienBanDauValue),
                 hd.isHinhThucThanhToan() ? "Chuyển khoản" : "Tiền mặt"
             });  
         }
@@ -471,13 +496,14 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             
             maHD = tableModel.getValueAt(selectedRow, 0).toString();
             maNV = tableModel.getValueAt(selectedRow, 1).toString();
-            maKH = tableModel.getValueAt(selectedRow, 2).toString();
+            sdtKH = tableModel.getValueAt(selectedRow, 2).toString();
             ngayLap = tableModel.getValueAt(selectedRow, 3).toString();
             hinhThucThanhToan = tableModel.getValueAt(selectedRow, 5).toString();
             
             HoaDonBanHang hd = hoaDon_dao.getHoaDonTheoMa(maHD);
-            KhachHang kh = khachHang_dao.getKhachHangTheoMaKH(maKH);
-            if (hd != null & kh != null) {
+            if (hd != null) {
+                maKH = hd.getMaKHGia();
+                KhachHang kh = khachHang_dao.getKhachHangTheoMaKH(maKH);
                 DecimalFormat df = new DecimalFormat("#,##0đ");
                 double thanhTienValue = hd.getTongtienGia();
                 double phanTramGiam = hd.getPhanTramGiamGia() / 100.0;
@@ -487,17 +513,21 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
                 tongTienBanDau = df.format(tongTienBanDauValue);
                 phanTramGiamGia = String.valueOf(hd.getPhanTramGiamGia());
                 diemTL = String.valueOf(hd.getdiemTL());
-                tenKH = kh.getTenKH();
-                sdtKH = kh.getSoDienThoai();
+                tenKH = kh != null ? kh.getTenKH() : "Khách lẻ";
+                sdtKH = kh != null && !BIEN.SDTMAU.equals(kh.getSoDienThoai()) ? kh.getSoDienThoai() : "---";
 
                 this.tongTienBanDauValue = tongTienBanDauValue;
                 this.thanhTienValue = thanhTienValue;
             } else {
+                maKH = "---";
+                tenKH = "---";
+                sdtKH = "---";
                 thanhTien = "0đ";
                 tongTienBanDau = "0đ";
                 phanTramGiamGia = "0";
                 this.tongTienBanDauValue = 0;
                 this.thanhTienValue = 0;
+                diemTL = "0";
             }
 
             loadHoaDon();
@@ -527,6 +557,10 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             double phanTramGiam = hd.getPhanTramGiamGia() / 100.0;
             tongTienBanDauValue = thanhTienValue / (1 - phanTramGiam);
 
+            KhachHang kh = khachHang_dao.getKhachHangTheoMaKH(maKH);
+            tenKH = kh != null ? kh.getTenKH() : "Khách lẻ";
+            sdtKH = kh != null && !BIEN.SDTMAU.equals(kh.getSoDienThoai()) ? kh.getSoDienThoai() : "---";
+
             thanhTien = df.format(thanhTienValue);
             tongTienBanDau = df.format(tongTienBanDauValue);
             phanTramGiamGia = String.valueOf(hd.getPhanTramGiamGia());
@@ -535,7 +569,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             loadHoaDon();
             updateProductPanel(maHD);
 
-            //chọn dòng trong table
+            // Chọn dòng trong table
             for (int i = 0; i < tableModel.getRowCount(); i++) {
                 if (tableModel.getValueAt(i, 0).equals(maHD)) {
                     table.setRowSelectionInterval(i, i);
@@ -556,6 +590,8 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             tongTienBanDau = "0đ";
             phanTramGiamGia = "0";
             diemTL = "0";
+            tenKH = "---";
+            sdtKH = "---";
             tongTienBanDauValue = 0;
             thanhTienValue = 0;
 
@@ -628,10 +664,10 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         infoPanel.add(createInfoLabel("Ngày lập: " + hoaDon.getNgayLapHDBH(), infoFont));
         infoPanel.add(createInfoLabel("Nhân viên: " + hoaDon.getMaNVGia(), infoFont));
         
-        String khachHangInfo = hoaDon.getKhachHang() != null ? 
-            hoaDon.getKhachHang().getTenKH() : "Khách lẻ";
-        if (hoaDon.getKhachHang() != null && !BIEN.SDTMAU.equals(hoaDon.getKhachHang().getSoDienThoai())) {
-            khachHangInfo += " (SDT: " + hoaDon.getKhachHang().getSoDienThoai() + ")";
+        
+        String khachHangInfo = tenKH;
+        if (!"---".equals(sdtKH)) {
+            khachHangInfo += " (SDT: " + sdtKH + ")";
         }
         infoPanel.add(createInfoLabel("Khách hàng: " + khachHangInfo, infoFont));
         
@@ -764,21 +800,17 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     
     @Override
     public void mousePressed(MouseEvent e) {
-        
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-       
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-       
     }
 }
