@@ -187,6 +187,103 @@ public class HoaDon_DAO {
         return hoaDon;
     }
     
+    public static List<HoaDonBanHang> getDSHoaDonTheoMa(String maHDBH) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        HoaDonBanHang hoaDon = null;
+        
+        List<HoaDonBanHang> list = new ArrayList<HoaDonBanHang>();
+        try {
+            ConnectDB.getInstance().connect();
+            conn = ConnectDB.getConnection();
+            if (conn == null) {
+                System.err.println("Không thể kết nối đến cơ sở dữ liệu");
+                return null;
+            }
+
+            String sql = "SELECT MAHDBH, MANV, MAKH, NGAYHDBH, TONGTIEN, DIEMTL, GIAMGIA, HINHTHUCTHANHTOAN " +
+                         "FROM HOADONBANHANG WHERE MAHDBH LIKE ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, "%" + maHDBH + "%");
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String maHD = rs.getString("MAHDBH");
+                String maNV = rs.getString("MANV");
+                String maKH = rs.getString("MAKH");
+                LocalDate ngayLap = rs.getDate("NGAYHDBH").toLocalDate();
+                double tongTien = rs.getDouble("TONGTIEN");
+                int diemTL = rs.getInt("DIEMTL");
+                int giamGia = rs.getInt("GIAMGIA");
+                boolean hinhThucTT = rs.getBoolean("HINHTHUCTHANHTOAN");
+
+                hoaDon = new HoaDonBanHang(maHD, ngayLap, diemTL, hinhThucTT, maKH, maNV, giamGia, tongTien);
+                list.add(hoaDon);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi truy vấn hóa đơn theo mã: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
+    
+    public static List<HoaDonBanHang> getDSHoaDonTheoSDT(String sdt) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<HoaDonBanHang> list = new ArrayList<>();
+
+        try {
+            ConnectDB.getInstance().connect();
+            conn = ConnectDB.getConnection();
+            if (conn == null) {
+                System.err.println("Không thể kết nối đến cơ sở dữ liệu");
+                return null;
+            }
+
+            String sql = "SELECT hd.MAHDBH, hd.MANV, hd.MAKH, hd.NGAYHDBH, hd.TONGTIEN, hd.DIEMTL, hd.GIAMGIA, hd.HINHTHUCTHANHTOAN " +
+                         "FROM HOADONBANHANG hd JOIN KHACHHANG kh ON hd.MAKH = kh.MAKH " +
+                         "WHERE kh.SDT LIKE ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, "%" + sdt + "%");
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String maHD = rs.getString("MAHDBH");
+                String maNV = rs.getString("MANV");
+                String maKH = rs.getString("MAKH");
+                LocalDate ngayLap = rs.getDate("NGAYHDBH").toLocalDate();
+                double tongTien = rs.getDouble("TONGTIEN");
+                int diemTL = rs.getInt("DIEMTL");
+                int giamGia = rs.getInt("GIAMGIA");
+                boolean hinhThucTT = rs.getBoolean("HINHTHUCTHANHTOAN");
+
+                HoaDonBanHang hoaDon = new HoaDonBanHang(maHD, ngayLap, diemTL, hinhThucTT, maKH, maNV, giamGia, tongTien);
+                list.add(hoaDon);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi truy vấn hóa đơn theo SDT: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
+
+    
     public List<ChiTietHoaDon> getChiTietSanPhamTheoMaHD(String maHDBH) {
         List<ChiTietHoaDon> chiTietList = new ArrayList<>();
         Connection conn = null;

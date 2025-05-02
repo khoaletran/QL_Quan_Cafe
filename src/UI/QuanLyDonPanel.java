@@ -38,6 +38,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -56,7 +58,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     private DefaultTableModel tableModel;
     private HoaDon_DAO hoaDon_dao;
     private KhachHang_DAO khachHang_dao;
-    private JTextField txtMaHD;
+    private JTextField txtMaHD,txtSDT;
     private String maHD = "---";
     private String ngayLap = "---";
     private String maNV = "---";
@@ -94,6 +96,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     private JTextField jTf_TongTienDen;
     private JButton jBt_Loc;
     private JButton jBt_Reset;
+    private List<HoaDonBanHang> list;
 
     public QuanLyDonPanel() {
         try {
@@ -425,7 +428,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         JPanel jPn_TimKiem = new JPanel(new GridBagLayout());
         jPn_TimKiem.setBackground(Color.WHITE);
         jPn_TimKiem.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.GRAY), "Chức năng chính",
+            BorderFactory.createLineBorder(Color.GRAY), "Chức năng tìm kiếm",
             0, 0, new Font("Arial", Font.BOLD, 14)));
         GridBagConstraints searchGbc = new GridBagConstraints();
         searchGbc.insets = new Insets(5, 5, 5, 5);
@@ -444,19 +447,27 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         txtMaHD = new JTextField(15);
         txtMaHD.setFont(new Font("Arial", Font.PLAIN, 14));
         jPn_TimKiem.add(txtMaHD, searchGbc);
-
-        searchGbc.gridx = 2;
-        searchGbc.gridy = 0;
+        txtMaHD.getDocument().addDocumentListener(timKiemDongMaHD());
+        
+        searchGbc.gridx = 0;
+        searchGbc.gridy = 1;
         searchGbc.weightx = 0;
-        JButton jBt_Tim = new JButton("Tìm");
-        jBt_Tim.setFont(new Font("Arial", Font.PLAIN, 14));
-        jPn_TimKiem.add(jBt_Tim, searchGbc);
-        jBt_Tim.addActionListener(e -> timHoaDon());
+        JLabel jLB_timsdt = new JLabel("Nhập mã SDT:");
+        jLB_timsdt.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_TimKiem.add(jLB_timsdt, searchGbc);
 
-        searchGbc.gridx = 3;
-        searchGbc.gridy = 0;
+        searchGbc.gridx = 1;
+        searchGbc.gridy = 1;
+        searchGbc.weightx = 1.0;
+        txtSDT = new JTextField(15);
+        txtSDT.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_TimKiem.add(txtSDT, searchGbc);
+        txtSDT.getDocument().addDocumentListener(timKiemDongSDT());
+
+        searchGbc.gridx = 1;
+        searchGbc.gridy = 2;
         searchGbc.weightx = 0;
-        JButton jBt_InHoaDon = new JButton("In Hóa Đơn");
+        JButton jBt_InHoaDon = new JButton("In Hóa Đơn ( Ctrl + P )");
         jBt_InHoaDon.setFont(new Font("Arial", Font.PLAIN, 14));
         jBt_InHoaDon.setToolTipText("Ctrl + P để in");
         jPn_TimKiem.add(jBt_InHoaDon, searchGbc);
@@ -510,12 +521,12 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     }
 
     public void DocDuLieuDatabaseVaoTable() {
-        List<HoaDonBanHang> list = hoaDon_dao.getAllHoaDon();
+        list = hoaDon_dao.getAllHoaDon();
         tableModel.setRowCount(0);
         DecimalFormat df = new DecimalFormat("#,##0đ");
         for (HoaDonBanHang hd : list) {
             String sdtKH = "---";
-            KhachHang kh = khachHang_dao.getKhachHangTheoMaKH(hd.getMaKHGia());
+            KhachHang kh = KhachHang_DAO.getKhachHangTheoMaKH(hd.getMaKHGia());
             if (kh != null && !BIEN.SDTMAU.equals(kh.getSoDienThoai())) {
                 sdtKH = kh.getSoDienThoai();
             }
@@ -533,6 +544,89 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
                 hd.isHinhThucThanhToan() ? "Chuyển khoản" : "Tiền mặt"
             });
         }
+    }
+    
+    public void reload() {
+        tableModel.setRowCount(0);
+        DecimalFormat df = new DecimalFormat("#,##0đ");
+        for (HoaDonBanHang hd : list) {
+            String sdtKH = "---";
+            KhachHang kh = KhachHang_DAO.getKhachHangTheoMaKH(hd.getMaKHGia());
+            if (kh != null && !BIEN.SDTMAU.equals(kh.getSoDienThoai())) {
+                sdtKH = kh.getSoDienThoai();
+            }
+
+            double thanhTienValue = hd.getTongtienGia();
+            double phanTramGiam = hd.getPhanTramGiamGia() / 100.0;
+            double tongTienBanDauValue = thanhTienValue / (1 - phanTramGiam);
+
+            tableModel.addRow(new Object[] {
+                hd.getMaHDBH(),
+                hd.getMaNVGia(),
+                sdtKH,
+                hd.getNgayLapHDBH(),
+                df.format(tongTienBanDauValue),
+                hd.isHinhThucThanhToan() ? "Chuyển khoản" : "Tiền mặt"
+            });
+        }
+    }
+    
+    private DocumentListener timKiemDongMaHD() {
+        return new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                thucHienTimKiem();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                thucHienTimKiem();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                thucHienTimKiem();
+            }
+
+            private void thucHienTimKiem() {
+                String mahd = txtMaHD.getText().trim();
+                if (mahd.isEmpty()) {
+                	DocDuLieuDatabaseVaoTable();
+                } else {
+                    list = HoaDon_DAO.getDSHoaDonTheoMa(mahd);
+                }
+                reload();
+            }
+        };
+    }
+    
+    private DocumentListener timKiemDongSDT() {
+        return new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                thucHienTimKiem();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                thucHienTimKiem();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                thucHienTimKiem();
+            }
+
+            private void thucHienTimKiem() {
+                String sdt = txtSDT.getText().trim();
+                if (sdt.isEmpty()) {
+                	DocDuLieuDatabaseVaoTable();
+                } else {
+                    list = HoaDon_DAO.getDSHoaDonTheoSDT(sdt);
+                }
+                reload();
+            }
+        };
     }
 
     private void updateProductPanel(String maHDBH) {
