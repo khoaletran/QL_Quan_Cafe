@@ -187,7 +187,8 @@ public class SanPhamPanel extends JPanel {
 		JLabel lblMaHH = new JLabel("Mã HH:");
 		lblMaHH.setFont(formFont); // Áp dụng font
 		formPanel.add(lblMaHH, gbc);
-		txtMaHH = new JTextField(10); // Giảm từ 15 xuống 10 cột
+		txtMaHH = new JTextField(10); 
+		txtMaHH.setEditable(false);
 		txtMaHH.setFont(formFont); // Áp dụng font
 		gbc.gridx = 1;
 		formPanel.add(txtMaHH, gbc);
