@@ -164,6 +164,86 @@
 //}
 
 //test lần 3
+//package UI;
+//
+//import ConnectDB.ConnectDB;
+//import Dao.ThongKe_DAO;
+//import org.jfree.chart.ChartFactory;
+//import org.jfree.chart.ChartPanel;
+//import org.jfree.chart.JFreeChart;
+//import org.jfree.data.general.DefaultPieDataset;
+//
+//import javax.swing.*;
+//import java.awt.*;
+//import java.sql.Connection;
+//import java.util.Map;
+//
+//public class ThongKePanel extends JPanel {
+//
+//    public ThongKePanel() {
+//        setLayout(new BorderLayout());
+//        setBackground(Color.WHITE);
+//        initChart();
+//    }
+//
+//    private void initChart() {
+//        try {
+//            ConnectDB.getInstance().connect(); // Đảm bảo đã kết nối
+//            Connection conn = ConnectDB.getConnection();
+//
+//            if (conn == null) {
+//                add(new JLabel("⚠️ Không thể kết nối đến cơ sở dữ liệu"), BorderLayout.CENTER);
+//                return;
+//            }
+//
+//            Map<String, Integer> data = ThongKe_DAO.getSoLuongSanPhamBanRa(conn);
+//            if (data.isEmpty()) {
+//                add(new JLabel("🔍 Không có dữ liệu để thống kê"), BorderLayout.CENTER);
+//                return;
+//            }
+//
+//            // Tạo DefaultPieDataset cho biểu đồ
+//            DefaultPieDataset dataset = new DefaultPieDataset();            
+//
+//            for (Map.Entry<String, Integer> entry : data.entrySet()) {
+//                String label = entry.getKey() + " - " + entry.getValue();
+//                dataset.setValue(label, entry.getValue());
+//            }
+//
+//            // Tạo biểu đồ pie
+//            JFreeChart chart = ChartFactory.createPieChart(
+//                    "Tỉ lệ sản phẩm bán ra", dataset, true, true, false
+//            );
+//
+//            // Thêm biểu đồ vào panel
+//            ChartPanel chartPanel = new ChartPanel(chart);
+//            chartPanel.setPreferredSize(new Dimension(getWidth(), getHeight() - 100)); // Chừa không gian cho ô chú thích
+//            add(chartPanel, BorderLayout.CENTER);
+//
+//            // Tạo JPanel cho ô chú thích
+//            JPanel legendPanel = new JPanel();
+//            legendPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+//
+//            // Tạo JLabel cho chú thích
+//            JLabel legendLabel = new JLabel("Tên hàng - Số lượng bán được");
+//            legendLabel.setPreferredSize(new Dimension(200, 40));  // Kích thước ô vuông
+//            legendLabel.setBackground(Color.LIGHT_GRAY);           // Màu nền
+//            legendLabel.setOpaque(true);                            // Đảm bảo nền có màu
+//            legendLabel.setHorizontalAlignment(SwingConstants.CENTER);
+//            legendPanel.add(legendLabel);
+//
+//            // Thêm ô chú thích vào panel dưới biểu đồ
+//            add(legendPanel, BorderLayout.SOUTH);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            add(new JLabel("⚠️ Lỗi khi tải dữ liệu thống kê"), BorderLayout.CENTER);
+//        }
+//    }
+//}
+
+
+//test lan 4
 package UI;
 
 import ConnectDB.ConnectDB;
@@ -171,76 +251,140 @@ import Dao.ThongKe_DAO;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.util.Map;
 
 public class ThongKePanel extends JPanel {
+    private JPanel chartContainer;
+    private JComboBox<String> comboBoxNgay;
 
     public ThongKePanel() {
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
-        initChart();
-    }
+        JTabbedPane tabbedPane = new JTabbedPane();
 
-    private void initChart() {
+        // Tab thống kê theo ngày
+        JPanel panelNgay = new JPanel(new BorderLayout());
+        chartContainer = new JPanel(new BorderLayout());
+
+        comboBoxNgay = new JComboBox<>();
+        for (int i = 1; i <= 31; i++) {
+            comboBoxNgay.addItem(String.format("%02d", i));
+            // % để bắt đầu chuỗi định dạng,độ dài tối đa 2 chữ số, nếu số 1 chữ số thì thêm 0 dô cho đẹp, d là decimal
+        }
+        // gọi phương thức để xử lí
+        comboBoxNgay.addActionListener(e -> loadBieuDoTheoNgay());
+
+        JPanel topPanel = new JPanel();
+        topPanel.add(new JLabel("Chọn ngày:"));
+        topPanel.add(comboBoxNgay);
+
+        panelNgay.add(topPanel, BorderLayout.NORTH);
+        panelNgay.add(chartContainer, BorderLayout.CENTER);
+        tabbedPane.addTab("Theo ngày", panelNgay);
+
+        // Tab thống kê theo tháng
+        JPanel panelThang = new JPanel(new BorderLayout());
+        panelThang.add(createBieuDoTheoThang(), BorderLayout.CENTER);
+        tabbedPane.addTab("Theo tháng", panelThang);
+
+        add(tabbedPane, BorderLayout.CENTER);
+
+        loadBieuDoTheoNgay(); // Load mặc định cho ngày đầu
+    }
+    //bieu do ngay cot
+//    private void loadBieuDoTheoNgay() {
+//        chartContainer.removeAll();
+//        try {
+//            ConnectDB.getInstance().connect();
+//            Connection conn = ConnectDB.getConnection();
+//
+//            int selectedDay = Integer.parseInt((String) comboBoxNgay.getSelectedItem());
+//
+//            Map<String, Integer> data = ThongKe_DAO.getSoLuongSanPhamTheoNgay(conn, selectedDay);
+//            if (data.isEmpty()) {
+//                chartContainer.add(new JLabel("🔍 Không có dữ liệu."), BorderLayout.CENTER);
+//            } else {
+//                DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+//                for (Map.Entry<String, Integer> entry : data.entrySet()) {
+//                    dataset.addValue(entry.getValue(), entry.getKey(), "Ngày " + selectedDay);
+//                }
+//
+//                JFreeChart barChart = ChartFactory.createBarChart(
+//                        "Sản phẩm bán ra trong ngày " + selectedDay,
+//                        "Sản phẩm", "Số lượng", dataset
+//                );
+//                chartContainer.add(new ChartPanel(barChart), BorderLayout.CENTER);
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            chartContainer.add(new JLabel("⚠️ Lỗi khi tải biểu đồ ngày"), BorderLayout.CENTER);
+//        }
+//        chartContainer.revalidate();
+//        chartContainer.repaint();
+//    }
+    //bieu do ngay tron
+    private void loadBieuDoTheoNgay() {
+        chartContainer.removeAll();
         try {
-            ConnectDB.getInstance().connect(); // Đảm bảo đã kết nối
+            ConnectDB.getInstance().connect();
             Connection conn = ConnectDB.getConnection();
 
-            if (conn == null) {
-                add(new JLabel("⚠️ Không thể kết nối đến cơ sở dữ liệu"), BorderLayout.CENTER);
-                return;
-            }
+            int selectedDay = Integer.parseInt((String) comboBoxNgay.getSelectedItem());
 
-            Map<String, Integer> data = ThongKe_DAO.getSoLuongSanPhamBanRa(conn);
+            Map<String, Integer> data = ThongKe_DAO.getSoLuongSanPhamTheoNgay(conn, selectedDay);
             if (data.isEmpty()) {
-                add(new JLabel("🔍 Không có dữ liệu để thống kê"), BorderLayout.CENTER);
-                return;
+                chartContainer.add(new JLabel("🔍 Không có dữ liệu."), BorderLayout.CENTER);
+            } else {
+                // Sử dụng PieDataset
+                DefaultPieDataset dataset = new DefaultPieDataset();
+                for (Map.Entry<String, Integer> entry : data.entrySet()) {
+                    dataset.setValue(entry.getKey() + " - " + entry.getValue(), entry.getValue());
+                }
+
+                JFreeChart pieChart = ChartFactory.createPieChart(
+                        "Tỉ lệ sản phẩm bán ra trong ngày " + selectedDay,
+                        dataset, true, true, false
+                );
+                chartContainer.add(new ChartPanel(pieChart), BorderLayout.CENTER);
             }
-
-            // Tạo DefaultPieDataset cho biểu đồ
-            DefaultPieDataset dataset = new DefaultPieDataset();            
-
-            for (Map.Entry<String, Integer> entry : data.entrySet()) {
-                String label = entry.getKey() + " - " + entry.getValue();
-                dataset.setValue(label, entry.getValue());
-            }
-
-            // Tạo biểu đồ pie
-            JFreeChart chart = ChartFactory.createPieChart(
-                    "Tỉ lệ sản phẩm bán ra", dataset, true, true, false
-            );
-
-            // Thêm biểu đồ vào panel
-            ChartPanel chartPanel = new ChartPanel(chart);
-            chartPanel.setPreferredSize(new Dimension(getWidth(), getHeight() - 100)); // Chừa không gian cho ô chú thích
-            add(chartPanel, BorderLayout.CENTER);
-
-            // Tạo JPanel cho ô chú thích
-            JPanel legendPanel = new JPanel();
-            legendPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-
-            // Tạo JLabel cho chú thích
-            JLabel legendLabel = new JLabel("Tên hàng - Số lượng bán được");
-            legendLabel.setPreferredSize(new Dimension(200, 40));  // Kích thước ô vuông
-            legendLabel.setBackground(Color.LIGHT_GRAY);           // Màu nền
-            legendLabel.setOpaque(true);                            // Đảm bảo nền có màu
-            legendLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            legendPanel.add(legendLabel);
-
-            // Thêm ô chú thích vào panel dưới biểu đồ
-            add(legendPanel, BorderLayout.SOUTH);
 
         } catch (Exception e) {
             e.printStackTrace();
-            add(new JLabel("⚠️ Lỗi khi tải dữ liệu thống kê"), BorderLayout.CENTER);
+            chartContainer.add(new JLabel("⚠️ Lỗi khi tải biểu đồ ngày"), BorderLayout.CENTER);
+        }
+        chartContainer.revalidate();
+        chartContainer.repaint();
+    }
+
+    
+    private ChartPanel createBieuDoTheoThang() {
+        try {
+            ConnectDB.getInstance().connect();
+            Connection conn = ConnectDB.getConnection();
+            Map<String, Integer> data = ThongKe_DAO.getSoLuongSanPhamBanRa(conn);
+
+            DefaultPieDataset dataset = new DefaultPieDataset();
+            for (Map.Entry<String, Integer> entry : data.entrySet()) {
+                dataset.setValue(entry.getKey() + " - " + entry.getValue(), entry.getValue());
+            }
+
+            JFreeChart pieChart = ChartFactory.createPieChart("Tỉ lệ sản phẩm bán ra theo tháng", dataset, true, true, false);
+            return new ChartPanel(pieChart);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ChartPanel(null);
         }
     }
 }
+
 
 
 
