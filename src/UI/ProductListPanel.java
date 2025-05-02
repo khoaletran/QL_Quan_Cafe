@@ -45,7 +45,7 @@ public class ProductListPanel extends JPanel {
         headerPanel.add(searchPanel, BorderLayout.SOUTH);
         add(headerPanel, BorderLayout.NORTH);
 
-        productGridPanel = new JPanel(new GridLayout(0, 4, 15, 15));
+        productGridPanel = new JPanel(new GridLayout(0, 4, 10, 30));
         productGridPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
         productGridPanel.setBackground(Color.WHITE);
 
