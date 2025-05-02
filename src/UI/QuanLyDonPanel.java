@@ -35,14 +35,17 @@ import javax.swing.table.JTableHeader;
 import Bien.BIEN;
 import ConnectDB.ConnectDB;
 import Dao.HoaDon_DAO;
+import Dao.KhachHang_DAO;
 import Model.ChiTietHoaDon;
 import Model.HoaDonBanHang;
+import Model.KhachHang;
 
 public class QuanLyDonPanel extends JPanel implements MouseListener {
     private static final long serialVersionUID = 1L;
     private JTable table;
     private DefaultTableModel tableModel;
     private HoaDon_DAO hoaDon_dao;
+    private KhachHang_DAO khachHang_dao;
     private JTextField txtMaHD;
     private String maHD = "---";
     private String ngayLap = "---";
@@ -58,6 +61,8 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     private String phanTramGiamGia = "0";
     private String chietKhau = "0";
     private String diemTL = "0";
+    private String tenKH = "---";
+    private String sdtKH = "---";
     private JLabel lblMaHD;
     private JLabel lblNgayLap;
     private JLabel lblMaNV;
@@ -80,6 +85,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         }
 
         hoaDon_dao = new HoaDon_DAO();
+        khachHang_dao = new KhachHang_DAO();
         
         initUI();
         DocDuLieuDatabaseVaoTable();
@@ -176,7 +182,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         lblMaHD = createInfoLabel("Mã hóa đơn: " + maHD, infoFont);
         lblNgayLap = createInfoLabel("Ngày lập: " + ngayLap, infoFont);
         lblMaNV = createInfoLabel("Nhân viên: " + maNV, infoFont);
-        lblMaKH = createInfoLabel("Khách hàng: " + maKH, infoFont);
+        lblMaKH = createInfoLabel("Khách hàng: " + tenKH +"(SDT: "+sdtKH+")", infoFont);
         lblHinhThucThanhToan = createInfoLabel("Hình thức thanh toán: " + hinhThucThanhToan, infoFont);
         lblMaGiamGia = createInfoLabel("Mã giảm giá: " + maGiamGia, infoFont);
 
@@ -353,7 +359,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         lblMaHD.setText("Mã hóa đơn: " + maHD);
         lblNgayLap.setText("Ngày lập: " + ngayLap);
         lblMaNV.setText("Nhân viên: " + maNV);
-        lblMaKH.setText("Khách hàng: " + maKH);
+        lblMaKH.setText("Khách hàng: " + tenKH +"(SDT: "+sdtKH+")");
         lblHinhThucThanhToan.setText("Hình thức thanh toán: " + hinhThucThanhToan);
 
         DecimalFormat df = new DecimalFormat("#,##0đ");
@@ -470,7 +476,8 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             hinhThucThanhToan = tableModel.getValueAt(selectedRow, 5).toString();
             
             HoaDonBanHang hd = hoaDon_dao.getHoaDonTheoMa(maHD);
-            if (hd != null) {
+            KhachHang kh = khachHang_dao.getKhachHangTheoMaKH(maKH);
+            if (hd != null & kh != null) {
                 DecimalFormat df = new DecimalFormat("#,##0đ");
                 double thanhTienValue = hd.getTongtienGia();
                 double phanTramGiam = hd.getPhanTramGiamGia() / 100.0;
@@ -480,6 +487,8 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
                 tongTienBanDau = df.format(tongTienBanDauValue);
                 phanTramGiamGia = String.valueOf(hd.getPhanTramGiamGia());
                 diemTL = String.valueOf(hd.getdiemTL());
+                tenKH = kh.getTenKH();
+                sdtKH = kh.getSoDienThoai();
 
                 this.tongTienBanDauValue = tongTienBanDauValue;
                 this.thanhTienValue = thanhTienValue;

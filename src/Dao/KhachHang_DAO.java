@@ -90,6 +90,45 @@ public class KhachHang_DAO {
         return dsKhachHang;
     }
     
+    public static KhachHang getKhachHangTheoMaKH(String maKH) {
+        KhachHang khachHang = null;
+
+        try {
+            ConnectDB.getInstance().connect();
+            Connection con = ConnectDB.getConnection();
+
+            String sql = "SELECT KH.MAKH, KH.TENKH, KH.SDT, KH.DIEMTL, " +
+                         "LKH.MALKH, LKH.TENLKH, LKH.GIAMGIA " +
+                         "FROM KHACHHANG KH JOIN LOAIKHACHHANG LKH ON KH.MALKH = LKH.MALKH " +
+                         "WHERE KH.MAKH = ?";
+
+            PreparedStatement statement = con.prepareStatement(sql);
+            statement.setString(1, maKH);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                String maKHResult = rs.getString("MAKH");
+                String tenKH = rs.getString("TENKH");
+                String sdt = rs.getString("SDT");
+                int diemTL = rs.getInt("DIEMTL");
+
+                String maLKH = rs.getString("MALKH");
+                String tenLKH = rs.getString("TENLKH");
+                int giamGia = rs.getInt("GIAMGIA");
+
+                LoaiKhachHang loaiKH = new LoaiKhachHang(maLKH, tenLKH, giamGia);
+                khachHang = new KhachHang(maKHResult, tenKH, sdt, diemTL, loaiKH);
+            }
+
+            rs.close();
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return khachHang;
+    }
+    
     public static KhachHang timKhachHangTheoSDT_DT(String soDienThoai) {
         KhachHang kh = null;
 
