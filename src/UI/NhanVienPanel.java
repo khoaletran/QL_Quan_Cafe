@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -25,7 +27,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -33,6 +34,10 @@ import Dao.NhanVien_DAO;
 import Model.NhanVien;
 
 public class NhanVienPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<NhanVien> dsnv = NhanVien_DAO.getAllNhanVien();
 	private JTextField txtMaNV, txtTenNV, txtNgayVaoLam, txtSdt, txtDiaChi, txtMatKhau;
 	private JRadioButton radNam, radNu;
@@ -165,6 +170,11 @@ public class NhanVienPanel extends JPanel {
 		String[] columnNames = { "Mã Nhân Viên", "Tên Nhân Viên", "Ngày Vào Làm", "Giới Tính", "Số Điện Thoại",
 				"Địa Chỉ", "Mật Khẩu", "Quản Lý" };
 		tableModel = new DefaultTableModel(columnNames, 0) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
@@ -173,24 +183,31 @@ public class NhanVienPanel extends JPanel {
 		table.setFont(new Font("Arial", Font.PLAIN, 14));
 		table.setRowHeight(30);
 
-		table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
-			int selectedRow = table.getSelectedRow();
-			if (!e.getValueIsAdjusting() && selectedRow >= 0) {
-				txtMaNV.setText((String) table.getValueAt(selectedRow, 0));
-				txtTenNV.setText((String) table.getValueAt(selectedRow, 1));
-				txtNgayVaoLam.setText((String) table.getValueAt(selectedRow, 2));
-				String gt = (String) table.getValueAt(selectedRow, 3);
-				if (gt.equalsIgnoreCase("Nam"))
-					radNam.setSelected(true);
-				else
-					radNu.setSelected(true);
-				txtSdt.setText((String) table.getValueAt(selectedRow, 4));
-				txtDiaChi.setText((String) table.getValueAt(selectedRow, 5));
-				txtMatKhau.setText((String) table.getValueAt(selectedRow, 6));
-				String ql = (String) table.getValueAt(selectedRow, 7);
-				chkQuanLy.setSelected(ql.equalsIgnoreCase("Có"));
-			}
+		table.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		        int selectedRow = table.getSelectedRow();
+		        if (selectedRow >= 0) {
+		            txtMaNV.setText((String) table.getValueAt(selectedRow, 0));
+		            txtTenNV.setText((String) table.getValueAt(selectedRow, 1));
+		            txtNgayVaoLam.setText((String) table.getValueAt(selectedRow, 2));
+
+		            String gt = (String) table.getValueAt(selectedRow, 3);
+		            if (gt.equalsIgnoreCase("Nam"))
+		                radNam.setSelected(true);
+		            else
+		                radNu.setSelected(true);
+
+		            txtSdt.setText((String) table.getValueAt(selectedRow, 4));
+		            txtDiaChi.setText((String) table.getValueAt(selectedRow, 5));
+		            txtMatKhau.setText((String) table.getValueAt(selectedRow, 6));
+
+		            String ql = (String) table.getValueAt(selectedRow, 7);
+		            chkQuanLy.setSelected(ql.equalsIgnoreCase("Có"));
+		        }
+		    }
 		});
+
 
 		TableColumn maNVColumn = table.getColumnModel().getColumn(0);
 		maNVColumn.setPreferredWidth(40);

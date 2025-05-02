@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -14,9 +16,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -26,11 +30,16 @@ import Dao.KhachHang_DAO;
 import Model.KhachHang;
 
 public class KhachHangPanel extends JPanel {
-    private ArrayList<KhachHang> dskh = KhachHang_DAO.getAllKhachHang();
-    private JTextField[] textFields;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private ArrayList<KhachHang> dskh = KhachHang_DAO.getAllKhachHang();
+    private JTextField txtMaKH, txtTenKH, txtSoDienThoai, txtDiemTL, txtLoaiKH;
     private JTable table;
     private DefaultTableModel tableModel;
     private JTextField txtTimKiem;
+
     public KhachHangPanel() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -44,36 +53,84 @@ public class KhachHangPanel extends JPanel {
         titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
         add(titleLabel, BorderLayout.NORTH);
 
-        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 8, 75));
         inputPanel.setBackground(new Color(245, 245, 245));
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        String[] labels = {"Mã Khách Hàng:", "Tên Khách Hàng:", "Số Điện Thoại:", "Điểm Tích Lũy:", "Loại Khách Hàng:"};
-        textFields = new JTextField[5];
         Font labelFont = new Font("Arial", Font.PLAIN, 14);
         Font textFieldFont = new Font("Arial", Font.PLAIN, 14);
 
-        for (int i = 0; i < labels.length; i++) {
-            JLabel label = new JLabel(labels[i]);
-            label.setFont(labelFont);
-            inputPanel.add(label);
+        // Mã Khách Hàng
+        JLabel lblMaKH = new JLabel("Mã Khách Hàng:");
+        lblMaKH.setFont(labelFont);
+        inputPanel.add(lblMaKH);
+        txtMaKH = new JTextField();
+        txtMaKH.setFont(textFieldFont);
+        txtMaKH.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+        txtMaKH.setPreferredSize(new Dimension(120, 10));
+        txtMaKH.setEnabled(false);
+        inputPanel.add(txtMaKH);
 
-            textFields[i] = new JTextField();
-            textFields[i].setFont(textFieldFont);
-            textFields[i].setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
-            inputPanel.add(textFields[i]);
-        }
-        //2 dong nay khong cho nhap
-        textFields[0].setEditable(false);
-        textFields[4].setEditable(false);
+        // Tên Khách Hàng
+        JLabel lblTenKH = new JLabel("Tên Khách Hàng:");
+        lblTenKH.setFont(labelFont);
+        inputPanel.add(lblTenKH);
+        txtTenKH = new JTextField();
+        txtTenKH.setFont(textFieldFont);
+        txtTenKH.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+        txtTenKH.setPreferredSize(new Dimension(120, 10));
+        inputPanel.add(txtTenKH);
+
+        // Số Điện Thoại
+        JLabel lblSoDienThoai = new JLabel("Số Điện Thoại:");
+        lblSoDienThoai.setFont(labelFont);
+        inputPanel.add(lblSoDienThoai);
+        txtSoDienThoai = new JTextField();
+        txtSoDienThoai.setFont(textFieldFont);
+        txtSoDienThoai.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+        txtSoDienThoai.setPreferredSize(new Dimension(120, 10));
+        inputPanel.add(txtSoDienThoai);
+
+        // Điểm Tích Lũy
+        JLabel lblDiemTL = new JLabel("Điểm Tích Lũy:");
+        lblDiemTL.setFont(labelFont);
+        inputPanel.add(lblDiemTL);
+        txtDiemTL = new JTextField();
+        txtDiemTL.setFont(textFieldFont);
+        txtDiemTL.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+        txtDiemTL.setPreferredSize(new Dimension(120, 10));
+        inputPanel.add(txtDiemTL);
+
+        // Loại Khách Hàng
+        JLabel lblLoaiKH = new JLabel("Loại Khách Hàng:");
+        lblLoaiKH.setFont(labelFont);
+        inputPanel.add(lblLoaiKH);
+        txtLoaiKH = new JTextField();
+        txtLoaiKH.setFont(textFieldFont);
+        txtLoaiKH.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+        txtLoaiKH.setPreferredSize(new Dimension(120, 10));
+        txtLoaiKH.setEnabled(false);
+        inputPanel.add(txtLoaiKH);
+
+        // Bọc inputPanel trong panel có tiêu đề
+        JPanel inputWrapperBorder = new JPanel(new BorderLayout());
+        inputWrapperBorder.setBackground(new Color(245, 245, 245));
+        inputWrapperBorder.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)), "Thông Tin Khách Hàng", TitledBorder.LEFT,
+                TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), Color.DARK_GRAY));
+        inputWrapperBorder.add(inputPanel, BorderLayout.CENTER);
+
+        JPanel inputWrapper = new JPanel(new BorderLayout());
+        inputWrapper.setBackground(new Color(245, 245, 245));
+        inputWrapper.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+        inputWrapper.add(inputWrapperBorder, BorderLayout.CENTER);
 
         String[] columnNames = {"Mã Khách Hàng", "Tên Khách Hàng", "Số Điện Thoại", "Điểm Tích Lũy", "Loại Khách Hàng"};
         tableModel = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public Class<?> getColumnClass(int columnIndex) {
-                return columnIndex == 3 ? Integer.class : String.class;
-            }
-
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -86,74 +143,110 @@ public class KhachHangPanel extends JPanel {
         table.setRowHeight(30);
         table.setGridColor(new Color(200, 200, 200));
         table.setShowGrid(true);
-        
-        // Renderer tùy chỉnh để căn giữa nội dung cho tất cả các cột
+
+        // Renderer tùy chỉnh để căn giữa nội dung
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setFont(new Font("Arial", Font.PLAIN, 14));
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER); // Căn giữa nội dung
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         for (int i = 0; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
-        
-        table.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
+
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
-                    textFields[0].setText((String) table.getValueAt(selectedRow, 0));
-                    textFields[1].setText((String) table.getValueAt(selectedRow, 1));
-                    textFields[2].setText((String) table.getValueAt(selectedRow, 2));
-                    textFields[3].setText(String.valueOf(table.getValueAt(selectedRow, 3)));
-                    textFields[4].setText((String) table.getValueAt(selectedRow, 4));
+                    txtMaKH.setText((String) table.getValueAt(selectedRow, 0));
+                    txtTenKH.setText((String) table.getValueAt(selectedRow, 1));
+                    txtSoDienThoai.setText((String) table.getValueAt(selectedRow, 2));
+                    txtDiemTL.setText(String.valueOf(table.getValueAt(selectedRow, 3)));
+                    txtLoaiKH.setText((String) table.getValueAt(selectedRow, 4));
                 }
             }
         });
 
+
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
+        // Bọc scrollPane trong panel có tiêu đề
+        JPanel tableWrapper = new JPanel(new BorderLayout());
+        tableWrapper.setBackground(new Color(245, 245, 245));
+        tableWrapper.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)), "Danh Sách Khách Hàng", TitledBorder.LEFT,
+                TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), Color.DARK_GRAY));
+        tableWrapper.add(scrollPane, BorderLayout.CENTER);
+
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBackground(new Color(245, 245, 245));
-        centerPanel.add(inputPanel, BorderLayout.NORTH);
-        centerPanel.add(scrollPane, BorderLayout.CENTER);
+        centerPanel.add(inputWrapper, BorderLayout.EAST);
+        centerPanel.add(tableWrapper, BorderLayout.CENTER);
         add(centerPanel, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        buttonPanel.setBackground(new Color(245, 245, 245));
-        String[] buttonLabels = {"Thêm", "Xóa", "Sửa", "Làm Mới"};
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        leftPanel.setBackground(new Color(245, 245, 245));
+        leftPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)), "Chức Năng Chính", TitledBorder.LEFT,
+                TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), Color.DARK_GRAY));
         Font buttonFont = new Font("Arial", Font.BOLD, 14);
-        
-        //
-        JLabel lblTimKiem = new JLabel("NHẬP SỐ ĐIỆN THOẠI KHÁCH HÀNG CẦN TÌM:");
-        txtTimKiem = new JTextField(20);
+
+        JButton btnThem = new JButton("Thêm");
+        btnThem.setFont(buttonFont);
+        btnThem.setBackground(new Color(220, 220, 220));
+        btnThem.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
+        btnThem.setPreferredSize(new Dimension(100, 40));
+        btnThem.addActionListener(e -> xuLySuKienThemKhachHang());
+        leftPanel.add(btnThem);
+
+        JButton btnXoa = new JButton("Xóa");
+        btnXoa.setFont(buttonFont);
+        btnXoa.setBackground(new Color(220, 220, 220));
+        btnXoa.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
+        btnXoa.setPreferredSize(new Dimension(100, 40));
+        btnXoa.addActionListener(e -> xuLySuKienXoaKhachHang());
+        leftPanel.add(btnXoa);
+
+        JButton btnSua = new JButton("Sửa");
+        btnSua.setFont(buttonFont);
+        btnSua.setBackground(new Color(220, 220, 220));
+        btnSua.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
+        btnSua.setPreferredSize(new Dimension(100, 40));
+        btnSua.addActionListener(e -> xuLySuKienSuaKhachHang());
+        leftPanel.add(btnSua);
+
+        JButton btnXoaTrang = new JButton("Xóa Trắng");
+        btnXoaTrang.setFont(buttonFont);
+        btnXoaTrang.setBackground(new Color(220, 220, 220));
+        btnXoaTrang.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
+        btnXoaTrang.setPreferredSize(new Dimension(100, 40));
+        btnXoaTrang.addActionListener(e -> xuLySuKienLamMoi());
+        leftPanel.add(btnXoaTrang);
+
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
+        rightPanel.setBackground(new Color(245, 245, 245));
+        rightPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)), "Tìm Kiếm Khách Hàng", TitledBorder.LEFT,
+                TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), Color.DARK_GRAY));
+
+        JLabel lblTimKiem = new JLabel("Số Điện Thoại:");
+        lblTimKiem.setFont(new Font("Arial", Font.PLAIN, 13));
+        txtTimKiem = new JTextField(10);
+        txtTimKiem.setFont(new Font("Arial", Font.PLAIN, 13));
         txtTimKiem.getDocument().addDocumentListener(timKiemDong());
+        rightPanel.add(lblTimKiem);
+        rightPanel.add(txtTimKiem);
 
-        JPanel pTimKiem = new JPanel(new GridLayout(2,1,2,2));
-        pTimKiem.add(lblTimKiem);
-        pTimKiem.add(txtTimKiem);
-        
-        for (String label : buttonLabels) {
-            JButton button = new JButton(label);
-            button.setFont(buttonFont);
-            button.setBackground(new Color(220, 220, 220));
-            button.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150)));
-            button.setPreferredSize(new Dimension(100, 40));
+        JSplitPane buttonSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
+        buttonSplitPane.setDividerLocation(850);
+        buttonSplitPane.setBorder(null);
 
-            button.addActionListener(e -> {
-                switch (e.getActionCommand()) {
-                    case "Thêm" -> xuLySuKienThemKhachHang();
-                    case "Xóa" -> xuLySuKienXoaKhachHang();
-                    case "Sửa" -> xuLySuKienSuaKhachHang();
-                    case "Làm Mới" -> xuLySuKienLamMoi();
-                }
-            });
+        JPanel bottomWrapper = new JPanel(new BorderLayout());
+        bottomWrapper.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        bottomWrapper.add(buttonSplitPane, BorderLayout.CENTER);
+        add(bottomWrapper, BorderLayout.SOUTH);
 
-            buttonPanel.add(button);
-            buttonPanel.add(pTimKiem);
-        }
-
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        loadDataToTable(); // Load dữ liệu ban đầu
+        loadDataToTable();
     }
 
     private void loadDataToTable() {
@@ -177,9 +270,9 @@ public class KhachHangPanel extends JPanel {
 
     private void xuLySuKienThemKhachHang() {
         try {
-            String tenKH = textFields[1].getText();
-            String soDienThoai = textFields[2].getText();
-            int diemTL = Integer.parseInt(textFields[3].getText());
+            String tenKH = txtTenKH.getText().trim();
+            String soDienThoai = txtSoDienThoai.getText().trim();
+            int diemTL = Integer.parseInt(txtDiemTL.getText().trim());
             KhachHang newKH = new KhachHang(tenKH, soDienThoai, diemTL);
             boolean result = KhachHang_DAO.themKhachHang(newKH);
             if (result) {
@@ -189,19 +282,23 @@ public class KhachHangPanel extends JPanel {
             } else {
                 JOptionPane.showMessageDialog(this, "Thất bại! Do Trùng số điện thoại ", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Điểm tích lũy phải là số nguyên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
 
-
-
     private void xuLySuKienXoaKhachHang() {
-        String maKH = textFields[0].getText();
+        String maKH = txtMaKH.getText().trim();
+        if (maKH.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa khách hàng này không?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-        
+
         if (confirm == JOptionPane.YES_OPTION) {
             try {
                 boolean daXoa = KhachHang_DAO.xoaKhachHang(maKH);
@@ -219,34 +316,41 @@ public class KhachHangPanel extends JPanel {
         }
     }
 
-
     private void xuLySuKienSuaKhachHang() {
-        String maKH = textFields[0].getText();
-        String tenKH = textFields[1].getText();
-        String soDienThoai = textFields[2].getText();
-        int diemTL = Integer.parseInt(textFields[3].getText());
-        KhachHang newKH = new KhachHang(maKH, tenKH, soDienThoai, diemTL);
-       boolean ok = KhachHang_DAO.suaKhachHang(newKH);
-       if(ok) {
-    	   JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
-    	   updateTable();
-    	   lamRong();
-       }
-       else {
-    	   JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
-       }
-        
-        updateTable();
+        try {
+            String maKH = txtMaKH.getText().trim();
+            String tenKH = txtTenKH.getText().trim();
+            String soDienThoai = txtSoDienThoai.getText().trim();
+            int diemTL = Integer.parseInt(txtDiemTL.getText().trim());
+            if (maKH.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng để sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            KhachHang newKH = new KhachHang(maKH, tenKH, soDienThoai, diemTL);
+            boolean ok = KhachHang_DAO.suaKhachHang(newKH);
+            if (ok) {
+                JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
+                updateTable();
+                lamRong();
+            } else {
+                JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Điểm tích lũy phải là số nguyên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
-    
     private void xuLySuKienLamMoi() {
-    	dskh = KhachHang_DAO.getAllKhachHang();
-    	loadDataToTable();
-    	txtTimKiem.setText("");
-    	lamRong();
+        dskh = KhachHang_DAO.getAllKhachHang();
+        loadDataToTable();
+        txtTimKiem.setText("");
+        lamRong();
     }
-    
+
     private DocumentListener timKiemDong() {
         return new DocumentListener() {
             @Override
@@ -271,12 +375,12 @@ public class KhachHangPanel extends JPanel {
             }
         };
     }
-    
-    private void lamRong(){
-    	textFields[0].setText(""); 
-        textFields[1].setText(""); 
-        textFields[2].setText("");
-        textFields[3].setText("");
-        textFields[4].setText("");
+
+    private void lamRong() {
+        txtMaKH.setText("");
+        txtTenKH.setText("");
+        txtSoDienThoai.setText("");
+        txtDiemTL.setText("");
+        txtLoaiKH.setText("");
     }
 }
