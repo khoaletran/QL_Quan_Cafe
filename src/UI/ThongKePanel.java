@@ -16,18 +16,19 @@ import java.util.Map;
 
 public class ThongKePanel extends JPanel {
 
-    // combobox và biểu đồ
     private JComboBox<String> comboBoxThang;
     private JComboBox<String> comboBoxSanPham;
     private JPanel panelLineChartContainer;
+
+    private JComboBox<String> comboBoxThangSanPhamThang;
+    private JPanel panelPieChartContainer;
 
     public ThongKePanel() {
         setLayout(new BorderLayout());
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        //Tab biểu đồ đường thêm ComboBox lọc
+        // Tab biểu đồ đường
         JPanel panelLine = new JPanel(new BorderLayout());
-
         JPanel filterPanel = new JPanel();
         comboBoxThang = new JComboBox<>();
         comboBoxSanPham = new JComboBox<>();
@@ -37,13 +38,10 @@ public class ThongKePanel extends JPanel {
         }
 
         try {
-            // [SỬA] Chỉ kết nối DB 1 lần và load danh sách sản phẩm
             ConnectDB.getInstance().connect();
             Connection conn = ConnectDB.getConnection();
 
-            // [SỬA] Thêm "Tất cả" vào đầu danh sách sản phẩm
             comboBoxSanPham.addItem("Tất cả");
-
             java.util.List<String> dsSanPham = ThongKe_DAO.getDanhSachTenSanPham(conn);
             for (String tenSP : dsSanPham) {
                 comboBoxSanPham.addItem(tenSP);
@@ -57,7 +55,6 @@ public class ThongKePanel extends JPanel {
         filterPanel.add(new JLabel("Sản phẩm:"));
         filterPanel.add(comboBoxSanPham);
 
-        // [THÊM] Lắng nghe sự kiện thay đổi
         comboBoxThang.addActionListener(e -> updateLineChart());
         comboBoxSanPham.addActionListener(e -> updateLineChart());
 
@@ -69,12 +66,28 @@ public class ThongKePanel extends JPanel {
 
         tabbedPane.addTab("Line Chart Theo Ngày", panelLine);
 
-        // Tab thống kê theo tháng
+        // Tab số lượng sản phẩm theo tháng
         JPanel panelThang = new JPanel(new BorderLayout());
-        panelThang.add(createBieuDoTheoThang(), BorderLayout.CENTER);
+
+        JPanel filterThangPanel = new JPanel();
+        comboBoxThangSanPhamThang = new JComboBox<>();
+        for (int i = 1; i <= 12; i++) {
+            comboBoxThangSanPhamThang.addItem(String.format("%02d", i));
+        }
+        filterThangPanel.add(new JLabel("Chọn tháng:"));
+        filterThangPanel.add(comboBoxThangSanPhamThang);
+
+        panelPieChartContainer = new JPanel(new BorderLayout());
+        panelPieChartContainer.add(createBieuDoTheoThang(), BorderLayout.CENTER);
+
+        comboBoxThangSanPhamThang.addActionListener(e -> updateBieuDoTheoThang());
+
+        panelThang.add(filterThangPanel, BorderLayout.NORTH);
+        panelThang.add(panelPieChartContainer, BorderLayout.CENTER);
+
         tabbedPane.addTab("Số Lượng Sản Phẩm Theo tháng", panelThang);
 
-        // Tab thống kê doanh thu theo tháng
+        // Tab doanh thu theo tháng
         JPanel panelDoanhThu = new JPanel(new BorderLayout());
         panelDoanhThu.add(createBieuDoDoanhThuThang(), BorderLayout.CENTER);
         tabbedPane.addTab("Doanh thu theo tháng", panelDoanhThu);
@@ -82,7 +95,6 @@ public class ThongKePanel extends JPanel {
         add(tabbedPane, BorderLayout.CENTER);
     }
 
-    // [SỬA] Load biểu đồ theo lựa chọn combobox
     private ChartPanel createLineChartTheoNgay() {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
@@ -98,7 +110,6 @@ public class ThongKePanel extends JPanel {
             Map<String, Map<String, Integer>> data = ThongKe_DAO.getSoLuongTungLoaiSanPhamTheoNgay(conn, selectedThang);
 
             if (selectedSP.equals("Tất cả")) {
-                // [SỬA] Vẽ toàn bộ sản phẩm nếu chọn "Tất cả"
                 for (Map.Entry<String, Map<String, Integer>> entry : data.entrySet()) {
                     String tenSP = entry.getKey();
                     Map<String, Integer> ngayData = entry.getValue();
@@ -110,7 +121,6 @@ public class ThongKePanel extends JPanel {
                     }
                 }
             } else {
-                // [SỬA] Chỉ vẽ sản phẩm được chọn
                 if (data.containsKey(selectedSP)) {
                     Map<String, Integer> ngayData = data.get(selectedSP);
                     for (int i = 1; i <= 31; i++) {
@@ -133,7 +143,6 @@ public class ThongKePanel extends JPanel {
         return new ChartPanel(lineChart);
     }
 
-    // [THÊM] Hàm cập nhật biểu đồ khi chọn ComboBox
     private void updateLineChart() {
         panelLineChartContainer.removeAll();
         panelLineChartContainer.add(createLineChartTheoNgay(), BorderLayout.CENTER);
@@ -145,20 +154,33 @@ public class ThongKePanel extends JPanel {
         try {
             ConnectDB.getInstance().connect();
             Connection conn = ConnectDB.getConnection();
-            Map<String, Integer> data = ThongKe_DAO.getSoLuongSanPhamBanRa(conn);
+
+            int selectedThang = comboBoxThangSanPhamThang.getSelectedIndex() + 1;
+            Map<String, Integer> data = ThongKe_DAO.getSoLuongSanPhamTheoThang(conn, selectedThang);
 
             DefaultPieDataset dataset = new DefaultPieDataset();
             for (Map.Entry<String, Integer> entry : data.entrySet()) {
                 dataset.setValue(entry.getKey() + " - " + entry.getValue(), entry.getValue());
             }
 
-            JFreeChart pieChart = ChartFactory.createPieChart("Tỉ lệ sản phẩm bán ra theo tháng", dataset, true, true, false);
+            JFreeChart pieChart = ChartFactory.createPieChart(
+                    "Tỉ lệ sản phẩm bán ra trong tháng " + selectedThang,
+                    dataset, true, true, false
+            );
+
             return new ChartPanel(pieChart);
 
         } catch (Exception e) {
             e.printStackTrace();
             return new ChartPanel(null);
         }
+    }
+
+    private void updateBieuDoTheoThang() {
+        panelPieChartContainer.removeAll();
+        panelPieChartContainer.add(createBieuDoTheoThang(), BorderLayout.CENTER);
+        panelPieChartContainer.revalidate();
+        panelPieChartContainer.repaint();
     }
 
     private ChartPanel createBieuDoDoanhThuThang() {

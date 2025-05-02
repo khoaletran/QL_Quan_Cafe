@@ -74,7 +74,28 @@ public class ThongKe_DAO {
 
         return danhSach;
     }
+    
+    public static Map<String, Integer> getSoLuongSanPhamTheoThang(Connection conn, int thang) throws SQLException {
+        String sql = "SELECT HH.TENHH, SUM(CTHD.SOLUONG) AS SOLUONGBAN " +
+                     "FROM HOADONBANHANG HDBH " +
+                     "JOIN CHITIETHOADON CTHD ON HDBH.MAHDBH = CTHD.MAHDBH " +
+                     "JOIN HANGHOA HH ON CTHD.MAHH = HH.MAHH " +
+                     "WHERE MONTH(HDBH.NGAYHDBH) = ? AND YEAR(HDBH.NGAYHDBH) = YEAR(GETDATE()) " +
+                     "GROUP BY HH.TENHH";
 
+        Map<String, Integer> result = new LinkedHashMap<>();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, thang);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                result.put(rs.getString("TENHH"), rs.getInt("SOLUONGBAN"));
+            }
+        }
+        return result;
+    }
+
+    
     public static Map<String, Double> getDoanhThuTheoThang(Connection conn) throws Exception {
         String sql = "SELECT MONTH(NGAYHDBH) AS THANG, SUM(TONGTIEN) AS DOANHTHU " +
                      "FROM HOADONBANHANG HDBH " +
