@@ -110,7 +110,11 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         // Làm đậm chữ trong header
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Arial", Font.BOLD, 14));
-
+        
+        //căn giữa tên collumn
+        DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
+        headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        
         // Renderer tùy chỉnh cho các cột văn bản
         DefaultTableCellRenderer textRenderer = new DefaultTableCellRenderer();
         textRenderer.setFont(tableFont);

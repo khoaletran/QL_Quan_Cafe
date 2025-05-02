@@ -1,10 +1,6 @@
 package Bien;
 
-import java.awt.Label;
-
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
 
 public class BIEN {
 	
