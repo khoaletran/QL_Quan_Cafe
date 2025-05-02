@@ -28,7 +28,7 @@ public class QuetQR {
         WebcamPanel panel = new WebcamPanel(webcam);
         panel.setMirrored(true);
 
-        JFrame frame = new JFrame("Quét mã QR - " + BIEN.TENQUAN);
+        JFrame frame = new JFrame("Quét mã QR - "+ BIEN.TENQUAN);
         frame.setIconImage(BIEN.LOGO_QUAN.getImage());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
@@ -60,7 +60,6 @@ public class QuetQR {
                         return result.getText();
                     }
                 } catch (NotFoundException e) {
-                    // Không tìm thấy mã QR, tiếp tục quét
                 }
             }
         } catch (Exception e) {

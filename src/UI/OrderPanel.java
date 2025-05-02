@@ -63,19 +63,7 @@ public class OrderPanel extends JPanel {
         createUI();
     }
     
-    public void handleScanQRCode(JPanel panel) {
-        new Thread(() -> {
-            String qrResult = QuetQR.scanQRCode();
 
-            SwingUtilities.invokeLater(() -> {
-                if (qrResult != null) {
-                    discountCodeField.setText(qrResult);
-                } else {
-                    JOptionPane.showMessageDialog(panel, "Không quét được mã QR!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
-            });
-        }).start();
-    }
     
 
     private void createUI() {
@@ -537,6 +525,19 @@ public class OrderPanel extends JPanel {
         label.setFont(font);
         label.setHorizontalAlignment(alignment);
         return label;
+    }
+    public void handleScanQRCode(JPanel panel) {
+        new Thread(() -> {
+            String qrResult = QuetQR.scanQRCode();
+
+            SwingUtilities.invokeLater(() -> {
+                if (qrResult != null) {
+                    discountCodeField.setText(qrResult);
+                } else {
+                    JOptionPane.showMessageDialog(panel, "Không quét được mã QR!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            });
+        }).start();
     }
 
     private JLabel createRightLabel(String text, Font font) {
