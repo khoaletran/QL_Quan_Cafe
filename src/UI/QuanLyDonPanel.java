@@ -51,6 +51,10 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     private String sLuong = "0";
     private String gia = "0";
     private String thanhTien = "0";
+    private String tongTienBanDau = "0";
+    private String phanTramGiamGia = "0";
+    private String chietKhau = "0";
+    private String diemTL = "0";
     private JLabel lblMaHD;
     private JLabel lblNgayLap;
     private JLabel lblMaNV;
@@ -58,7 +62,12 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     private JLabel lblHinhThucThanhToan;
     private JLabel lblMaGiamGia;
 	private JPanel productPanel;
- 
+	private JLabel lBl_TongTien;
+	private JLabel lBl_chietKhau;
+	private JLabel lBl_thanhTien;
+	private JLabel lBl_diemTL;
+	private double tongTienBanDauValue;
+	private double thanhTienValue;
 
     public QuanLyDonPanel() {
         try {
@@ -238,29 +247,29 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
 
         sumGbc.gridx = 0;
         sumGbc.gridy = 0;
-        JLabel totalAmountLabel = new JLabel("Tổng tiền: 0");
-        totalAmountLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        totalAmountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        summaryPanel.add(totalAmountLabel, sumGbc);
+         lBl_TongTien = new JLabel("Tổng tiền: "+tongTienBanDau);
+         lBl_TongTien.setFont(new Font("Arial", Font.BOLD, 14));
+         lBl_TongTien.setHorizontalAlignment(SwingConstants.RIGHT);
+        summaryPanel.add(lBl_TongTien, sumGbc);
 
         sumGbc.gridy = 1;
-        JLabel discountLabel = new JLabel("Chiết khấu: 0 (0%)");
-        discountLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        discountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        summaryPanel.add(discountLabel, sumGbc);
+         lBl_chietKhau = new JLabel("Chiết khấu: "+chietKhau+"("+phanTramGiamGia+")");
+         lBl_chietKhau.setFont(new Font("Arial", Font.BOLD, 14));
+         lBl_chietKhau.setHorizontalAlignment(SwingConstants.RIGHT);
+        summaryPanel.add(lBl_chietKhau, sumGbc);
 
         sumGbc.gridy = 2;
-        JLabel finalAmountLabel = new JLabel("Thành tiền: 0");
-        finalAmountLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        finalAmountLabel.setForeground(new Color(204, 0, 0));
-        finalAmountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        summaryPanel.add(finalAmountLabel, sumGbc);
+         lBl_thanhTien = new JLabel("Thành tiền: "+thanhTien);
+         lBl_thanhTien.setFont(new Font("Arial", Font.BOLD, 14));
+         lBl_thanhTien.setForeground(new Color(204, 0, 0));
+         lBl_thanhTien.setHorizontalAlignment(SwingConstants.RIGHT);
+        summaryPanel.add(lBl_thanhTien, sumGbc);
 
         sumGbc.gridy = 3;
-        JLabel pointsLabel = new JLabel("Điểm tích lũy: 0");
-        pointsLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        pointsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        summaryPanel.add(pointsLabel, sumGbc);
+         lBl_diemTL = new JLabel("Điểm tích lũy: "+diemTL);
+         lBl_diemTL.setFont(new Font("Arial", Font.PLAIN, 14));
+         lBl_diemTL.setHorizontalAlignment(SwingConstants.RIGHT);
+        summaryPanel.add(lBl_diemTL, sumGbc);
 
         sumGbc.gridy = 4;
         JSeparator bottomSeparator = new JSeparator();
@@ -337,11 +346,20 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         lblMaNV.setText("Nhân viên: " + maNV);
         lblMaKH.setText("Khách hàng: " + maKH);
         lblHinhThucThanhToan.setText("Hình thức thanh toán: " + hinhThucThanhToan);
-//        lblMaGiamGia.setText("Mã giảm giá: " + maGiamGia);
+
+        DecimalFormat df = new DecimalFormat("#,##0đ");
+        double chietKhauValue = tongTienBanDauValue - thanhTienValue;
+        chietKhauValue = Math.max(0, chietKhauValue);
+
+        lBl_TongTien.setText("Tổng tiền: " + tongTienBanDau);
+        lBl_thanhTien.setText("Thành tiền: " + thanhTien);
+        lBl_chietKhau.setText("Chiết khấu: " + df.format(chietKhauValue) + " (" + phanTramGiamGia + "%)");
+        lBl_diemTL.setText("Điểm tích lũy: "+diemTL);
     }
 
     public void DocDuLieuDatabaseVaoTable() {
         List<HoaDonBanHang> list = hoaDon_dao.getAllHoaDon();
+        tableModel.setRowCount(0);
         for (HoaDonBanHang hd : list) {
             tableModel.addRow(new Object[] {
                 hd.getMaHDBH(),
@@ -350,7 +368,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
                 hd.getNgayLapHDBH(),
                 hd.getPhanTramGiamGia(),
                 hd.isHinhThucThanhToan() ? "Chuyển khoản" : "Tiền mặt"
-            });
+            });  
         }
     }
     
@@ -440,14 +458,35 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             maNV = tableModel.getValueAt(selectedRow, 1).toString();
             maKH = tableModel.getValueAt(selectedRow, 2).toString();
             ngayLap = tableModel.getValueAt(selectedRow, 3).toString();
-//            maGiamGia = tableModel.getValueAt(selectedRow, 4).toString();
             hinhThucThanhToan = tableModel.getValueAt(selectedRow, 5).toString();
             
+            HoaDonBanHang hd = hoaDon_dao.getHoaDonTheoMa(maHD);
+            if (hd != null) {
+                DecimalFormat df = new DecimalFormat("#,##0đ");
+                double thanhTienValue = hd.getTongtienGia();
+                double phanTramGiam = hd.getPhanTramGiamGia() / 100.0;
+                double tongTienBanDauValue = thanhTienValue / (1 - phanTramGiam);
+
+                thanhTien = df.format(thanhTienValue);
+                tongTienBanDau = df.format(tongTienBanDauValue);
+                phanTramGiamGia = String.valueOf(hd.getPhanTramGiamGia());
+                diemTL = String.valueOf(hd.getdiemTL());
+
+                this.tongTienBanDauValue = tongTienBanDauValue;
+                this.thanhTienValue = thanhTienValue;
+            } else {
+                thanhTien = "0đ";
+                tongTienBanDau = "0đ";
+                phanTramGiamGia = "0";
+                this.tongTienBanDauValue = 0;
+                this.thanhTienValue = 0;
+            }
+
             loadHoaDon();
             updateProductPanel(maHD);
         }
     }
-
+    
     @Override
     public void mousePressed(MouseEvent e) {
         
