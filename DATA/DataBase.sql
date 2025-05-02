@@ -372,8 +372,8 @@ INSERT INTO LOAIHANGHOA (TENLH, MOTA) VALUES (N'Trà', N'Trà truyền thống v
 INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Coca Cola', N'Resource/HangHoa/coca.jpg', 12000);
 INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Pepsi', N'Resource/HangHoa/pepsi.jpg', 12000);
 INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Sprite', N'Resource/HangHoa/sprite.jpg', 12000);
-INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Nước tăng lực Sting', N'Resource/HangHoa/sting.jpg', 13000);
-INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Sữa đậu nành Fami', N'Resource/HangHoa/fami.jpg', 10000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Sting', N'Resource/HangHoa/sting.jpg', 13000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Fami', N'Resource/HangHoa/fami.jpg', 10000);
 INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Nước suối Aquafina', N'Resource/HangHoa/aquafina.jpg', 8000);
 
 

@@ -9,5 +9,11 @@
 	<classpathentry kind="lib" path="Library/sqljdbc42.jar"/>
 	<classpathentry kind="lib" path="Library/jfreechart-1.0.19.jar"/>
 	<classpathentry kind="lib" path="Library/jcommon-1.0.23.jar"/>
+	<classpathentry kind="lib" path="Library/webcam-capture-0.3.12.jar"/>
+	<classpathentry kind="lib" path="Library/core-3.5.1.jar"/>
+	<classpathentry kind="lib" path="Library/javase-3.5.1.jar"/>
+	<classpathentry kind="lib" path="Library/slf4j-api-1.7.2.jar"/>
+	<classpathentry kind="lib" path="Library/bridj-0.7.0.jar"/>
+	<classpathentry kind="lib" path="Library/slf4j-simple-1.7.32.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

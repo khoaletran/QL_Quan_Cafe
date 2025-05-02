@@ -709,8 +709,6 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         int selectedRow = table.getSelectedRow();
         if (selectedRow != -1) {
-            txtMaHD.setText(tableModel.getValueAt(selectedRow, 0).toString());
-            
             maHD = tableModel.getValueAt(selectedRow, 0).toString();
             maNV = tableModel.getValueAt(selectedRow, 1).toString();
             sdtKH = tableModel.getValueAt(selectedRow, 2).toString();

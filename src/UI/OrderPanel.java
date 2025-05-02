@@ -8,6 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import Bien.BIEN;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.Printable;
@@ -40,6 +41,7 @@ public class OrderPanel extends JPanel {
     private JTextField discountCodeField;
     private JTextField phoneField;
     private JCheckBox bankTransferCheckBox;
+    private JButton scanQRCodeButton;
     private double discountPercentage = 0.0;
     private double customerDiscount = 0.0;
     private double total = 0.0;
@@ -60,6 +62,21 @@ public class OrderPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         createUI();
     }
+    
+    public void handleScanQRCode(JPanel panel) {
+        new Thread(() -> {
+            String qrResult = QuetQR.scanQRCode();
+
+            SwingUtilities.invokeLater(() -> {
+                if (qrResult != null) {
+                    discountCodeField.setText(qrResult);
+                } else {
+                    JOptionPane.showMessageDialog(panel, "Không quét được mã QR!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            });
+        }).start();
+    }
+    
 
     private void createUI() {
         JPanel headerPanel = new JPanel(new BorderLayout());
@@ -128,8 +145,14 @@ public class OrderPanel extends JPanel {
         discountCodeLabel.setForeground(Color.BLUE);
         discountCodeField = new JTextField(10);
         discountCodeField.setPreferredSize(new Dimension(100, 25));
+
+        scanQRCodeButton = new JButton("QR");
+        scanQRCodeButton.setFont(new Font("Arial", Font.PLAIN, 12));
+        scanQRCodeButton.addActionListener(e -> handleScanQRCode(headerPanel));
+
         discountPanel.add(discountCodeLabel);
         discountPanel.add(discountCodeField);
+        discountPanel.add(scanQRCodeButton); 
         summaryPanel.add(discountPanel);
 
         JPanel discountAmountPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -531,6 +554,8 @@ public class OrderPanel extends JPanel {
         label.setHorizontalAlignment(SwingConstants.RIGHT);
         return label;
     }
+    
+
 
 
     public void addOrderItem(HangHoa hh, int quantity) {
