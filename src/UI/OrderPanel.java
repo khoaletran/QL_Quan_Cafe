@@ -27,7 +27,6 @@ import Dao.MaGiamGia_DAO;
 import Model.KhachHang;
 import Model.HangHoa;
 import Model.ChiTietHoaDon;
-import Model.DanhSach_LoaiKhachHang;
 import Model.HoaDonBanHang;
 import Model.MaGiamGia;
 import Model.LoaiKhachHang;

@@ -7,7 +7,7 @@ DECLARE @i INT = 1;
 DECLARE @MANV varchar(6);
 DECLARE @MAKH varchar(6)
 
-WHILE @i <= 500
+WHILE @i <= 1000
 BEGIN
     DECLARE @Month INT = FLOOR(RAND() * 12) + 1;       
     DECLARE @Day INT = FLOOR(RAND() * 28) + 1;        

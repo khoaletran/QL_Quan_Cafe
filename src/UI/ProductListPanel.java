@@ -1,19 +1,25 @@
 package UI;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.List;
+
 import Dao.HangHoa_DAO;
 import Model.HangHoa;
 
 public class ProductListPanel extends JPanel {
-    private ArrayList<HangHoa> dsHH;
-    private JPanel productGridPanel; // Để cập nhật sản phẩm khi tìm kiếm 
-    private OrderPanel orderPanel; // Tham chiếu đến OrderPanel    
+    private List<HangHoa> dsHH;
+    private JPanel productGridPanel;
+    private OrderPanel orderPanel;
+    private JTextField searchField; // Khai báo để sử dụng trong DocumentListener
+	private HangHoa_DAO hangHoaDAO;
 
     public ProductListPanel(OrderPanel orderPanel) {
-    	this.orderPanel = orderPanel;
+        this.orderPanel = orderPanel;
         setLayout(new BorderLayout());
+        hangHoaDAO = new HangHoa_DAO();
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setBackground(Color.WHITE);
         createUI();
@@ -25,12 +31,15 @@ public class ProductListPanel extends JPanel {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
 
-        JPanel searchPanel = new JPanel(new BorderLayout(5, 0));
-        JTextField searchField = new JTextField();
-        searchPanel.add(searchField, BorderLayout.CENTER);
+        JPanel searchPanel = new JPanel(new BorderLayout(5, 5));
+        searchPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        searchField = new JTextField();
         CustomButton searchButton = new CustomButton("🔍", Color.WHITE, Color.BLACK, 5);
-        searchButton.addActionListener(e -> searchProducts(searchField.getText().trim()));
+        searchPanel.add(searchField, BorderLayout.CENTER);
         searchPanel.add(searchButton, BorderLayout.EAST);
+
+        // Thêm DocumentListener cho tìm kiếm động
+        searchField.getDocument().addDocumentListener(createDocumentListener());
 
         headerPanel.add(titleLabel, BorderLayout.NORTH);
         headerPanel.add(searchPanel, BorderLayout.SOUTH);
@@ -48,37 +57,59 @@ public class ProductListPanel extends JPanel {
         loadProducts(); // Tải sản phẩm sau khi tạo UI
     }
 
+    private DocumentListener createDocumentListener() {
+        return new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                thucHienTimKiem();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                thucHienTimKiem();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                thucHienTimKiem();
+            }
+
+            private void thucHienTimKiem() {
+                String keyword = searchField.getText().trim();
+                try {
+                    if (keyword.isEmpty()) {
+                        dsHH = HangHoa_DAO.getAllHangHoa(); // Hiển thị tất cả nếu từ khóa rỗng
+                    } else {
+                        dsHH = hangHoaDAO.timKiemHangHoa(keyword); // Giả sử phương thức này tồn tại
+                    }
+                    addProducts(dsHH); // Cập nhật danh sách sản phẩm
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(ProductListPanel.this, 
+                        "Lỗi khi tìm kiếm sản phẩm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+    }
+
     private void loadProducts() {
         try {
             dsHH = HangHoa_DAO.getAllHangHoa();
             addProducts(dsHH);
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách sản phẩm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách sản phẩm!", 
+                "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void addProducts(ArrayList<HangHoa> products) {
+    private void addProducts(List<HangHoa> dsHH2) {
         productGridPanel.removeAll();
-        for (HangHoa hh : products) {
+        for (HangHoa hh : dsHH2) {
             productGridPanel.add(createProductCard(hh));
         }
         productGridPanel.revalidate();
         productGridPanel.repaint();
-    }
-
-    private void searchProducts(String keyword) {
-        if (keyword.isEmpty()) {
-            addProducts(dsHH); // Hiển thị tất cả nếu không có từ khóa
-            return;
-        }
-        ArrayList<HangHoa> filteredProducts = new ArrayList<>();
-        for (HangHoa hh : dsHH) {
-            if (hh.getTenHH().toLowerCase().contains(keyword.toLowerCase())) {
-                filteredProducts.add(hh);
-            }
-        }
-        addProducts(filteredProducts);
     }
 
     private JPanel createProductCard(HangHoa hh) {
@@ -128,7 +159,7 @@ public class ProductListPanel extends JPanel {
         card.add(selectButton, BorderLayout.SOUTH);
         return card;
     }
-    
+
     private void addToOrder(HangHoa hh) {
         if (hh != null) {
             orderPanel.addOrderItem(hh, 1);
