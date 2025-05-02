@@ -27,6 +27,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -181,6 +182,13 @@ public class NhanVienPanel extends JPanel {
 		};
 		table = new JTable(tableModel);
 		table.setFont(new Font("Arial", Font.PLAIN, 14));
+		
+		table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+	        
+	    //căn giữa tên collumn
+	    DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
+	    headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+		
 		table.setRowHeight(30);
 
 		table.addMouseListener(new MouseAdapter() {

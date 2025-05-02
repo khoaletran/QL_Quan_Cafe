@@ -140,9 +140,16 @@ public class KhachHangPanel extends JPanel {
         table = new JTable(tableModel);
         table.setFont(new Font("Arial", Font.PLAIN, 14));
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+        
+        //căn giữa tên collumn
+        DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
+        headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        
         table.setRowHeight(30);
         table.setGridColor(new Color(200, 200, 200));
         table.setShowGrid(true);
+        
 
         // Renderer tùy chỉnh để căn giữa nội dung
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -272,19 +279,35 @@ public class KhachHangPanel extends JPanel {
         try {
             String tenKH = txtTenKH.getText().trim();
             String soDienThoai = txtSoDienThoai.getText().trim();
-            int diemTL = Integer.parseInt(txtDiemTL.getText().trim());
+
+            if (tenKH.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập tên khách hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (soDienThoai.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập số điện thoại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int diemTL;
+            try {
+                diemTL = Integer.parseInt(txtDiemTL.getText().trim());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Điểm tích lũy phải là số nguyên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             KhachHang newKH = new KhachHang(tenKH, soDienThoai, diemTL);
             boolean result = KhachHang_DAO.themKhachHang(newKH);
             if (result) {
                 dskh.add(newKH);
                 updateTable();
                 lamRong();
+                JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "Thất bại! Do Trùng số điện thoại ", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Thêm thất bại! Số điện thoại đã tồn tại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Điểm tích lũy phải là số nguyên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -319,30 +342,51 @@ public class KhachHangPanel extends JPanel {
     private void xuLySuKienSuaKhachHang() {
         try {
             String maKH = txtMaKH.getText().trim();
-            String tenKH = txtTenKH.getText().trim();
-            String soDienThoai = txtSoDienThoai.getText().trim();
-            int diemTL = Integer.parseInt(txtDiemTL.getText().trim());
             if (maKH.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng để sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
+
+            String tenKH = txtTenKH.getText().trim();
+            String soDienThoai = txtSoDienThoai.getText().trim();
+
+            if (tenKH.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập tên khách hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (soDienThoai.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập số điện thoại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int diemTL;
+            try {
+                diemTL = Integer.parseInt(txtDiemTL.getText().trim());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Điểm tích lũy phải là số nguyên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn cập nhật thông tin khách hàng này không?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+            if (confirm != JOptionPane.YES_OPTION) return;
+
+            
             KhachHang newKH = new KhachHang(maKH, tenKH, soDienThoai, diemTL);
             boolean ok = KhachHang_DAO.suaKhachHang(newKH);
             if (ok) {
-                JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
+                JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thành công!");
                 updateTable();
                 lamRong();
             } else {
-                JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+                JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thất bại!");
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Điểm tích lũy phải là số nguyên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
+
 
     private void xuLySuKienLamMoi() {
         dskh = KhachHang_DAO.getAllKhachHang();

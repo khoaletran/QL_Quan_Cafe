@@ -92,7 +92,11 @@ public class SanPhamPanel extends JPanel {
 		// Tăng kích thước chữ trong bảng
 		Font tableFont = new Font("Arial", Font.PLAIN, 14); // Kích thước chữ lớn hơn
 		table.setFont(tableFont);
-
+		
+	        
+	    //căn giữa tên collumn
+	    DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
+	    headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		// Làm đậm chữ trong header
 		JTableHeader header = table.getTableHeader();
 		header.setFont(new Font("Arial", Font.BOLD, 14)); // Header in đậm
