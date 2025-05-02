@@ -67,11 +67,11 @@ public class ThongKe_DAO {
 
     
     public static Map<String, Double> getDoanhThuTheoThang(Connection conn) throws Exception {
-        String sql = "SELECT MONTH(NGAYHDBH) AS THANG, TONGTIEN AS DOANHTHU " +
+        String sql = "SELECT MONTH(NGAYHDBH) AS THANG, SUM(TONGTIEN) AS DOANHTHU " +
                      "FROM HOADONBANHANG HDBH " +
                      "JOIN CHITIETHOADON CTHD ON HDBH.MAHDBH = CTHD.MAHDBH " +
                      "WHERE YEAR(HDBH.NGAYHDBH) = YEAR(GETDATE()) " +
-                     "GROUP BY MONTH(NGAYHDBH),TONGTIEN " +
+                     "GROUP BY MONTH(NGAYHDBH)" +
                      "ORDER BY THANG";
 
         Map<String, Double> result = new LinkedHashMap<>();
