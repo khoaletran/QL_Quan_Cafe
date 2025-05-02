@@ -55,6 +55,7 @@ public class SanPhamPanel extends JPanel {
 	private JButton btnXoaTrang;
 	private List<HangHoa> dsHH;
 	private JTextField txtHinhAnhPath;
+	private JComboBox<String> cbLocLoaiHH;
 
 	public SanPhamPanel() {
 		try {
@@ -264,6 +265,8 @@ public class SanPhamPanel extends JPanel {
 
 		// Panel nút
 		JPanel buttonPanel = new JPanel(new FlowLayout());
+		buttonPanel.setBorder(BorderFactory.createTitledBorder("Chức năng chính"));
+
 		btnThem = new JButton("Thêm");
 		btnSua = new JButton("Sửa");
 		btnXoa = new JButton("Xóa");
@@ -291,8 +294,44 @@ public class SanPhamPanel extends JPanel {
 		btnSua.addActionListener(e -> suaHangHoa());
 		btnXoaTrang.addActionListener(e -> clearForm());
 		txtTimKiem.getDocument().addDocumentListener(timKiemDong());
+		
+		
+		JPanel locLoaiHangCbo = new JPanel(new BorderLayout());
+		locLoaiHangCbo.setBorder(BorderFactory.createCompoundBorder(
+			    BorderFactory.createTitledBorder("Lọc theo loại hàng"),
+			    BorderFactory.createEmptyBorder(5, 10, 5, 10)
+			));
+
+		cbLocLoaiHH = new JComboBox<String>();
+		cbLocLoaiHH.addItem("Tất cả");
+		for (LoaiHangHoa lhh : loaiHangHoaDAO.getAllLoaiHangHoa()) {
+			
+		    cbLocLoaiHH.addItem(lhh.getTenLoaiHang());
+		}
+		cbLocLoaiHH.addItemListener(e -> locLoaiHang());
+		locLoaiHangCbo.add(cbLocLoaiHH, BorderLayout.CENTER);
+		gbc.gridx = 0;
+		gbc.gridy = 8;
+		locLoaiHangCbo.add(cbLocLoaiHH);
+		formPanel.add(locLoaiHangCbo, gbc);
 	}
 
+	private void locLoaiHang() {
+        String loaiHang = cbLocLoaiHH.getSelectedItem().toString();
+        tableModel.setRowCount(0); 
+        for (HangHoa hh : dsHH) {
+            if (loaiHang.equals("Tất cả") || hh.getLoaiHangHoa().getTenLoaiHang().equalsIgnoreCase(loaiHang)) {
+                ImageIcon imageIcon = createImageIcon(hh.getHinhAnh(), 150, 100);
+                tableModel.addRow(new Object[] {
+                    hh.getMaHH(),
+                    hh.getTenHH(),
+                    imageIcon != null ? imageIcon : hh.getHinhAnh(),
+                    hh.getGiaSP(),
+                    hh.getLoaiHangHoa().getTenLoaiHang()
+                });
+            }
+        }
+    }
 	private void loadData() {
 		tableModel.setRowCount(0);
 		dsHH = hangHoaDAO.getAllHangHoaForSanPhamPanel();
