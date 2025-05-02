@@ -10,14 +10,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -58,7 +57,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     private DefaultTableModel tableModel;
     private HoaDon_DAO hoaDon_dao;
     private KhachHang_DAO khachHang_dao;
-    private JTextField txtMaHD,txtSDT;
+    private JTextField txtMaHD, txtSDT;
     private String maHD = "---";
     private String ngayLap = "---";
     private String maNV = "---";
@@ -90,8 +89,9 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     private double thanhTienValue;
     private JCheckBox jCb_TienMat;
     private JCheckBox jCb_ChuyenKhoan;
-    private JComboBox<String> jCb_LocTheo;
-    private JTextField jTf_ThoiGian;
+    private JComboBox<String> jCb_Ngay;
+    private JComboBox<String> jCb_Thang;
+    private JComboBox<String> jCb_Nam;
     private JTextField jTf_TongTienTu;
     private JTextField jTf_TongTienDen;
     private JButton jBt_Loc;
@@ -203,18 +203,54 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.weightx = 1.0;
-        jCb_LocTheo = new JComboBox<>(new String[]{"Không lọc", "Lọc theo ngày", "Lọc theo tháng", "Lọc theo năm"});
-        jCb_LocTheo.setFont(new Font("Arial", Font.PLAIN, 14));
-        jCb_LocTheo.setSelectedIndex(0);
-        jPn_Loc.add(jCb_LocTheo, gbc);
+        JPanel jPn_ThoiGian = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        jPn_ThoiGian.setBackground(new Color(240, 242, 245));
 
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.weightx = 0;
-        jTf_ThoiGian = new JTextField(10);
-        jTf_ThoiGian.setFont(new Font("Arial", Font.PLAIN, 14));
-        jTf_ThoiGian.setEnabled(false);
-        jPn_Loc.add(jTf_ThoiGian, gbc);
+        // JComboBox Ngày
+        String[] ngayItems = new String[32];
+        ngayItems[0] = "";
+        for (int i = 1; i <= 31; i++) {
+            ngayItems[i] = String.valueOf(i);
+        }
+        JLabel lblNgay = new JLabel("Ngày:");
+        lblNgay.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_ThoiGian.add(lblNgay);
+        jCb_Ngay = new JComboBox<>(ngayItems);
+        jCb_Ngay.setFont(new Font("Arial", Font.PLAIN, 14));
+        jCb_Ngay.setPreferredSize(new Dimension(60, 25));
+        jPn_ThoiGian.add(jCb_Ngay);
+
+        // JComboBox Tháng
+        String[] thangItems = new String[13];
+        thangItems[0] = "";
+        for (int i = 1; i <= 12; i++) {
+            thangItems[i] = String.valueOf(i);
+        }
+        JLabel lblThang = new JLabel("Tháng:");
+        lblThang.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_ThoiGian.add(lblThang);
+        jCb_Thang = new JComboBox<>(thangItems);
+        jCb_Thang.setFont(new Font("Arial", Font.PLAIN, 14));
+        jCb_Thang.setPreferredSize(new Dimension(60, 25));
+        jPn_ThoiGian.add(jCb_Thang);
+
+        // JComboBox Năm
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        int startYear = 2000;
+        String[] namItems = new String[currentYear - startYear + 2];
+        namItems[0] = "";
+        for (int i = 0; i <= currentYear - startYear; i++) {
+            namItems[i + 1] = String.valueOf(startYear + i);
+        }
+        JLabel lblNam = new JLabel("Năm:");
+        lblNam.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_ThoiGian.add(lblNam);
+        jCb_Nam = new JComboBox<>(namItems);
+        jCb_Nam.setFont(new Font("Arial", Font.PLAIN, 14));
+        jCb_Nam.setPreferredSize(new Dimension(80, 25));
+        jPn_ThoiGian.add(jCb_Nam);
+
+        jPn_Loc.add(jPn_ThoiGian, gbc);
 
         // Dòng 3: Lọc theo tổng tiền
         gbc.gridx = 0;
@@ -244,7 +280,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.weightx = 0;
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 2;
         JPanel jPn_NutLoc = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         jPn_NutLoc.setBackground(new Color(240, 242, 245));
 
@@ -259,24 +295,6 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         jBt_Reset.addActionListener(e -> resetLoc());
 
         jPn_Loc.add(jPn_NutLoc, gbc);
-
-        // Thêm ItemListener cho jCb_LocTheo để bật/tắt jTf_ThoiGian
-        jCb_LocTheo.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                String selected = jCb_LocTheo.getSelectedItem().toString();
-                jTf_ThoiGian.setEnabled(!selected.equals("Không lọc"));
-                jTf_ThoiGian.setText("");
-                if (selected.equals("Lọc theo ngày")) {
-                    jTf_ThoiGian.setToolTipText("Nhập định dạng YYYY-MM-DD");
-                } else if (selected.equals("Lọc theo tháng")) {
-                    jTf_ThoiGian.setToolTipText("Nhập định dạng YYYY-MM");
-                } else if (selected.equals("Lọc theo năm")) {
-                    jTf_ThoiGian.setToolTipText("Nhập định dạng YYYY");
-                } else {
-                    jTf_ThoiGian.setToolTipText(null);
-                }
-            }
-        });
 
         tablePanel.add(jPn_Loc, BorderLayout.SOUTH);
         add(tablePanel, BorderLayout.CENTER);
@@ -591,7 +609,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             private void thucHienTimKiem() {
                 String mahd = txtMaHD.getText().trim();
                 if (mahd.isEmpty()) {
-                	DocDuLieuDatabaseVaoTable();
+                    DocDuLieuDatabaseVaoTable();
                 } else {
                     list = HoaDon_DAO.getDSHoaDonTheoMa(mahd);
                 }
@@ -620,7 +638,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             private void thucHienTimKiem() {
                 String sdt = txtSDT.getText().trim();
                 if (sdt.isEmpty()) {
-                	DocDuLieuDatabaseVaoTable();
+                    DocDuLieuDatabaseVaoTable();
                 } else {
                     list = HoaDon_DAO.getDSHoaDonTheoSDT(sdt);
                 }
@@ -709,7 +727,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         int selectedRow = table.getSelectedRow();
         if (selectedRow != -1) {
-            txtMaHD.setText(tableModel.getValueAt(selectedRow, 0).toString());
+//            txtMaHD.setText(tableModel.getValueAt(selectedRow, 0).toString());
             
             maHD = tableModel.getValueAt(selectedRow, 0).toString();
             maNV = tableModel.getValueAt(selectedRow, 1).toString();
@@ -753,7 +771,6 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     }
 
     private void timHoaDon() {
-    	// CHÓ NHÃ NGU
         String maHDInput = txtMaHD.getText().trim();
         
         if (maHDInput.isEmpty()) {
@@ -1016,8 +1033,9 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
 
         boolean filterTienMat = jCb_TienMat.isSelected();
         boolean filterChuyenKhoan = jCb_ChuyenKhoan.isSelected();
-        String locTheo = (String) jCb_LocTheo.getSelectedItem();
-        String thoiGian = jTf_ThoiGian.getText().trim();
+        String ngay = (String) jCb_Ngay.getSelectedItem();
+        String thang = (String) jCb_Thang.getSelectedItem();
+        String nam = (String) jCb_Nam.getSelectedItem();
         String tongTienTu = jTf_TongTienTu.getText().trim();
         String tongTienDen = jTf_TongTienDen.getText().trim();
 
@@ -1025,11 +1043,27 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM");
         SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
 
+        // Kiểm tra ngày hợp lệ
+        boolean validDate = true;
+        if (!ngay.isEmpty() && !thang.isEmpty() && !nam.isEmpty()) {
+            try {
+                String dateStr = String.format("%s-%02d-%02d", nam, Integer.parseInt(thang), Integer.parseInt(ngay));
+                dateFormat.setLenient(false);
+                dateFormat.parse(dateStr);
+            } catch (ParseException e) {
+                JOptionPane.showMessageDialog(this, "Ngày không hợp lệ (ví dụ: 31/4 không tồn tại)!", 
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
         for (HoaDonBanHang hd : list) {
             boolean match = true;
 
+            // Lọc theo hình thức thanh toán
             if (filterTienMat || filterChuyenKhoan) {
                 if (filterTienMat && filterChuyenKhoan) {
+                    // Cả hai đều được chọn, không cần lọc
                 } else if (filterTienMat && hd.isHinhThucThanhToan()) {
                     match = false;
                 } else if (filterChuyenKhoan && !hd.isHinhThucThanhToan()) {
@@ -1038,26 +1072,26 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             }
 
             // Lọc theo thời gian
-            if (!locTheo.equals("Không lọc") && !thoiGian.isEmpty()) {
+            if (!nam.isEmpty()) {
                 try {
                     String hdDateStr = hd.getNgayLapHDBH().toString();
-                    if (locTheo.equals("Lọc theo ngày")) {
-                        if (!hdDateStr.equals(thoiGian)) {
-                            match = false;
-                        }
-                    } else if (locTheo.equals("Lọc theo tháng")) {
+                    String hdYear = yearFormat.format(dateFormat.parse(hdDateStr));
+                    if (!hdYear.equals(nam)) {
+                        match = false;
+                    } else if (!thang.isEmpty()) {
                         String hdMonth = monthFormat.format(dateFormat.parse(hdDateStr));
-                        if (!hdMonth.equals(thoiGian)) {
+                        String filterMonth = String.format("%s-%02d", nam, Integer.parseInt(thang));
+                        if (!hdMonth.equals(filterMonth)) {
                             match = false;
-                        }
-                    } else if (locTheo.equals("Lọc theo năm")) {
-                        String hdYear = yearFormat.format(dateFormat.parse(hdDateStr));
-                        if (!hdYear.equals(thoiGian)) {
-                            match = false;
+                        } else if (!ngay.isEmpty()) {
+                            String filterDate = String.format("%s-%02d-%02d", nam, Integer.parseInt(thang), Integer.parseInt(ngay));
+                            if (!hdDateStr.equals(filterDate)) {
+                                match = false;
+                            }
                         }
                     }
                 } catch (ParseException e) {
-                    JOptionPane.showMessageDialog(this, "Định dạng thời gian không hợp lệ!", 
+                    JOptionPane.showMessageDialog(this, "Lỗi xử lý ngày hóa đơn!", 
                         "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -1123,8 +1157,9 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     private void resetLoc() {
         jCb_TienMat.setSelected(false);
         jCb_ChuyenKhoan.setSelected(false);
-        jCb_LocTheo.setSelectedIndex(0);
-        jTf_ThoiGian.setText("");
+        jCb_Ngay.setSelectedIndex(0);
+        jCb_Thang.setSelectedIndex(0);
+        jCb_Nam.setSelectedIndex(0);
         jTf_TongTienTu.setText("");
         jTf_TongTienDen.setText("");
         txtMaHD.setText("");
