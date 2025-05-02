@@ -53,7 +53,7 @@ public class KhachHangPanel extends JPanel {
         titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
         add(titleLabel, BorderLayout.NORTH);
 
-        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 8, 75));
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 8, 90));
         inputPanel.setBackground(new Color(245, 245, 245));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
