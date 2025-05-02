@@ -10,9 +10,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +25,8 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -80,6 +86,14 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     private JLabel lBl_diemTL;
     private double tongTienBanDauValue;
     private double thanhTienValue;
+    private JCheckBox jCb_TienMat;
+    private JCheckBox jCb_ChuyenKhoan;
+    private JComboBox<String> jCb_LocTheo;
+    private JTextField jTf_ThoiGian;
+    private JTextField jTf_TongTienTu;
+    private JTextField jTf_TongTienDen;
+    private JButton jBt_Loc;
+    private JButton jBt_Reset;
 
     public QuanLyDonPanel() {
         try {
@@ -98,9 +112,9 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
     private void initUI() {
         setLayout(new BorderLayout());
 
-        // Phần CENTER: JPanel chứa tiêu đề và JTable
+        // Phần CENTER: JPanel chứa tiêu đề, JTable và bộ lọc
         JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.setBackground(new Color(240, 242, 245)); // Xám nhạt
+        tablePanel.setBackground(new Color(240, 242, 245));
 
         // Tiêu đề "Quản lý Hóa Đơn"
         JLabel lblTitle = new JLabel("Quản lý Hóa Đơn", JLabel.CENTER);
@@ -116,19 +130,15 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         table.setRowHeight(30);
         table.addMouseListener(this);
 
-        // Tăng kích thước chữ trong bảng
         Font tableFont = new Font("Arial", Font.PLAIN, 14);
         table.setFont(tableFont);
 
-        // Làm đậm chữ trong header
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Arial", Font.BOLD, 14));
         
-        // Căn giữa tên cột
         DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
         headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         
-        // Renderer tùy chỉnh cho các cột văn bản
         DefaultTableCellRenderer textRenderer = new DefaultTableCellRenderer();
         textRenderer.setFont(tableFont);
         textRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -136,24 +146,141 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             table.getColumnModel().getColumn(i).setCellRenderer(textRenderer);
         }
 
-        // Set chiều rộng cho từng cột
-        table.getColumnModel().getColumn(0).setPreferredWidth(100); // Mã Hóa Đơn
-        table.getColumnModel().getColumn(1).setPreferredWidth(80);  // Mã NV
-        table.getColumnModel().getColumn(2).setPreferredWidth(120); // SDT Khách Hàng
-        table.getColumnModel().getColumn(3).setPreferredWidth(100); // Ngày Lập
-        table.getColumnModel().getColumn(4).setPreferredWidth(100); // Tổng Tiền
-        table.getColumnModel().getColumn(5).setPreferredWidth(120); // Thanh Toán
+        table.getColumnModel().getColumn(0).setPreferredWidth(100);
+        table.getColumnModel().getColumn(1).setPreferredWidth(80);
+        table.getColumnModel().getColumn(2).setPreferredWidth(120);
+        table.getColumnModel().getColumn(3).setPreferredWidth(100);
+        table.getColumnModel().getColumn(4).setPreferredWidth(100);
+        table.getColumnModel().getColumn(5).setPreferredWidth(120);
 
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        tablePanel.add(scrollPane, BorderLayout.CENTER);
-        add(tablePanel, BorderLayout.CENTER);
-        
         scrollPane.setBorder(BorderFactory.createTitledBorder("Danh Sách Hóa Đơn"));
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Phần lọc bên dưới bảng
+        JPanel jPn_Loc = new JPanel(new GridBagLayout());
+        jPn_Loc.setBackground(new Color(240, 242, 245));
+        jPn_Loc.setBorder(BorderFactory.createTitledBorder("Bộ Lọc"));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Dòng 1: Checkbox hình thức thanh toán
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0;
+        JLabel jLb_ThanhToan = new JLabel("Hình thức thanh toán:");
+        jLb_ThanhToan.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_Loc.add(jLb_ThanhToan, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        JPanel jPn_ThanhToan = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        jPn_ThanhToan.setBackground(new Color(240, 242, 245));
+        jCb_TienMat = new JCheckBox("Tiền mặt");
+        jCb_TienMat.setFont(new Font("Arial", Font.PLAIN, 14));
+        jCb_TienMat.setBackground(new Color(240, 242, 245));
+        jPn_ThanhToan.add(jCb_TienMat);
+        jCb_ChuyenKhoan = new JCheckBox("Chuyển khoản");
+        jCb_ChuyenKhoan.setFont(new Font("Arial", Font.PLAIN, 14));
+        jCb_ChuyenKhoan.setBackground(new Color(240, 242, 245));
+        jPn_ThanhToan.add(jCb_ChuyenKhoan);
+        jPn_Loc.add(jPn_ThanhToan, gbc);
+
+        // Dòng 2: Lọc theo thời gian
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 0;
+        JLabel jLb_LocTheo = new JLabel("Lọc theo thời gian:");
+        jLb_LocTheo.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_Loc.add(jLb_LocTheo, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        jCb_LocTheo = new JComboBox<>(new String[]{"Không lọc", "Lọc theo ngày", "Lọc theo tháng", "Lọc theo năm"});
+        jCb_LocTheo.setFont(new Font("Arial", Font.PLAIN, 14));
+        jCb_LocTheo.setSelectedIndex(0);
+        jPn_Loc.add(jCb_LocTheo, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.weightx = 0;
+        jTf_ThoiGian = new JTextField(10);
+        jTf_ThoiGian.setFont(new Font("Arial", Font.PLAIN, 14));
+        jTf_ThoiGian.setEnabled(false);
+        jPn_Loc.add(jTf_ThoiGian, gbc);
+
+        // Dòng 3: Lọc theo tổng tiền
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.weightx = 0;
+        JLabel jLb_TongTien = new JLabel("Tổng tiền (VNĐ):");
+        jLb_TongTien.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_Loc.add(jLb_TongTien, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.weightx = 1.0;
+        JPanel jPn_TongTien = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        jPn_TongTien.setBackground(new Color(240, 242, 245));
+        jTf_TongTienTu = new JTextField(8);
+        jTf_TongTienTu.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_TongTien.add(jTf_TongTienTu);
+        JLabel jLb_Den = new JLabel("đến");
+        jLb_Den.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_TongTien.add(jLb_Den);
+        jTf_TongTienDen = new JTextField(8);
+        jTf_TongTienDen.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_TongTien.add(jTf_TongTienDen);
+        jPn_Loc.add(jPn_TongTien, gbc);
+
+        // Dòng 4: Nút Lọc và Reset
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.weightx = 0;
+        gbc.gridwidth = 3;
+        JPanel jPn_NutLoc = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        jPn_NutLoc.setBackground(new Color(240, 242, 245));
+
+        jBt_Loc = new JButton("Lọc");
+        jBt_Loc.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_NutLoc.add(jBt_Loc);
+        jBt_Loc.addActionListener(e -> locHoaDon());
+
+        jBt_Reset = new JButton("Reset");
+        jBt_Reset.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_NutLoc.add(jBt_Reset);
+        jBt_Reset.addActionListener(e -> resetLoc());
+
+        jPn_Loc.add(jPn_NutLoc, gbc);
+
+        // Thêm ItemListener cho jCb_LocTheo để bật/tắt jTf_ThoiGian
+        jCb_LocTheo.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                String selected = jCb_LocTheo.getSelectedItem().toString();
+                jTf_ThoiGian.setEnabled(!selected.equals("Không lọc"));
+                jTf_ThoiGian.setText("");
+                if (selected.equals("Lọc theo ngày")) {
+                    jTf_ThoiGian.setToolTipText("Nhập định dạng YYYY-MM-DD");
+                } else if (selected.equals("Lọc theo tháng")) {
+                    jTf_ThoiGian.setToolTipText("Nhập định dạng YYYY-MM");
+                } else if (selected.equals("Lọc theo năm")) {
+                    jTf_ThoiGian.setToolTipText("Nhập định dạng YYYY");
+                } else {
+                    jTf_ThoiGian.setToolTipText(null);
+                }
+            }
+        });
+
+        tablePanel.add(jPn_Loc, BorderLayout.SOUTH);
+        add(tablePanel, BorderLayout.CENTER);
 
         // Phần EAST: JPanel chứa thông tin chi tiết hóa đơn
         JPanel inputPanel = new JPanel(new BorderLayout());
-        inputPanel.setPreferredSize(new java.awt.Dimension(400, 650));
+        inputPanel.setPreferredSize(new Dimension(400, 650));
         inputPanel.setBackground(Color.WHITE);
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
@@ -181,11 +308,10 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         Font infoFont = new Font("Arial", Font.PLAIN, 14);
         infoPanel.add(Box.createVerticalStrut(10));
 
-        // Khởi tạo và thêm các JLabel
         lblMaHD = createInfoLabel("Mã hóa đơn: " + maHD, infoFont);
         lblNgayLap = createInfoLabel("Ngày lập: " + ngayLap, infoFont);
         lblMaNV = createInfoLabel("Nhân viên: " + maNV, infoFont);
-        lblMaKH = createInfoLabel("Khách hàng: " + tenKH +"(SDT: "+sdtKH+")", infoFont);
+        lblMaKH = createInfoLabel("Khách hàng: " + tenKH + "(SDT: " + sdtKH + ")", infoFont);
         lblHinhThucThanhToan = createInfoLabel("Hình thức thanh toán: " + hinhThucThanhToan, infoFont);
         lblMaGiamGia = createInfoLabel("Mã giảm giá: " + maGiamGia, infoFont);
 
@@ -200,7 +326,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         separatorPanel.setBackground(new Color(245, 245, 245));
         JSeparator infoSeparator = new JSeparator();
         infoSeparator.setForeground(Color.BLACK);
-        infoSeparator.setPreferredSize(new java.awt.Dimension(4000, 2));
+        infoSeparator.setPreferredSize(new Dimension(4000, 2));
         separatorPanel.add(infoSeparator);
         infoPanel.add(separatorPanel);
 
@@ -216,38 +342,37 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         productPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), 
             "Chi tiết sản phẩm", 0, 0, new Font("Arial", Font.BOLD, 14)));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 4, 4, 4);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        GridBagConstraints gbcProduct = new GridBagConstraints();
+        gbcProduct.insets = new Insets(4, 4, 4, 4);
+        gbcProduct.fill = GridBagConstraints.HORIZONTAL;
 
         Font headerFont = new Font("Arial", Font.BOLD, 14);
         String[] headers = {"Sản phẩm", "Số lượng", "Giá", "Thành tiền"};
         int[] weights = {3, 1, 2, 2};
         for (int i = 0; i < headers.length; i++) {
-            gbc.gridx = i;
-            gbc.gridy = 0;
-            gbc.weightx = weights[i];
+            gbcProduct.gridx = i;
+            gbcProduct.gridy = 0;
+            gbcProduct.weightx = weights[i];
             JLabel headerLabel = new JLabel(headers[i]);
             headerLabel.setFont(headerFont);
             if (i > 0) headerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            productPanel.add(headerLabel, gbc);
+            productPanel.add(headerLabel, gbcProduct);
         }
 
-        // Dòng mẫu (chưa có dữ liệu)
         Font cellFont = new Font("Arial", Font.PLAIN, 13);
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-        gbc.weightx = weights[0];
-        productPanel.add(createCellLabel("[Chưa có sản phẩm]", cellFont, SwingConstants.LEFT), gbc);
-        gbc.gridx = 1;
-        gbc.weightx = weights[1];
-        productPanel.add(createCellLabel("0", cellFont, SwingConstants.CENTER), gbc);
-        gbc.gridx = 2;
-        gbc.weightx = weights[2];
-        productPanel.add(createCellLabel("0", cellFont, SwingConstants.RIGHT), gbc);
-        gbc.gridx = 3;
-        gbc.weightx = weights[3];
-        productPanel.add(createCellLabel("0", cellFont, SwingConstants.RIGHT), gbc);
+        gbcProduct.gridy = 1;
+        gbcProduct.gridx = 0;
+        gbcProduct.weightx = weights[0];
+        productPanel.add(createCellLabel("[Chưa có sản phẩm]", cellFont, SwingConstants.LEFT), gbcProduct);
+        gbcProduct.gridx = 1;
+        gbcProduct.weightx = weights[1];
+        productPanel.add(createCellLabel("0", cellFont, SwingConstants.CENTER), gbcProduct);
+        gbcProduct.gridx = 2;
+        gbcProduct.weightx = weights[2];
+        productPanel.add(createCellLabel("0", cellFont, SwingConstants.RIGHT), gbcProduct);
+        gbcProduct.gridx = 3;
+        gbcProduct.weightx = weights[3];
+        productPanel.add(createCellLabel("0", cellFont, SwingConstants.RIGHT), gbcProduct);
 
         invoicePanel.add(productPanel);
         invoicePanel.add(Box.createVerticalStrut(20));
@@ -263,26 +388,26 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
 
         sumGbc.gridx = 0;
         sumGbc.gridy = 0;
-        lBl_TongTien = new JLabel("Tổng tiền: "+tongTienBanDau);
+        lBl_TongTien = new JLabel("Tổng tiền: " + tongTienBanDau);
         lBl_TongTien.setFont(new Font("Arial", Font.BOLD, 14));
         lBl_TongTien.setHorizontalAlignment(SwingConstants.RIGHT);
         summaryPanel.add(lBl_TongTien, sumGbc);
 
         sumGbc.gridy = 1;
-        lBl_chietKhau = new JLabel("Chiết khấu: "+chietKhau+"("+phanTramGiamGia+")");
+        lBl_chietKhau = new JLabel("Chiết khấu: " + chietKhau + "(" + phanTramGiamGia + ")");
         lBl_chietKhau.setFont(new Font("Arial", Font.BOLD, 14));
         lBl_chietKhau.setHorizontalAlignment(SwingConstants.RIGHT);
         summaryPanel.add(lBl_chietKhau, sumGbc);
 
         sumGbc.gridy = 2;
-        lBl_thanhTien = new JLabel("Thành tiền: "+thanhTien);
+        lBl_thanhTien = new JLabel("Thành tiền: " + thanhTien);
         lBl_thanhTien.setFont(new Font("Arial", Font.BOLD, 14));
         lBl_thanhTien.setForeground(new Color(204, 0, 0));
         lBl_thanhTien.setHorizontalAlignment(SwingConstants.RIGHT);
         summaryPanel.add(lBl_thanhTien, sumGbc);
 
         sumGbc.gridy = 3;
-        lBl_diemTL = new JLabel("Điểm tích lũy: "+diemTL);
+        lBl_diemTL = new JLabel("Điểm tích lũy: " + diemTL);
         lBl_diemTL.setFont(new Font("Arial", Font.PLAIN, 14));
         lBl_diemTL.setHorizontalAlignment(SwingConstants.RIGHT);
         summaryPanel.add(lBl_diemTL, sumGbc);
@@ -296,54 +421,53 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         invoicePanel.add(summaryPanel);
         invoicePanel.add(Box.createVerticalStrut(20));
 
-        // Phần tìm kiếm: Nhập mã HD, nút Tìm, nút In Hóa Đơn
-        JPanel searchPanel = new JPanel(new GridBagLayout());
-        searchPanel.setBackground(Color.WHITE);
+        // Phần tìm kiếm: Nhập mã HD, nút Tìm, In Hóa Đơn
+        JPanel jPn_TimKiem = new JPanel(new GridBagLayout());
+        jPn_TimKiem.setBackground(Color.WHITE);
+        jPn_TimKiem.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(Color.GRAY), "Chức năng chính",
+            0, 0, new Font("Arial", Font.BOLD, 14)));
         GridBagConstraints searchGbc = new GridBagConstraints();
         searchGbc.insets = new Insets(5, 5, 5, 5);
         searchGbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Nhãn "Nhập mã HD"
         searchGbc.gridx = 0;
         searchGbc.gridy = 0;
         searchGbc.weightx = 0;
-        JLabel lblMaHDInput = new JLabel("Nhập mã HD:");
-        lblMaHDInput.setFont(new Font("Arial", Font.PLAIN, 14));
-        searchPanel.add(lblMaHDInput, searchGbc);
+        JLabel jLb_MaHDInput = new JLabel("Nhập mã HD:");
+        jLb_MaHDInput.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_TimKiem.add(jLb_MaHDInput, searchGbc);
 
-        // JTextField để nhập mã HD
         searchGbc.gridx = 1;
         searchGbc.gridy = 0;
         searchGbc.weightx = 1.0;
         txtMaHD = new JTextField(15);
         txtMaHD.setFont(new Font("Arial", Font.PLAIN, 14));
-        searchPanel.add(txtMaHD, searchGbc);
+        jPn_TimKiem.add(txtMaHD, searchGbc);
 
-        // Nút Tìm
         searchGbc.gridx = 2;
         searchGbc.gridy = 0;
         searchGbc.weightx = 0;
-        JButton btnTim = new JButton("Tìm");
-        btnTim.setFont(new Font("Arial", Font.PLAIN, 14));
-        searchPanel.add(btnTim, searchGbc);
-        btnTim.addActionListener(e -> timHoaDon());
+        JButton jBt_Tim = new JButton("Tìm");
+        jBt_Tim.setFont(new Font("Arial", Font.PLAIN, 14));
+        jPn_TimKiem.add(jBt_Tim, searchGbc);
+        jBt_Tim.addActionListener(e -> timHoaDon());
 
-        // Nút In Hóa Đơn
         searchGbc.gridx = 3;
         searchGbc.gridy = 0;
         searchGbc.weightx = 0;
-        JButton btnInHoaDon = new JButton("In Hóa Đơn");
-        btnInHoaDon.setFont(new Font("Arial", Font.PLAIN, 14));
-        btnInHoaDon.setToolTipText("Ctrl + P để in");
-        searchPanel.add(btnInHoaDon, searchGbc);
-        btnInHoaDon.addActionListener(e -> printHoaDon());
+        JButton jBt_InHoaDon = new JButton("In Hóa Đơn");
+        jBt_InHoaDon.setFont(new Font("Arial", Font.PLAIN, 14));
+        jBt_InHoaDon.setToolTipText("Ctrl + P để in");
+        jPn_TimKiem.add(jBt_InHoaDon, searchGbc);
+        jBt_InHoaDon.addActionListener(e -> printHoaDon());
 
-        invoicePanel.add(searchPanel);
+        invoicePanel.add(jPn_TimKiem);
 
         inputPanel.add(invoicePanel, BorderLayout.CENTER);
         add(inputPanel, BorderLayout.EAST);
 
-        // Thêm Key Binding cho Ctrl + P
+        // Thêm in cho Ctrl + P
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
             KeyStroke.getKeyStroke("control P"), "printInvoice");
         getActionMap().put("printInvoice", new AbstractAction() {
@@ -354,7 +478,6 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         });
     }
 
-    // Hàm hỗ trợ
     private JLabel createInfoLabel(String text, Font font) {
         JLabel label = new JLabel(text);
         label.setFont(font);
@@ -373,7 +496,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         lblMaHD.setText("Mã hóa đơn: " + maHD);
         lblNgayLap.setText("Ngày lập: " + ngayLap);
         lblMaNV.setText("Nhân viên: " + maNV);
-        lblMaKH.setText("Khách hàng: " + tenKH +"(SDT: "+sdtKH+")");
+        lblMaKH.setText("Khách hàng: " + tenKH + "(SDT: " + sdtKH + ")");
         lblHinhThucThanhToan.setText("Hình thức thanh toán: " + hinhThucThanhToan);
 
         DecimalFormat df = new DecimalFormat("#,##0đ");
@@ -383,7 +506,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         lBl_TongTien.setText("Tổng tiền: " + tongTienBanDau);
         lBl_thanhTien.setText("Thành tiền: " + thanhTien);
         lBl_chietKhau.setText("Chiết khấu: " + df.format(chietKhauValue) + " (" + phanTramGiamGia + "%)");
-        lBl_diemTL.setText("Điểm tích lũy: "+diemTL);
+        lBl_diemTL.setText("Điểm tích lũy: " + diemTL);
     }
 
     public void DocDuLieuDatabaseVaoTable() {
@@ -408,10 +531,10 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
                 hd.getNgayLapHDBH(),
                 df.format(tongTienBanDauValue),
                 hd.isHinhThucThanhToan() ? "Chuyển khoản" : "Tiền mặt"
-            });  
+            });
         }
     }
-    
+
     private void updateProductPanel(String maHDBH) {
         List<ChiTietHoaDon> chiTietList;
         try {
@@ -421,7 +544,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             chiTietList = new ArrayList<>();
             JOptionPane.showMessageDialog(this, 
                 "Không thể tải chi tiết sản phẩm: " + e.getMessage(), 
-                "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
+                "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
 
         productPanel.removeAll();
@@ -534,8 +657,9 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             updateProductPanel(maHD);
         }
     }
-    
+
     private void timHoaDon() {
+    	// CHÓ NHÃ NGU
         String maHDInput = txtMaHD.getText().trim();
         
         if (maHDInput.isEmpty()) {
@@ -569,7 +693,6 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             loadHoaDon();
             updateProductPanel(maHD);
 
-            // Chọn dòng trong table
             for (int i = 0; i < tableModel.getRowCount(); i++) {
                 if (tableModel.getValueAt(i, 0).equals(maHD)) {
                     table.setRowSelectionInterval(i, i);
@@ -596,11 +719,11 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             thanhTienValue = 0;
 
             loadHoaDon();
-            updateProductPanel(null); 
+            updateProductPanel(null);
             table.clearSelection();
         }
     }
-    
+
     private void printHoaDon() {
         if (maHD.equals("---")) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn hoặc tìm một hóa đơn để in!", 
@@ -626,7 +749,6 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
-        // Tiêu đề
         JLabel titleLabel = new JLabel("HÓA ĐƠN BÁN HÀNG", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setForeground(new Color(0, 102, 204));
@@ -635,7 +757,6 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
 
         panel.add(Box.createVerticalStrut(5));
 
-        // Thông tin quán
         JLabel tenQuanLabel = new JLabel("Tên quán: " + BIEN.TENQUAN, SwingConstants.CENTER);
         tenQuanLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(tenQuanLabel);
@@ -651,7 +772,6 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         panel.add(Box.createVerticalStrut(5));
         panel.add(new JSeparator());
 
-        // Thông tin chung
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setBackground(Color.WHITE);
@@ -663,7 +783,6 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         infoPanel.add(createInfoLabel("Mã hóa đơn: " + hoaDon.getMaHDBH(), infoFont));
         infoPanel.add(createInfoLabel("Ngày lập: " + hoaDon.getNgayLapHDBH(), infoFont));
         infoPanel.add(createInfoLabel("Nhân viên: " + hoaDon.getMaNVGia(), infoFont));
-        
         
         String khachHangInfo = tenKH;
         if (!"---".equals(sdtKH)) {
@@ -692,7 +811,6 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         panel.add(infoWrapper);
         panel.add(Box.createVerticalStrut(10));
 
-        // Danh sách sản phẩm
         JPanel productPanel = new JPanel(new GridBagLayout());
         productPanel.setBackground(Color.WHITE);
         productPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), 
@@ -748,7 +866,6 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         panel.add(productPanel);
         panel.add(Box.createVerticalStrut(20));
 
-        // Tổng tiền và chiết khấu
         JPanel summaryPanel = new JPanel(new GridBagLayout());
         summaryPanel.setBackground(Color.WHITE);
         GridBagConstraints sumGbc = new GridBagConstraints();
@@ -797,7 +914,130 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
 
         InHoaDon.printPanel(panel);
     }
-    
+
+    private void locHoaDon() {
+        List<HoaDonBanHang> list = hoaDon_dao.getAllHoaDon();
+        List<HoaDonBanHang> filteredList = new ArrayList<>();
+        DecimalFormat df = new DecimalFormat("#,##0đ");
+
+        boolean filterTienMat = jCb_TienMat.isSelected();
+        boolean filterChuyenKhoan = jCb_ChuyenKhoan.isSelected();
+        String locTheo = (String) jCb_LocTheo.getSelectedItem();
+        String thoiGian = jTf_ThoiGian.getText().trim();
+        String tongTienTu = jTf_TongTienTu.getText().trim();
+        String tongTienDen = jTf_TongTienDen.getText().trim();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM");
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+
+        for (HoaDonBanHang hd : list) {
+            boolean match = true;
+
+            if (filterTienMat || filterChuyenKhoan) {
+                if (filterTienMat && filterChuyenKhoan) {
+                } else if (filterTienMat && hd.isHinhThucThanhToan()) {
+                    match = false;
+                } else if (filterChuyenKhoan && !hd.isHinhThucThanhToan()) {
+                    match = false;
+                }
+            }
+
+            // Lọc theo thời gian
+            if (!locTheo.equals("Không lọc") && !thoiGian.isEmpty()) {
+                try {
+                    String hdDateStr = hd.getNgayLapHDBH().toString();
+                    if (locTheo.equals("Lọc theo ngày")) {
+                        if (!hdDateStr.equals(thoiGian)) {
+                            match = false;
+                        }
+                    } else if (locTheo.equals("Lọc theo tháng")) {
+                        String hdMonth = monthFormat.format(dateFormat.parse(hdDateStr));
+                        if (!hdMonth.equals(thoiGian)) {
+                            match = false;
+                        }
+                    } else if (locTheo.equals("Lọc theo năm")) {
+                        String hdYear = yearFormat.format(dateFormat.parse(hdDateStr));
+                        if (!hdYear.equals(thoiGian)) {
+                            match = false;
+                        }
+                    }
+                } catch (ParseException e) {
+                    JOptionPane.showMessageDialog(this, "Định dạng thời gian không hợp lệ!", 
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            // Lọc theo tổng tiền
+            double thanhTienValue = hd.getTongtienGia();
+            double phanTramGiam = hd.getPhanTramGiamGia() / 100.0;
+            double tongTienBanDauValue = thanhTienValue / (1 - phanTramGiam);
+            try {
+                if (!tongTienTu.isEmpty()) {
+                    double tu = Double.parseDouble(tongTienTu);
+                    if (tongTienBanDauValue < tu) {
+                        match = false;
+                    }
+                }
+                if (!tongTienDen.isEmpty()) {
+                    double den = Double.parseDouble(tongTienDen);
+                    if (tongTienBanDauValue > den) {
+                        match = false;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Tổng tiền phải là số hợp lệ!", 
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (match) {
+                filteredList.add(hd);
+            }
+        }
+
+        // Cập nhật bảng
+        tableModel.setRowCount(0);
+        for (HoaDonBanHang hd : filteredList) {
+            String sdtKH = "---";
+            KhachHang kh = khachHang_dao.getKhachHangTheoMaKH(hd.getMaKHGia());
+            if (kh != null && !BIEN.SDTMAU.equals(kh.getSoDienThoai())) {
+                sdtKH = kh.getSoDienThoai();
+            }
+
+            double thanhTienValue = hd.getTongtienGia();
+            double phanTramGiam = hd.getPhanTramGiamGia() / 100.0;
+            double tongTienBanDauValue = thanhTienValue / (1 - phanTramGiam);
+
+            tableModel.addRow(new Object[] {
+                hd.getMaHDBH(),
+                hd.getMaNVGia(),
+                sdtKH,
+                hd.getNgayLapHDBH(),
+                df.format(tongTienBanDauValue),
+                hd.isHinhThucThanhToan() ? "Chuyển khoản" : "Tiền mặt"
+            });
+        }
+
+        if (filteredList.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn phù hợp!", 
+                "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void resetLoc() {
+        jCb_TienMat.setSelected(false);
+        jCb_ChuyenKhoan.setSelected(false);
+        jCb_LocTheo.setSelectedIndex(0);
+        jTf_ThoiGian.setText("");
+        jTf_TongTienTu.setText("");
+        jTf_TongTienDen.setText("");
+        txtMaHD.setText("");
+        table.clearSelection();
+        DocDuLieuDatabaseVaoTable();
+    }
+
     @Override
     public void mousePressed(MouseEvent e) {
     }
