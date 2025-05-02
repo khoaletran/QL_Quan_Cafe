@@ -343,46 +343,6 @@ INSERT INTO KHACHHANG (MALKH, TENKH, SDT, DIEMTL)
 VALUES
 ('LKH0005', N'Hoàng Thị V', '0911567890', 500);
 
-INSERT INTO LOAIHANGHOA (TENLH, MOTA)
-VALUES
-(N'Cà phê', N'Cà phê các loại');
-
-INSERT INTO LOAIHANGHOA (TENLH, MOTA)
-VALUES
-(N'Trà', N'Trà các loại');
-
-INSERT INTO LOAIHANGHOA (TENLH, MOTA)
-VALUES
-(N'Nước ép', N'Nước ép trái cây');
-
-INSERT INTO LOAIHANGHOA (TENLH, MOTA)
-VALUES
-(N'Sinh tố', N'Sinh tố trái cây');
-
-INSERT INTO LOAIHANGHOA (TENLH, MOTA)
-VALUES
-(N'Bánh ngọt', N'Các loại bánh ngọt');
-
-INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP)
-VALUES
-('LH0001', N'Cà phê đen', N'Resource/HangHoa/capheden.jpg', 20000);
-
-INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP)
-VALUES
-('LH0002', N'Trà sữa', N'Resource/HangHoa/TraSua.jpg', 30000);
-
-INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP)
-VALUES
-('LH0003', N'Nước cam', N'Resource/HangHoa/NuocCam.jpg', 25000);
-
-INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP)
-VALUES
-('LH0004', N'Sinh tố bơ', N'Resource/HangHoa/SinhToBo.jpg', 35000);
-
-INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP)
-VALUES
-('LH0005', N'Bánh mì', N'Resource/HangHoa/BanhMi.jpg', 15000);
-
 INSERT INTO MAGIAMGIA (MAGIAM, GIAMGIA)
 VALUES
 ('MGG10', 10);
@@ -402,3 +362,45 @@ VALUES
 INSERT INTO MAGIAMGIA (MAGIAM, GIAMGIA)
 VALUES
 ('MGG50', 50);
+
+INSERT INTO LOAIHANGHOA (TENLH, MOTA) VALUES (N'Nước ngọt', N'Nước giải khát đóng chai, lon, tiện lợi');
+INSERT INTO LOAIHANGHOA (TENLH, MOTA) VALUES (N'Ăn vặt', N'Các món ăn nhẹ, đồ nhâm nhi tiện lợi');
+INSERT INTO LOAIHANGHOA (TENLH, MOTA) VALUES (N'Sinh tố', N'Các loại sinh tố trái cây tươi mát bổ dưỡng');
+INSERT INTO LOAIHANGHOA (TENLH, MOTA) VALUES (N'Nước ép', N'Các loại nước ép trái cây nguyên chất');
+INSERT INTO LOAIHANGHOA (TENLH, MOTA) VALUES (N'Trà', N'Trà truyền thống và trà pha chế hiện đại');
+
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Coca Cola', N'Resource/HangHoa/coca.jpg', 12000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Pepsi', N'Resource/HangHoa/pepsi.jpg', 12000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Sprite', N'Resource/HangHoa/sprite.jpg', 12000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Nước tăng lực Sting', N'Resource/HangHoa/sting.jpg', 13000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Sữa đậu nành Fami', N'Resource/HangHoa/fami.jpg', 10000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0001', N'Nước suối Aquafina', N'Resource/HangHoa/aquafina.jpg', 8000);
+
+
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0002', N'Khoai tây chiên Lays', N'Resource/HangHoa/khoaitaylays.jpg', 15000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0002', N'Bánh tráng trộn', N'Resource/HangHoa/banhtrangtron.jpg', 20000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0002', N'Snack rong biển', N'Resource/HangHoa/snackrongbien.jpg', 18000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0002', N'Mít sấy giòn', N'Resource/HangHoa/mitsay.jpg', 25000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0002', N'Khô gà lá chanh', N'Resource/HangHoa/khogalachanh.jpg', 30000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0002', N'Hạt điều rang muối', N'Resource/HangHoa/hatdieu.jpg', 35000);
+
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0003', N'Sinh tố bơ', N'Resource/HangHoa/sinhtobo.jpg', 30000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0003', N'Sinh tố xoài', N'Resource/HangHoa/sinhtoxoai.jpg', 28000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0003', N'Sinh tố dâu', N'Resource/HangHoa/sinhtodau.jpg', 32000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0003', N'Sinh tố mãng cầu', N'Resource/HangHoa/sinhtomangcau.jpg', 30000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0003', N'Sinh tố sapoche', N'Resource/HangHoa/sinhtosapoche.jpg', 29000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0003', N'Sinh tố dưa hấu', N'Resource/HangHoa/sinhtoduahau.jpg', 25000);
+
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0004', N'Nước ép cam', N'Resource/HangHoa/epcam.jpg', 25000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0004', N'Nước ép ổi', N'Resource/HangHoa/epoi.jpg', 22000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0004', N'Nước ép táo', N'Resource/HangHoa/eptao.jpg', 26000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0004', N'Nước ép cà rốt', N'Resource/HangHoa/epcarot.jpg', 23000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0004', N'Nước ép cần tây', N'Resource/HangHoa/epcantay.jpg', 28000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0004', N'Nước ép chanh dây', N'Resource/HangHoa/epchanhday.jpg', 25000);
+
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0005', N'Trà đào cam sả', N'Resource/HangHoa/tradaocamsa.jpg', 28000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0005', N'Trà tắc xí muội', N'Resource/HangHoa/trataximuoi.jpg', 22000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0005', N'Trà sữa trân châu', N'Resource/HangHoa/trasuatranchau.jpg', 30000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0005', N'Trà vải', N'Resource/HangHoa/travai.jpg', 25000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0005', N'Trà sen vàng', N'Resource/HangHoa/trasenvang.jpg', 27000);
+INSERT INTO HANGHOA (MALH, TENHH, HINHANH, GIASP) VALUES ('LH0005', N'Trà gừng mật ong', N'Resource/HangHoa/tragungmatong.jpg', 26000);
