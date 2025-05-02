@@ -72,13 +72,4 @@ public class QuetQR {
 
         return null;
     }
-
-    public static void main(String[] args) {
-        String result = scanQRCode();
-        if (result != null) {
-            System.out.println("✅ Kết quả cuối cùng: " + result);
-        } else {
-            System.out.println("❌ Không đọc được mã QR.");
-        }
-    }
 }
