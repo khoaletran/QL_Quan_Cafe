@@ -141,6 +141,52 @@ public class HoaDon_DAO {
         }
     }
     
+    public HoaDonBanHang getHoaDonTheoMa(String maHDBH) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        HoaDonBanHang hoaDon = null;
+
+        try {
+            ConnectDB.getInstance().connect();
+            conn = ConnectDB.getConnection();
+            if (conn == null) {
+                System.err.println("Không thể kết nối đến cơ sở dữ liệu");
+                return null;
+            }
+
+            String sql = "SELECT MAHDBH, MANV, MAKH, NGAYHDBH, TONGTIEN, DIEMTL, GIAMGIA, HINHTHUCTHANHTOAN " +
+                         "FROM HOADONBANHANG WHERE MAHDBH = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, maHDBH);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String maHD = rs.getString("MAHDBH");
+                String maNV = rs.getString("MANV");
+                String maKH = rs.getString("MAKH");
+                LocalDate ngayLap = rs.getDate("NGAYHDBH").toLocalDate();
+                double tongTien = rs.getDouble("TONGTIEN");
+                int diemTL = rs.getInt("DIEMTL");
+                int giamGia = rs.getInt("GIAMGIA");
+                boolean hinhThucTT = rs.getBoolean("HINHTHUCTHANHTOAN");
+
+                hoaDon = new HoaDonBanHang(maHD, ngayLap, diemTL, hinhThucTT, maKH, maNV, giamGia, tongTien);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi truy vấn hóa đơn theo mã: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return hoaDon;
+    }
+    
     public List<ChiTietHoaDon> getChiTietSanPhamTheoMaHD(String maHDBH) {
         List<ChiTietHoaDon> chiTietList = new ArrayList<>();
         Connection conn = null;
