@@ -32,4 +32,27 @@ public class ThongKe_DAO {
 
         return result;
     }
+    //test
+    public static Map<String, Integer> getSoLuongSanPhamTheoNgay(Connection conn, int ngay) throws Exception {
+        String sql = "SELECT HH.TENHH, SUM(CTHD.SOLUONG) AS SOLUONGBAN " +
+                     "FROM HOADONBANHANG HDBH " +
+                     "JOIN CHITIETHOADON CTHD ON HDBH.MAHDBH = CTHD.MAHDBH " +
+                     "JOIN HANGHOA HH ON CTHD.MAHH = HH.MAHH " +
+                     "WHERE DAY(HDBH.NGAYHDBH) = ? AND MONTH(HDBH.NGAYHDBH) = MONTH(GETDATE()) " +
+                     "AND YEAR(HDBH.NGAYHDBH) = YEAR(GETDATE()) " +
+                     "GROUP BY HH.TENHH";
+
+        Map<String, Integer> result = new LinkedHashMap<>();
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, ngay);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.put(rs.getString("TENHH"), rs.getInt("SOLUONGBAN"));
+                }
+            }
+        }
+        return result;
+    }
+
 }
