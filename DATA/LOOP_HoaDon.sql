@@ -2,7 +2,6 @@
 delete from HOADONBANHANG;
 
 
-DECLARE @Year INT = 2025;
 DECLARE @i INT = 1;
 DECLARE @MANV varchar(6);
 DECLARE @MAKH varchar(6);
@@ -10,8 +9,9 @@ DECLARE @MAGIAM varchar(30);
 DECLARE @GIAMGIA int;
 DECLARE @HTTT BIT;
 
-WHILE @i <= 5000
+WHILE @i <= 200 
 BEGIN
+	DECLARE @Year INT = FLOOR(RAND() * 6) + 2020;
     DECLARE @Month INT = FLOOR(RAND() * 12) + 1;       
     DECLARE @Day INT = FLOOR(RAND() * 28) + 1;        
     DECLARE @Ngay DATE = DATEFROMPARTS(@Year, @Month, @Day);
