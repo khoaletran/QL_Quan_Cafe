@@ -20,48 +20,62 @@ import java.time.LocalDate;
 public class HoaDon_DAO {
 	
 	public ArrayList<HoaDonBanHang> getAllHoaDon() {
-        ArrayList<HoaDonBanHang> dsHoaDon = new ArrayList<>();
-        Connection con = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+	    ArrayList<HoaDonBanHang> dsHoaDon = new ArrayList<>();
+	    Connection con = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
 
-        try {
+	    try {
+	        ConnectDB.getInstance().connect();
+	        con = ConnectDB.getConnection();
+	        if (con == null) {
+	            System.err.println("Không thể kết nối đến cơ sở dữ liệu");
+	            return dsHoaDon;
+	        }
 
-            ConnectDB.getInstance().connect();
-            con = ConnectDB.getConnection();
-            if (con == null) {
-                System.err.println("Không thể kết nối đến cơ sở dữ liệu");
-                return dsHoaDon;
-            }
-            String sql = "select MAHDBH,MANV,MAKH,NGAYHDBH,TONGTIEN,DIEMTL,GIAMGIA,HINHTHUCTHANHTOAN FROM HOADONBANHANG";
-            stmt = con.prepareStatement(sql);
-            rs = stmt.executeQuery();
+	        String sql = "SELECT hd.MAHDBH, hd.MANV, hd.MAKH, hd.NGAYHDBH, hd.TONGTIEN, hd.DIEMTL, " +
+	                     "hd.MAGIAM, mg.GIAMGIA, hd.HINHTHUCTHANHTOAN " +
+	                     "FROM HOADONBANHANG hd " +
+	                     "LEFT JOIN MAGIAMGIA mg ON hd.MAGIAM = mg.MAGIAM";
 
-            while (rs.next()) {
-            	String maHDBH = rs.getString("MAHDBH");
-            	String maNV = rs.getString("MANV");
-            	String maKH = rs.getString("MAKH");
-                LocalDate ngayLap = rs.getDate("NGAYHDBH").toLocalDate();
-                double tongTien = rs.getDouble("TONGTIEN");
-                int diemTL = rs.getInt("DIEMTL");
-                int giamGia = rs.getInt("GIAMGIA");
-                boolean hinhThucTT = rs.getBoolean("HINHTHUCTHANHTOAN");
-                HoaDonBanHang hoaDon = new HoaDonBanHang(maHDBH, ngayLap, diemTL, hinhThucTT, maKH, maNV, giamGia, tongTien);
-                dsHoaDon.add(hoaDon);
-            }
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi truy vấn hóa đơn: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return dsHoaDon;
-    }
+	        stmt = con.prepareStatement(sql);
+	        rs = stmt.executeQuery();
+
+	        while (rs.next()) {
+	            String maHDBH = rs.getString("MAHDBH");
+	            String maNV = rs.getString("MANV");
+	            String maKH = rs.getString("MAKH");
+	            LocalDate ngayLap = rs.getDate("NGAYHDBH").toLocalDate();
+	            double tongTien = rs.getDouble("TONGTIEN");
+	            int diemTL = rs.getInt("DIEMTL");
+	            String maGiam = rs.getString("MAGIAM");
+	            int phanTramGiam = rs.getInt("GIAMGIA");
+	            boolean hinhThucTT = rs.getBoolean("HINHTHUCTHANHTOAN");
+
+	            MaGiamGia objMaGiam = null;
+	            if (maGiam != null) {
+	                objMaGiam = new MaGiamGia(maGiam, phanTramGiam);
+	            }
+
+	            HoaDonBanHang hoaDon = new HoaDonBanHang(maHDBH, ngayLap, diemTL, hinhThucTT, maKH, maNV, objMaGiam, phanTramGiam, tongTien);
+	            dsHoaDon.add(hoaDon);
+	        }
+
+	    } catch (SQLException e) {
+	        System.err.println("Lỗi khi truy vấn hóa đơn: " + e.getMessage());
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (stmt != null) stmt.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return dsHoaDon;
+	}
+
 	
     public void saveOrderWithDetails(HoaDonBanHang hoaDon, String maNhanVien) throws SQLException {
         // Kiểm tra tham số đầu vào
@@ -183,8 +197,11 @@ public class HoaDon_DAO {
                 return null;
             }
 
-            String sql = "SELECT MAHDBH, MANV, MAKH, NGAYHDBH, TONGTIEN, DIEMTL, GIAMGIA, HINHTHUCTHANHTOAN " +
-                         "FROM HOADONBANHANG WHERE MAHDBH = ?";
+            String sql = "SELECT hd.MAHDBH, hd.MANV, hd.MAKH, hd.NGAYHDBH, hd.TONGTIEN, hd.DIEMTL, " +
+                         "hd.MAGIAM, mg.GIAMGIA, hd.HINHTHUCTHANHTOAN " +
+                         "FROM HOADONBANHANG hd " +
+                         "LEFT JOIN MAGIAMGIA mg ON hd.MAGIAM = mg.MAGIAM " +
+                         "WHERE hd.MAHDBH = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, maHDBH);
             rs = stmt.executeQuery();
@@ -196,10 +213,16 @@ public class HoaDon_DAO {
                 LocalDate ngayLap = rs.getDate("NGAYHDBH").toLocalDate();
                 double tongTien = rs.getDouble("TONGTIEN");
                 int diemTL = rs.getInt("DIEMTL");
-                int giamGia = rs.getInt("GIAMGIA");
+                String maGiam = rs.getString("MAGIAM");
+                int phanTramGiam = rs.getInt("GIAMGIA");
                 boolean hinhThucTT = rs.getBoolean("HINHTHUCTHANHTOAN");
 
-                hoaDon = new HoaDonBanHang(maHD, ngayLap, diemTL, hinhThucTT, maKH, maNV, giamGia, tongTien);
+                MaGiamGia objMaGiam = null;
+                if (maGiam != null) {
+                    objMaGiam = new MaGiamGia(maGiam, phanTramGiam);
+                }
+
+                hoaDon = new HoaDonBanHang(maHD, ngayLap, diemTL, hinhThucTT, maKH, maNV, objMaGiam, phanTramGiam, tongTien);
             }
         } catch (SQLException e) {
             System.err.println("Lỗi khi truy vấn hóa đơn theo mã: " + e.getMessage());
@@ -214,14 +237,14 @@ public class HoaDon_DAO {
         }
         return hoaDon;
     }
+
     
     public static List<HoaDonBanHang> getDSHoaDonTheoMa(String maHDBH) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        HoaDonBanHang hoaDon = null;
-        
-        List<HoaDonBanHang> list = new ArrayList<HoaDonBanHang>();
+        List<HoaDonBanHang> list = new ArrayList<>();
+
         try {
             ConnectDB.getInstance().connect();
             conn = ConnectDB.getConnection();
@@ -230,8 +253,11 @@ public class HoaDon_DAO {
                 return null;
             }
 
-            String sql = "SELECT MAHDBH, MANV, MAKH, NGAYHDBH, TONGTIEN, DIEMTL, GIAMGIA, HINHTHUCTHANHTOAN " +
-                         "FROM HOADONBANHANG WHERE MAHDBH LIKE ?";
+            String sql = "SELECT hd.MAHDBH, hd.MANV, hd.MAKH, hd.NGAYHDBH, hd.TONGTIEN, hd.DIEMTL, " +
+                         "hd.MAGIAM, mg.GIAMGIA, hd.HINHTHUCTHANHTOAN " +
+                         "FROM HOADONBANHANG hd " +
+                         "LEFT JOIN MAGIAMGIA mg ON hd.MAGIAM = mg.MAGIAM " +
+                         "WHERE hd.MAHDBH LIKE ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, "%" + maHDBH + "%");
             rs = stmt.executeQuery();
@@ -243,10 +269,16 @@ public class HoaDon_DAO {
                 LocalDate ngayLap = rs.getDate("NGAYHDBH").toLocalDate();
                 double tongTien = rs.getDouble("TONGTIEN");
                 int diemTL = rs.getInt("DIEMTL");
-                int giamGia = rs.getInt("GIAMGIA");
+                String maGiam = rs.getString("MAGIAM");
+                int phanTramGiam = rs.getInt("GIAMGIA");
                 boolean hinhThucTT = rs.getBoolean("HINHTHUCTHANHTOAN");
 
-                hoaDon = new HoaDonBanHang(maHD, ngayLap, diemTL, hinhThucTT, maKH, maNV, giamGia, tongTien);
+                MaGiamGia objMaGiam = null;
+                if (maGiam != null) {
+                    objMaGiam = new MaGiamGia(maGiam, phanTramGiam);
+                }
+
+                HoaDonBanHang hoaDon = new HoaDonBanHang(maHD, ngayLap, diemTL, hinhThucTT, maKH, maNV, objMaGiam, phanTramGiam, tongTien);
                 list.add(hoaDon);
             }
         } catch (SQLException e) {
@@ -262,6 +294,7 @@ public class HoaDon_DAO {
         }
         return list;
     }
+
     
     public static List<HoaDonBanHang> getDSHoaDonTheoSDT(String sdt) {
         Connection conn = null;
@@ -277,8 +310,11 @@ public class HoaDon_DAO {
                 return null;
             }
 
-            String sql = "SELECT hd.MAHDBH, hd.MANV, hd.MAKH, hd.NGAYHDBH, hd.TONGTIEN, hd.DIEMTL, hd.GIAMGIA, hd.HINHTHUCTHANHTOAN " +
-                         "FROM HOADONBANHANG hd JOIN KHACHHANG kh ON hd.MAKH = kh.MAKH " +
+            String sql = "SELECT hd.MAHDBH, hd.MANV, hd.MAKH, hd.NGAYHDBH, hd.TONGTIEN, hd.DIEMTL, " +
+                         "hd.MAGIAM, mg.GIAMGIA, hd.HINHTHUCTHANHTOAN " +
+                         "FROM HOADONBANHANG hd " +
+                         "JOIN KHACHHANG kh ON hd.MAKH = kh.MAKH " +
+                         "LEFT JOIN MAGIAMGIA mg ON hd.MAGIAM = mg.MAGIAM " +
                          "WHERE kh.SDT LIKE ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, "%" + sdt + "%");
@@ -291,10 +327,16 @@ public class HoaDon_DAO {
                 LocalDate ngayLap = rs.getDate("NGAYHDBH").toLocalDate();
                 double tongTien = rs.getDouble("TONGTIEN");
                 int diemTL = rs.getInt("DIEMTL");
-                int giamGia = rs.getInt("GIAMGIA");
+                String maGiam = rs.getString("MAGIAM");
+                int phanTramGiam = rs.getInt("GIAMGIA");
                 boolean hinhThucTT = rs.getBoolean("HINHTHUCTHANHTOAN");
 
-                HoaDonBanHang hoaDon = new HoaDonBanHang(maHD, ngayLap, diemTL, hinhThucTT, maKH, maNV, giamGia, tongTien);
+                MaGiamGia objMaGiam = null;
+                if (maGiam != null) {
+                    objMaGiam = new MaGiamGia(maGiam, phanTramGiam);
+                }
+
+                HoaDonBanHang hoaDon = new HoaDonBanHang(maHD, ngayLap, diemTL, hinhThucTT, maKH, maNV, objMaGiam, phanTramGiam, tongTien);
                 list.add(hoaDon);
             }
         } catch (SQLException e) {
@@ -310,6 +352,7 @@ public class HoaDon_DAO {
         }
         return list;
     }
+
 
     
     public List<ChiTietHoaDon> getChiTietSanPhamTheoMaHD(String maHDBH) {

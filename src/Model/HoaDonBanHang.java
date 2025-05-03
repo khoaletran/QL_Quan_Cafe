@@ -21,18 +21,18 @@ public class HoaDonBanHang {
     private int phanTramGiamGia; //dùng chứa phần trăm gg cho QuanLyDonPanel
     private double tongtienGia; //dùng chứa phần tổng tiền cho QuanLyDonPanel
 
-    
   //const để lấy dl từ bảng HoaDonBanHang
 	public HoaDonBanHang(String maHDBH, LocalDate ngayLapHDBH, int diemTL, boolean hinhThucThanhToan, String maKHGia,
-			String maNVGia, int phanTramGiamGia,double tongtienGia) {
-		this.maHDBH = maHDBH;
-		this.ngayLapHDBH = ngayLapHDBH;
-		this.diemTL = diemTL;
-		this.hinhThucThanhToan = hinhThucThanhToan;
-		this.maKHGia = maKHGia;
-		this.maNVGia = maNVGia;
-		this.phanTramGiamGia = phanTramGiamGia;
-		this.tongtienGia = tongtienGia;
+			String maNVGia, MaGiamGia maGiamGia, int phanTramGiamGia,double tongtienGia) {
+		setMaHDBH(maHDBH);
+		setNgayLapHDBH(ngayLapHDBH);
+		setDiemTL(diemTL);
+		setHinhThucThanhToan(hinhThucThanhToan);
+		setMaKHGia(maKHGia);
+		setMaNVGia(maNVGia);
+		setGiamGia(maGiamGia);
+		setPhanTramGiamGia(phanTramGiamGia);
+		setTongtienGia(tongtienGia);
 	}
 
 	// Constructor đầy đủ lấy dữ liệu từ SQL
@@ -51,7 +51,7 @@ public class HoaDonBanHang {
         setKhachHang(khachHang);
         setHinhThucThanhToan(hinhThucThanhToan);
         setDiemTL(0);
-        this.chiTietHoaDonList = new ArrayList<ChiTietHoaDon>();
+        setChiTietHoaDonList(new ArrayList<ChiTietHoaDon>());
     }
     
  // Constructor cho việc tạo hóa đơn mới (chưa có mã)
@@ -62,7 +62,7 @@ public class HoaDonBanHang {
         setKhachHang(khachHang);
         setHinhThucThanhToan(hinhThucThanhToan);
         setDiemTL(0);
-        this.chiTietHoaDonList = new ArrayList<ChiTietHoaDon>();
+        setChiTietHoaDonList(new ArrayList<ChiTietHoaDon>());
     }
     
     public HoaDonBanHang(LocalDate ngayLapHDBH, MaGiamGia giamGia, KhachHang khachHang, 
@@ -74,7 +74,7 @@ public class HoaDonBanHang {
        setHinhThucThanhToan(hinhThucThanhToan);
        setTongGiamGia(tongGiamGia);
        setDiemTL(0);
-       this.chiTietHoaDonList = new ArrayList<>();
+       setChiTietHoaDonList(new ArrayList<ChiTietHoaDon>());
     }
 
     // ===== Ràng buộc =====
@@ -234,4 +234,6 @@ public class HoaDonBanHang {
                 ", soMatHang=" + chiTietHoaDonList.size() +
                 "]";
     }
+
+
 }

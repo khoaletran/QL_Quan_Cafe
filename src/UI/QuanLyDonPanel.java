@@ -527,6 +527,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         lblMaNV.setText("Nhân viên: " + maNV);
         lblMaKH.setText("Khách hàng: " + tenKH + "(SDT: " + sdtKH + ")");
         lblHinhThucThanhToan.setText("Hình thức thanh toán: " + hinhThucThanhToan);
+        lblMaGiamGia.setText("Mã Giảm Gia : " + maGiamGia);
 
         DecimalFormat df = new DecimalFormat("#,##0đ");
         double chietKhauValue = tongTienBanDauValue - thanhTienValue;
@@ -742,6 +743,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
                 double thanhTienValue = hd.getTongtienGia();
                 double phanTramGiam = hd.getPhanTramGiamGia() / 100.0;
                 double tongTienBanDauValue = thanhTienValue / (1 - phanTramGiam);
+                maGiamGia = (hd.getGiamGia() != null ? hd.getGiamGia().getMaGiam() + " (" + hd.getGiamGia().getGiamGia() + "%)" : "Không có"); 
 
                 thanhTien = df.format(thanhTienValue);
                 tongTienBanDau = df.format(tongTienBanDauValue);
@@ -766,71 +768,6 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
 
             loadHoaDon();
             updateProductPanel(maHD);
-        }
-    }
-
-    private void timHoaDon() {
-        String maHDInput = txtMaHD.getText().trim();
-        
-        if (maHDInput.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã hóa đơn!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        HoaDonBanHang hd = hoaDon_dao.getHoaDonTheoMa(maHDInput);
-        if (hd != null) {
-            maHD = hd.getMaHDBH();
-            maNV = hd.getMaNVGia();
-            maKH = hd.getMaKHGia();
-            ngayLap = hd.getNgayLapHDBH().toString();
-            hinhThucThanhToan = hd.isHinhThucThanhToan() ? "Chuyển khoản" : "Tiền mặt";
-            maGiamGia = (hd.getGiamGia() != null) ? hd.getGiamGia().getMaGiam() : "Không có";
-            
-            DecimalFormat df = new DecimalFormat("#,##0đ");
-            thanhTienValue = hd.getTongtienGia();
-            double phanTramGiam = hd.getPhanTramGiamGia() / 100.0;
-            tongTienBanDauValue = thanhTienValue / (1 - phanTramGiam);
-
-            KhachHang kh = khachHang_dao.getKhachHangTheoMaKH(maKH);
-            tenKH = kh != null ? kh.getTenKH() : "Khách lẻ";
-            sdtKH = kh != null && !BIEN.SDTMAU.equals(kh.getSoDienThoai()) ? kh.getSoDienThoai() : "---";
-
-            thanhTien = df.format(thanhTienValue);
-            tongTienBanDau = df.format(tongTienBanDauValue);
-            phanTramGiamGia = String.valueOf(hd.getPhanTramGiamGia());
-            diemTL = String.valueOf(hd.getdiemTL());
-
-            loadHoaDon();
-            updateProductPanel(maHD);
-
-            for (int i = 0; i < tableModel.getRowCount(); i++) {
-                if (tableModel.getValueAt(i, 0).equals(maHD)) {
-                    table.setRowSelectionInterval(i, i);
-                    table.scrollRectToVisible(table.getCellRect(i, 0, true));
-                    break;
-                }
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn với mã: " + maHDInput, 
-                                         "Lỗi", JOptionPane.ERROR_MESSAGE);
-            maHD = "---";
-            maNV = "---";
-            maKH = "---";
-            ngayLap = "---";
-            hinhThucThanhToan = "---";
-            maGiamGia = "---";
-            thanhTien = "0đ";
-            tongTienBanDau = "0đ";
-            phanTramGiamGia = "0";
-            diemTL = "0";
-            tenKH = "---";
-            sdtKH = "---";
-            tongTienBanDauValue = 0;
-            thanhTienValue = 0;
-
-            loadHoaDon();
-            updateProductPanel(null);
-            table.clearSelection();
         }
     }
 
