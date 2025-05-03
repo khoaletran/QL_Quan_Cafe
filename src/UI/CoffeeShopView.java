@@ -11,20 +11,23 @@ import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import Bien.BIEN;
-
 import ConnectDB.ConnectDB;
+import Dao.NhanVien_DAO;
+import Model.NhanVien;
 
 public class CoffeeShopView extends JFrame {
     private JPanel centerPanel; 
     private JPanel rightPanel; 
     private JPanel mainPanel; 
-    
+    private String maNhanVien; // Lưu mã nhân viên đăng nhập
+    private boolean isQuanLy; // Lưu trạng thái quản lý của nhân viên
 
     public CoffeeShopView() {
         setTitle(BIEN.TENQUAN); 
@@ -32,34 +35,38 @@ public class CoffeeShopView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setIconImage(BIEN.LOGO_QUAN.getImage());
-        createUI();
-//        showLoginDialog();
+        showLoginDialog(); // Hiển thị dialog đăng nhập khi khởi động
     }
-//    private void showLoginDialog() {
-//        JDialog loginDialog = new JDialog(this, "Đăng Nhập", true);
-//        loginDialog.setSize(400, 300);
-//        loginDialog.setLocationRelativeTo(this);
-//        loginDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//
-//        LoginPanel loginPanel = new LoginPanel();
-//        loginDialog.add(loginPanel);
-//
-//        loginPanel.addLoginListener(e -> {
-//            String username = loginPanel.getUsername();
-//            String password = loginPanel.getPassword();
-//
-//            // Giả lập kiểm tra đăng nhập (thay bằng logic thật nếu có)
-//            if ("a".equals(username) && "1".equals(password)) {
-//                loginDialog.dispose();
-//                initializeMainUI();
-//            } else {
-//                loginPanel.setMessage("Tên đăng nhập hoặc mật khẩu không đúng!");
-//                loginPanel.clearFields();
-//            }
-//        });
-//
-//        loginDialog.setVisible(true);
-//    }
+
+    private void showLoginDialog() {
+        JDialog loginDialog = new JDialog(this, "Đăng Nhập", true);
+        loginDialog.setSize(400, 300);
+        loginDialog.setLocationRelativeTo(this);
+        loginDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        LoginPanel loginPanel = new LoginPanel();
+        loginDialog.add(loginPanel);
+
+        loginPanel.addLoginListener(e -> {
+            String username = loginPanel.getUsername();
+            String password = loginPanel.getPassword();
+
+            // Kiểm tra đăng nhập bằng NhanVien_DAO
+            NhanVien_DAO nhanVienDAO = new NhanVien_DAO();
+            NhanVien nhanVien = nhanVienDAO.timNhanVienTheoMaNV(username);
+            if (nhanVien != null && nhanVien.getMatKhau().equals(password)) {
+                maNhanVien = nhanVien.getMaNV(); // Lưu mã nhân viên
+                isQuanLy = nhanVien.isQuanly(); // Lưu trạng thái quản lý
+                loginDialog.dispose();
+                initializeMainUI(); // Khởi tạo giao diện chính
+            } else {
+                JOptionPane.showMessageDialog(loginPanel, "Mã nhân viên hoặc mật khẩu không đúng");
+                loginPanel.clearFields();
+            }
+        });
+
+        loginDialog.setVisible(true);
+    }
 
     private void initializeMainUI() {
         connectDB();
@@ -75,7 +82,7 @@ public class CoffeeShopView extends JFrame {
         LeftMenuPanel leftMenu = new LeftMenuPanel();
 
         // Khởi tạo các panel cần thiết
-        OrderPanel orderPanel = new OrderPanel("NV0001");
+        OrderPanel orderPanel = new OrderPanel(maNhanVien); // Truyền mã nhân viên
         
         centerPanel = new ProductListPanel(orderPanel);
         rightPanel = new RightPanel(orderPanel);
@@ -86,14 +93,14 @@ public class CoffeeShopView extends JFrame {
 
         add(mainPanel, BorderLayout.CENTER);
 
-        JLabel footerLabel = new JLabel("Hệ Thống Quản Lý Quán Cafe - © 2025", SwingConstants.CENTER);
+        JLabel footerLabel = new JLabel("Hệ Thống Quản Lý Quản Cafe - © 2025", SwingConstants.CENTER);
         footerLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         add(footerLabel, BorderLayout.SOUTH);
 
         // Thêm sự kiện cho nút "Khách Hàng"
         leftMenu.setKhachHangButtonListener(() -> {
             mainPanel.remove(centerPanel);
-            mainPanel.remove(rightPanel); // Ẩn RightPanel
+            mainPanel.remove(rightPanel);
             centerPanel = new KhachHangPanel();
             mainPanel.add(centerPanel, BorderLayout.CENTER);
             mainPanel.revalidate();
@@ -104,45 +111,55 @@ public class CoffeeShopView extends JFrame {
         leftMenu.setDonHangMoiButtonListener(() -> {
             connectDB();
             mainPanel.remove(centerPanel);
-            centerPanel = new ProductListPanel(orderPanel); // Sửa lỗi: truyền ProductDetailPanel
+            centerPanel = new ProductListPanel(orderPanel);
             mainPanel.add(centerPanel, BorderLayout.CENTER);
-            mainPanel.add(rightPanel, BorderLayout.EAST); // Hiển thị lại RightPanel
+            mainPanel.add(rightPanel, BorderLayout.EAST);
             mainPanel.revalidate();
             mainPanel.repaint();
         });
 
-        // Thêm sự kiện cho nút "Nhân Viên"
+        // Thêm sự kiện cho nút "Nhân Viên" (chỉ quản lý được truy cập)
         leftMenu.setNhanVienButtonListener(() -> {
-            mainPanel.remove(centerPanel);
-            mainPanel.remove(rightPanel); // Ẩn RightPanel
-            centerPanel = new NhanVienPanel();
-            mainPanel.add(centerPanel, BorderLayout.CENTER);
-            mainPanel.revalidate();
-            mainPanel.repaint();
+            if (isQuanLy) {
+                mainPanel.remove(centerPanel);
+                mainPanel.remove(rightPanel);
+                centerPanel = new NhanVienPanel();
+                mainPanel.add(centerPanel, BorderLayout.CENTER);
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            } else {
+                JOptionPane.showMessageDialog(this, "Chỉ quản lý mới có quyền truy cập chức năng này!", 
+                                            "Lỗi quyền truy cập", JOptionPane.ERROR_MESSAGE);
+            }
         });
         
-       
-        
-     // Thêm sự kiện cho nút "Thống Kê"
+        // Thêm sự kiện cho nút "Thống Kê" (chỉ quản lý được truy cập)
         leftMenu.setThongKeButtonListener(() -> {
-            mainPanel.remove(centerPanel);
-            mainPanel.remove(rightPanel); // Ẩn RightPanel
-            centerPanel = new ThongKePanel();
-            mainPanel.add(centerPanel, BorderLayout.CENTER);
-            mainPanel.revalidate();
-            mainPanel.repaint();
+            if (isQuanLy) {
+                mainPanel.remove(centerPanel);
+                mainPanel.remove(rightPanel);
+                centerPanel = new ThongKePanel();
+                mainPanel.add(centerPanel, BorderLayout.CENTER);
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            } else {
+                JOptionPane.showMessageDialog(this, "Chỉ quản lý mới có quyền truy cập chức năng này!", 
+                                            "Lỗi quyền truy cập", JOptionPane.ERROR_MESSAGE);
+            }
         });
-        leftMenu.setSanPhamButtonListener(()->{
-        	mainPanel.remove(centerPanel);
-            mainPanel.remove(rightPanel); // Ẩn RightPanel
+        
+        leftMenu.setSanPhamButtonListener(() -> {
+            mainPanel.remove(centerPanel);
+            mainPanel.remove(rightPanel);
             centerPanel = new SanPhamPanel();
             mainPanel.add(centerPanel, BorderLayout.CENTER);
             mainPanel.revalidate();
             mainPanel.repaint();
         });
-        leftMenu.setQuanLyDonButtonListener(()->{
-        	mainPanel.remove(centerPanel);
-            mainPanel.remove(rightPanel); // Ẩn RightPanel
+        
+        leftMenu.setQuanLyDonButtonListener(() -> {
+            mainPanel.remove(centerPanel);
+            mainPanel.remove(rightPanel);
             centerPanel = new QuanLyDonPanel();
             mainPanel.add(centerPanel, BorderLayout.CENTER);
             mainPanel.revalidate();
@@ -150,8 +167,6 @@ public class CoffeeShopView extends JFrame {
         });
     }
     
-    
-
     public static void connectDB() {
         try {
             ConnectDB.getInstance().connect();
@@ -168,7 +183,7 @@ public class CoffeeShopView extends JFrame {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            new CoffeeShopView().setVisible(true);
+            new CoffeeShopView();
         });
     }
 }
