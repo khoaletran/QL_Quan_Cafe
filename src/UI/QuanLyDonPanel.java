@@ -127,11 +127,17 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
 
         // Bảng hiển thị hóa đơn
         String[] columns = { "Mã Hóa Đơn", "Mã NV", "SDT Khách Hàng", "Ngày Lập", "Tổng Tiền", "Thanh Toán" };
-        tableModel = new DefaultTableModel(columns, 0);
+        tableModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; 
+            }
+        };
         table = new JTable(tableModel);
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         table.setRowHeight(30);
         table.addMouseListener(this);
+        
 
         Font tableFont = new Font("Arial", Font.PLAIN, 14);
         table.setFont(tableFont);
@@ -160,9 +166,9 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         scrollPane.setBorder(BorderFactory.createTitledBorder("Danh Sách Hóa Đơn"));
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Phần lọc bên dưới bảng
+     // Phần lọc bên dưới bảng
         JPanel jPn_Loc = new JPanel(new GridBagLayout());
-        jPn_Loc.setBackground(new Color(240, 242, 245));
+        jPn_Loc.setBackground(Color.WHITE);
         jPn_Loc.setBorder(BorderFactory.createTitledBorder("Bộ Lọc"));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -181,14 +187,14 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         JPanel jPn_ThanhToan = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        jPn_ThanhToan.setBackground(new Color(240, 242, 245));
+        jPn_ThanhToan.setBackground(Color.WHITE);
         jCb_TienMat = new JCheckBox("Tiền mặt");
         jCb_TienMat.setFont(new Font("Arial", Font.PLAIN, 14));
-        jCb_TienMat.setBackground(new Color(240, 242, 245));
+        jCb_TienMat.setBackground(Color.WHITE);
         jPn_ThanhToan.add(jCb_TienMat);
         jCb_ChuyenKhoan = new JCheckBox("Chuyển khoản");
         jCb_ChuyenKhoan.setFont(new Font("Arial", Font.PLAIN, 14));
-        jCb_ChuyenKhoan.setBackground(new Color(240, 242, 245));
+        jCb_ChuyenKhoan.setBackground(Color.WHITE);
         jPn_ThanhToan.add(jCb_ChuyenKhoan);
         jPn_Loc.add(jPn_ThanhToan, gbc);
 
@@ -204,7 +210,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         gbc.gridy = 1;
         gbc.weightx = 1.0;
         JPanel jPn_ThoiGian = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        jPn_ThoiGian.setBackground(new Color(240, 242, 245));
+        jPn_ThoiGian.setBackground(Color.WHITE);
 
         // JComboBox Ngày
         String[] ngayItems = new String[32];
@@ -264,7 +270,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         gbc.gridy = 2;
         gbc.weightx = 1.0;
         JPanel jPn_TongTien = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        jPn_TongTien.setBackground(new Color(240, 242, 245));
+        jPn_TongTien.setBackground(Color.WHITE);
         jTf_TongTienTu = new JTextField(8);
         jTf_TongTienTu.setFont(new Font("Arial", Font.PLAIN, 14));
         jPn_TongTien.add(jTf_TongTienTu);
@@ -282,7 +288,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         gbc.weightx = 0;
         gbc.gridwidth = 2;
         JPanel jPn_NutLoc = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        jPn_NutLoc.setBackground(new Color(240, 242, 245));
+        jPn_NutLoc.setBackground(Color.WHITE);
 
         jBt_Loc = new JButton("Lọc");
         jBt_Loc.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -747,7 +753,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
 
                 thanhTien = df.format(thanhTienValue);
                 tongTienBanDau = df.format(tongTienBanDauValue);
-                phanTramGiamGia = String.valueOf(hd.getPhanTramGiamGia());
+                phanTramGiamGia = String.valueOf(hd.getTongGiamGia());
                 diemTL = String.valueOf(hd.getdiemTL());
                 tenKH = kh != null ? kh.getTenKH() : "Khách lẻ";
                 sdtKH = kh != null && !BIEN.SDTMAU.equals(kh.getSoDienThoai()) ? kh.getSoDienThoai() : "---";
@@ -976,22 +982,9 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
         String tongTienDen = jTf_TongTienDen.getText().trim();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM");
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
         SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
-
-        // Kiểm tra ngày hợp lệ
-        boolean validDate = true;
-        if (!ngay.isEmpty() && !thang.isEmpty() && !nam.isEmpty()) {
-            try {
-                String dateStr = String.format("%s-%02d-%02d", nam, Integer.parseInt(thang), Integer.parseInt(ngay));
-                dateFormat.setLenient(false);
-                dateFormat.parse(dateStr);
-            } catch (ParseException e) {
-                JOptionPane.showMessageDialog(this, "Ngày không hợp lệ (ví dụ: 31/4 không tồn tại)!", 
-                    "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
 
         for (HoaDonBanHang hd : list) {
             boolean match = true;
@@ -1008,29 +1001,37 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
             }
 
             // Lọc theo thời gian
-            if (!nam.isEmpty()) {
-                try {
-                    String hdDateStr = hd.getNgayLapHDBH().toString();
-                    String hdYear = yearFormat.format(dateFormat.parse(hdDateStr));
+            try {
+                String hdDateStr = hd.getNgayLapHDBH().toString();
+                java.util.Date hdDate = dateFormat.parse(hdDateStr);
+
+                // Lọc theo năm
+                if (!nam.isEmpty()) {
+                    String hdYear = yearFormat.format(hdDate);
                     if (!hdYear.equals(nam)) {
                         match = false;
-                    } else if (!thang.isEmpty()) {
-                        String hdMonth = monthFormat.format(dateFormat.parse(hdDateStr));
-                        String filterMonth = String.format("%s-%02d", nam, Integer.parseInt(thang));
-                        if (!hdMonth.equals(filterMonth)) {
-                            match = false;
-                        } else if (!ngay.isEmpty()) {
-                            String filterDate = String.format("%s-%02d-%02d", nam, Integer.parseInt(thang), Integer.parseInt(ngay));
-                            if (!hdDateStr.equals(filterDate)) {
-                                match = false;
-                            }
-                        }
                     }
-                } catch (ParseException e) {
-                    JOptionPane.showMessageDialog(this, "Lỗi xử lý ngày hóa đơn!", 
-                        "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    return;
                 }
+
+                // Lọc theo tháng
+                if (!thang.isEmpty()) {
+                    String hdMonth = monthFormat.format(hdDate);
+                    if (!hdMonth.equals(String.format("%02d", Integer.parseInt(thang)))) {
+                        match = false;
+                    }
+                }
+
+                // Lọc theo ngày
+                if (!ngay.isEmpty()) {
+                    String hdDay = dayFormat.format(hdDate);
+                    if (!hdDay.equals(String.format("%02d", Integer.parseInt(ngay)))) {
+                        match = false;
+                    }
+                }
+            } catch (ParseException e) {
+                JOptionPane.showMessageDialog(this, "Lỗi xử lý ngày hóa đơn!", 
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
             // Lọc theo tổng tiền

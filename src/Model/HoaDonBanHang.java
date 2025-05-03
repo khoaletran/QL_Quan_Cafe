@@ -32,6 +32,7 @@ public class HoaDonBanHang {
 		setMaNVGia(maNVGia);
 		setGiamGia(maGiamGia);
 		setPhanTramGiamGia(phanTramGiamGia);
+		setTongGiamGia(phanTramGiamGia);
 		setTongtienGia(tongtienGia);
 	}
 

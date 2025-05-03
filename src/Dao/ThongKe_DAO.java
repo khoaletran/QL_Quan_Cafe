@@ -4,9 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ThongKe_DAO {
 
@@ -19,22 +17,17 @@ public class ThongKe_DAO {
                      "GROUP BY HH.TENHH";
 
         Map<String, Integer> result = new LinkedHashMap<>();
-
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-
             while (rs.next()) {
                 result.put(rs.getString("TENHH"), rs.getInt("SOLUONGBAN"));
             }
         }
-
         return result;
     }
 
-    // [SỬA] thêm tham số lọc theo tháng
     public static Map<String, Map<String, Integer>> getSoLuongTungLoaiSanPhamTheoNgay(Connection conn, String thang) throws SQLException {
         Map<String, Map<String, Integer>> result = new HashMap<>();
-
         String sql = "SELECT DAY(hd.NGAYHDBH) AS Ngay, sp.TENHH, SUM(ct.SoLuong) AS SoLuong " +
                      "FROM HOADONBANHANG hd " +
                      "JOIN CHITIETHOADON ct ON hd.MaHDBH = ct.MaHDBH " +
@@ -44,7 +37,7 @@ public class ThongKe_DAO {
                      "ORDER BY Ngay";
 
         PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setInt(1, Integer.parseInt(thang)); // [SỬA] dùng tháng truyền vào
+        stmt.setInt(1, Integer.parseInt(thang));
         ResultSet rs = stmt.executeQuery();
 
         while (rs.next()) {
@@ -55,26 +48,22 @@ public class ThongKe_DAO {
             result.putIfAbsent(tenSP, new HashMap<>());
             result.get(tenSP).put(String.format("%02d", ngay), soLuong);
         }
-
         return result;
     }
-    
- // [THÊM] Lấy danh sách tên sản phẩm từ bảng HANGHOA
-    public static java.util.List<String> getDanhSachTenSanPham(Connection conn) throws SQLException {
-        java.util.List<String> danhSach = new java.util.ArrayList<>();
+
+    public static List<String> getDanhSachTenSanPham(Connection conn) throws SQLException {
+        List<String> danhSach = new ArrayList<>();
         String sql = "SELECT TENHH FROM HANGHOA";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-
             while (rs.next()) {
                 danhSach.add(rs.getString("TENHH"));
             }
         }
-
         return danhSach;
     }
-    
+
     public static Map<String, Integer> getSoLuongSanPhamTheoThang(Connection conn, int thang) throws SQLException {
         String sql = "SELECT HH.TENHH, SUM(CTHD.SOLUONG) AS SOLUONGBAN " +
                      "FROM HOADONBANHANG HDBH " +
@@ -87,7 +76,6 @@ public class ThongKe_DAO {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, thang);
             ResultSet rs = stmt.executeQuery();
-
             while (rs.next()) {
                 result.put(rs.getString("TENHH"), rs.getInt("SOLUONGBAN"));
             }
@@ -95,28 +83,22 @@ public class ThongKe_DAO {
         return result;
     }
 
-    
-    public static Map<String, Double> getDoanhThuTheoThang(Connection conn) throws Exception {
+    // ✅ Đã sửa để thêm tham số năm
+    public static Map<String, Double> getDoanhThuTheoThang(Connection conn, int nam) throws Exception {
         String sql = "SELECT MONTH(NGAYHDBH) AS THANG, SUM(TONGTIEN) AS DOANHTHU " +
-                     "FROM HOADONBANHANG HDBH " +
-                     "JOIN CHITIETHOADON CTHD ON HDBH.MAHDBH = CTHD.MAHDBH " +
-                     "WHERE YEAR(HDBH.NGAYHDBH) = YEAR(GETDATE()) " +
-
+                     "FROM HOADONBANHANG " +
+                     "WHERE YEAR(NGAYHDBH) = ? " +
                      "GROUP BY MONTH(NGAYHDBH) " +
                      "ORDER BY THANG";
 
         Map<String, Double> result = new LinkedHashMap<>();
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, nam);
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                int thang = rs.getInt("THANG");
-                double doanhThu = rs.getDouble("DOANHTHU");
-                result.put("Tháng " + thang, doanhThu);
+                result.put("Tháng " + rs.getInt("THANG"), rs.getDouble("DOANHTHU"));
             }
         }
-
         return result;
     }
 }
