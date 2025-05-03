@@ -28,7 +28,7 @@ public class QuetQR {
         WebcamPanel panel = new WebcamPanel(webcam);
         panel.setMirrored(true);
 
-        JFrame frame = new JFrame("Quét mã QR - "+ BIEN.TENQUAN);
+        JFrame frame = new JFrame("Quét mã QR - " + BIEN.TENQUAN);
         frame.setIconImage(BIEN.LOGO_QUAN.getImage());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
@@ -44,7 +44,10 @@ public class QuetQR {
 
             System.out.println("📷 Webcam đã mở. Đưa mã QR vào camera...");
 
-            while (!found) {
+            long startTime = System.currentTimeMillis();
+            long timeout = 10_000;
+
+            while (!found && (System.currentTimeMillis() - startTime < timeout)) {
                 BufferedImage image = webcam.getImage();
                 if (image == null) continue;
 
@@ -56,20 +59,26 @@ public class QuetQR {
                     if (result != null) {
                         System.out.println("✅ Mã QR đọc được: " + result.getText());
                         found = true;
-
                         return result.getText();
                     }
                 } catch (NotFoundException e) {
                 }
             }
+
+            if (!found) {
+                System.out.println("⌛ Hết thời gian! Không quét được mã QR trong 10 giây.");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (webcam.isOpen()) webcam.close();
             frame.dispose();
             System.out.println("📷 Webcam đã đóng.");
+            found = false;
         }
 
         return null;
     }
+
 }
