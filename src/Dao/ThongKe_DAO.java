@@ -13,7 +13,7 @@ public class ThongKe_DAO {
                      "FROM HOADONBANHANG HDBH " +
                      "JOIN CHITIETHOADON CTHD ON HDBH.MAHDBH = CTHD.MAHDBH " +
                      "JOIN HANGHOA HH ON CTHD.MAHH = HH.MAHH " +
-                     "WHERE HDBH.NGAYHDBH BETWEEN '2024-01-01' AND '2025-12-31' " +
+                     "WHERE HDBH.NGAYHDBH BETWEEN '2020-01-01' AND '2025-12-31' " +
                      "GROUP BY HH.TENHH";
 
         Map<String, Integer> result = new LinkedHashMap<>();
@@ -26,18 +26,19 @@ public class ThongKe_DAO {
         return result;
     }
 
-    public static Map<String, Map<String, Integer>> getSoLuongTungLoaiSanPhamTheoNgay(Connection conn, String thang) throws SQLException {
+    public static Map<String, Map<String, Integer>> getSoLuongTungLoaiSanPhamTheoNgay(Connection conn, String thang, int nam) throws SQLException {
         Map<String, Map<String, Integer>> result = new HashMap<>();
         String sql = "SELECT DAY(hd.NGAYHDBH) AS Ngay, sp.TENHH, SUM(ct.SoLuong) AS SoLuong " +
                      "FROM HOADONBANHANG hd " +
                      "JOIN CHITIETHOADON ct ON hd.MaHDBH = ct.MaHDBH " +
                      "JOIN HANGHOA sp ON sp.MaHH = ct.MaHH " +
-                     "WHERE MONTH(hd.NGAYHDBH) = ? AND YEAR(hd.NGAYHDBH) = YEAR(GETDATE()) " +
+                     "WHERE MONTH(hd.NGAYHDBH) = ? AND YEAR(hd.NGAYHDBH) = ? " +
                      "GROUP BY DAY(hd.NGAYHDBH), sp.TENHH " +
                      "ORDER BY Ngay";
 
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setInt(1, Integer.parseInt(thang));
+        stmt.setInt(2, nam);
         ResultSet rs = stmt.executeQuery();
 
         while (rs.next()) {
@@ -64,17 +65,18 @@ public class ThongKe_DAO {
         return danhSach;
     }
 
-    public static Map<String, Integer> getSoLuongSanPhamTheoThang(Connection conn, int thang) throws SQLException {
+    public static Map<String, Integer> getSoLuongSanPhamTheoThang(Connection conn, int thang, int nam) throws SQLException {
         String sql = "SELECT HH.TENHH, SUM(CTHD.SOLUONG) AS SOLUONGBAN " +
                      "FROM HOADONBANHANG HDBH " +
                      "JOIN CHITIETHOADON CTHD ON HDBH.MAHDBH = CTHD.MAHDBH " +
                      "JOIN HANGHOA HH ON CTHD.MAHH = HH.MAHH " +
-                     "WHERE MONTH(HDBH.NGAYHDBH) = ? AND YEAR(HDBH.NGAYHDBH) = YEAR(GETDATE()) " +
+                     "WHERE MONTH(HDBH.NGAYHDBH) = ? AND YEAR(HDBH.NGAYHDBH) = ? " +
                      "GROUP BY HH.TENHH";
 
         Map<String, Integer> result = new LinkedHashMap<>();
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, thang);
+            stmt.setInt(2, nam);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 result.put(rs.getString("TENHH"), rs.getInt("SOLUONGBAN"));
@@ -83,7 +85,6 @@ public class ThongKe_DAO {
         return result;
     }
 
-    // ✅ Đã sửa để thêm tham số năm
     public static Map<String, Double> getDoanhThuTheoThang(Connection conn, int nam) throws Exception {
         String sql = "SELECT MONTH(NGAYHDBH) AS THANG, SUM(TONGTIEN) AS DOANHTHU " +
                      "FROM HOADONBANHANG " +

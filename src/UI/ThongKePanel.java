@@ -13,7 +13,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.time.Year;
 import java.util.Map;
 
@@ -21,9 +20,11 @@ public class ThongKePanel extends JPanel {
 
     private JComboBox<String> comboBoxThang;
     private JComboBox<String> comboBoxSanPham;
+    private JComboBox<String> comboBoxNamLineChart;
     private JPanel panelLineChartContainer;
 
     private JComboBox<String> comboBoxThangSanPhamThang;
+    private JComboBox<String> comboBoxNamPieChart;
     private JPanel panelPieChartContainer;
 
     private JComboBox<String> comboBoxNamDoanhThu;
@@ -38,10 +39,17 @@ public class ThongKePanel extends JPanel {
         JPanel filterPanel = new JPanel();
         comboBoxThang = new JComboBox<>();
         comboBoxSanPham = new JComboBox<>();
+        comboBoxNamLineChart = new JComboBox<>();
 
         for (int i = 1; i <= 12; i++) {
             comboBoxThang.addItem(String.format("%02d", i));
         }
+
+        int currentYear = Year.now().getValue();
+        for (int y = 2020; y <= currentYear; y++) {
+            comboBoxNamLineChart.addItem(String.valueOf(y));
+        }
+        comboBoxNamLineChart.setSelectedItem(String.valueOf(currentYear));
 
         try {
             ConnectDB.getInstance().connect();
@@ -58,11 +66,14 @@ public class ThongKePanel extends JPanel {
 
         filterPanel.add(new JLabel("Tháng:"));
         filterPanel.add(comboBoxThang);
+        filterPanel.add(new JLabel("Năm:"));
+        filterPanel.add(comboBoxNamLineChart);
         filterPanel.add(new JLabel("Sản phẩm:"));
         filterPanel.add(comboBoxSanPham);
 
         comboBoxThang.addActionListener(e -> updateLineChart());
         comboBoxSanPham.addActionListener(e -> updateLineChart());
+        comboBoxNamLineChart.addActionListener(e -> updateLineChart());
 
         panelLineChartContainer = new JPanel(new BorderLayout());
         panelLineChartContainer.add(createLineChartTheoNgay(), BorderLayout.CENTER);
@@ -76,18 +87,27 @@ public class ThongKePanel extends JPanel {
         JPanel panelThang = new JPanel(new BorderLayout());
         JPanel filterThangPanel = new JPanel();
         comboBoxThangSanPhamThang = new JComboBox<>();
+        comboBoxNamPieChart = new JComboBox<>();
 
         for (int i = 1; i <= 12; i++) {
             comboBoxThangSanPhamThang.addItem(String.format("%02d", i));
         }
 
+        for (int y = 2020; y <= currentYear; y++) {
+            comboBoxNamPieChart.addItem(String.valueOf(y));
+        }
+        comboBoxNamPieChart.setSelectedItem(String.valueOf(currentYear));
+
         filterThangPanel.add(new JLabel("Chọn tháng:"));
         filterThangPanel.add(comboBoxThangSanPhamThang);
+        filterThangPanel.add(new JLabel("Chọn năm:"));
+        filterThangPanel.add(comboBoxNamPieChart);
 
         panelPieChartContainer = new JPanel(new BorderLayout());
         panelPieChartContainer.add(createBieuDoTheoThang(), BorderLayout.CENTER);
 
         comboBoxThangSanPhamThang.addActionListener(e -> updateBieuDoTheoThang());
+        comboBoxNamPieChart.addActionListener(e -> updateBieuDoTheoThang());
 
         panelThang.add(filterThangPanel, BorderLayout.NORTH);
         panelThang.add(panelPieChartContainer, BorderLayout.CENTER);
@@ -99,7 +119,6 @@ public class ThongKePanel extends JPanel {
         JPanel topPanelDoanhThu = new JPanel();
         comboBoxNamDoanhThu = new JComboBox<>();
 
-        int currentYear = Year.now().getValue();
         for (int y = 2020; y <= currentYear; y++) {
             comboBoxNamDoanhThu.addItem(String.valueOf(y));
         }
@@ -131,10 +150,11 @@ public class ThongKePanel extends JPanel {
 
             String selectedThang = (String) comboBoxThang.getSelectedItem();
             String selectedSP = (String) comboBoxSanPham.getSelectedItem();
+            int selectedYear = Integer.parseInt((String) comboBoxNamLineChart.getSelectedItem());
 
             if (selectedThang == null || selectedSP == null) return new ChartPanel(null);
 
-            Map<String, Map<String, Integer>> data = ThongKe_DAO.getSoLuongTungLoaiSanPhamTheoNgay(conn, selectedThang);
+            Map<String, Map<String, Integer>> data = ThongKe_DAO.getSoLuongTungLoaiSanPhamTheoNgay(conn, selectedThang, selectedYear);
 
             if (selectedSP.equals("Tất cả")) {
                 for (Map.Entry<String, Map<String, Integer>> entry : data.entrySet()) {
@@ -183,7 +203,8 @@ public class ThongKePanel extends JPanel {
             Connection conn = ConnectDB.getConnection();
 
             int selectedThang = comboBoxThangSanPhamThang.getSelectedIndex() + 1;
-            Map<String, Integer> data = ThongKe_DAO.getSoLuongSanPhamTheoThang(conn, selectedThang);
+            int selectedYear = Integer.parseInt((String) comboBoxNamPieChart.getSelectedItem());
+            Map<String, Integer> data = ThongKe_DAO.getSoLuongSanPhamTheoThang(conn, selectedThang, selectedYear);
 
             DefaultPieDataset dataset = new DefaultPieDataset();
             for (Map.Entry<String, Integer> entry : data.entrySet()) {
@@ -191,7 +212,7 @@ public class ThongKePanel extends JPanel {
             }
 
             JFreeChart pieChart = ChartFactory.createPieChart(
-                    "Tỉ lệ sản phẩm bán ra trong tháng " + selectedThang,
+                    "Tỉ lệ sản phẩm bán ra trong tháng " + selectedThang + "/" + selectedYear,
                     dataset, true, true, false
             );
 
