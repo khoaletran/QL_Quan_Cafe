@@ -747,7 +747,7 @@ public class QuanLyDonPanel extends JPanel implements MouseListener {
 
                 thanhTien = df.format(thanhTienValue);
                 tongTienBanDau = df.format(tongTienBanDauValue);
-                phanTramGiamGia = String.valueOf(hd.getPhanTramGiamGia());
+                phanTramGiamGia = String.valueOf(hd.getTongGiamGia());
                 diemTL = String.valueOf(hd.getdiemTL());
                 tenKH = kh != null ? kh.getTenKH() : "Khách lẻ";
                 sdtKH = kh != null && !BIEN.SDTMAU.equals(kh.getSoDienThoai()) ? kh.getSoDienThoai() : "---";
