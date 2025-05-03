@@ -57,12 +57,12 @@ public class HoaDonBanHang {
  // Constructor cho việc tạo hóa đơn mới (chưa có mã)
     public HoaDonBanHang(LocalDate ngayLapHDBH, MaGiamGia giamGia, KhachHang khachHang, boolean hinhThucThanhToan) {
         this.maHDBH = null; // Khởi tạo là null
-        this.ngayLapHDBH = ngayLapHDBH;
-        this.giamGia = giamGia;
-        this.khachHang = khachHang;
-        this.hinhThucThanhToan = hinhThucThanhToan;
-        this.diemTL = 0;
-        this.chiTietHoaDonList = new ArrayList<>();
+        setNgayLapHDBH(ngayLapHDBH);
+        setGiamGia(giamGia);
+        setKhachHang(khachHang);
+        setHinhThucThanhToan(hinhThucThanhToan);
+        setDiemTL(0);
+        this.chiTietHoaDonList = new ArrayList<ChiTietHoaDon>();
     }
     
     public HoaDonBanHang(LocalDate ngayLapHDBH, MaGiamGia giamGia, KhachHang khachHang, 
@@ -226,7 +226,7 @@ public class HoaDonBanHang {
         return "HoaDonBanHang [" +
                 "maHDBH=" + maHDBH +
                 ", ngayLap=" + ngayLapHDBH +
-                ", giamGia=" + (giamGia != null ? giamGia.getGiamGia() : 0) +
+                ", giamGia=" + (giamGia != null ? giamGia.toString() : 0) +
                 ", diemTL=" + diemTL +
                 ", hinhThucThanhToan=" + (hinhThucThanhToan ? "Chuyển khoản" : "Tiền mặt") +
                 ", tongTienHang=" + tinhTong() +

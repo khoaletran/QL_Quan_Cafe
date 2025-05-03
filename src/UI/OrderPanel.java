@@ -303,13 +303,12 @@ public class OrderPanel extends JPanel {
         
         String generatedMaHDBH = null;
         try {
-            // Lưu hóa đơn vào database
+
             hoaDonDAO.saveOrderWithDetails(hoaDon, maNhanVien);
-            
-            // Lấy mã hóa đơn mới nhất từ database
+
             generatedMaHDBH = hoaDonDAO.getLatestMaHDBH();
             if (generatedMaHDBH != null) {
-                hoaDon.setMaHDBH(generatedMaHDBH); // Cập nhật mã hóa đơn vào đối tượng hoaDon
+                hoaDon.setMaHDBH(generatedMaHDBH);
             } else {
                 throw new SQLException("Không thể lấy mã hóa đơn tự sinh từ database.");
             }
@@ -320,10 +319,8 @@ public class OrderPanel extends JPanel {
             return;
         }
 
-        // In hóa đơn sau khi mã hóa đơn đã được gán
         printHoaDon(hoaDon);
 
-        // Xóa đơn hàng sau khi in
         clearOrder();
     }
 

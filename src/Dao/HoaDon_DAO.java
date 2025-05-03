@@ -110,10 +110,11 @@ public class HoaDon_DAO {
             }
         }
     }
+   
 
     private String insertHoaDon(Connection conn, HoaDonBanHang hoaDon, String maNhanVien) throws SQLException {
-        String sql = "INSERT INTO HOADONBANHANG (MANV, MAKH, NGAYHDBH, TONGTIEN, DIEMTL, GIAMGIA, HINHTHUCTHANHTOAN) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO HOADONBANHANG (MANV, MAKH, NGAYHDBH, TONGTIEN, DIEMTL, MAGIAM, GIAMGIA, HINHTHUCTHANHTOAN) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, maNhanVien);
@@ -126,10 +127,17 @@ public class HoaDon_DAO {
             }
             
             stmt.setDate(3, java.sql.Date.valueOf(hoaDon.getNgayLapHDBH()));
-            stmt.setDouble(4, hoaDon.tinhTongThanhToan()); // Lưu tổng tiền sau giảm giá
+            stmt.setDouble(4, hoaDon.tinhTongThanhToan());
             stmt.setInt(5, hoaDon.getdiemTL_THD());
-            stmt.setInt(6, (int) hoaDon.getTongGiamGia()); // Lưu tổng giảm giá (%)
-            stmt.setBoolean(7, hoaDon.isHinhThucThanhToan());
+            if (hoaDon.getGiamGia() == null) {
+                stmt.setNull(6, java.sql.Types.VARCHAR);
+            } else {
+                stmt.setString(6, hoaDon.getGiamGia().getMaGiam());
+            }
+            stmt.setInt(7, (int) hoaDon.getTongGiamGia());
+            stmt.setBoolean(8, hoaDon.isHinhThucThanhToan());
+            
+            System.out.println(hoaDon.toString());
             
             int affectedRows = stmt.executeUpdate();
             
@@ -138,6 +146,26 @@ public class HoaDon_DAO {
             }
             
             return getMaHoaDonVuaThem(conn, maNhanVien, java.sql.Date.valueOf(hoaDon.getNgayLapHDBH()));
+        }
+    }
+    
+    private void insertChiTietHoaDon(Connection conn, String maHDBH, List<ChiTietHoaDon> chiTietList) 
+            throws SQLException {
+        String sql = "INSERT INTO CHITIETHOADON (MAHDBH, MAHH, SOLUONG, THANHTIEN) VALUES (?, ?, ?, ?)";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (ChiTietHoaDon cthd : chiTietList) {
+                if (cthd == null || cthd.getHangHoa() == null) {
+                    continue;
+                }
+                
+                stmt.setString(1, maHDBH);
+                stmt.setString(2, cthd.getHangHoa().getMaHH());
+                stmt.setInt(3, cthd.getSoLuong());
+                stmt.setDouble(4, cthd.getThanhTien());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
         }
     }
     
@@ -347,26 +375,6 @@ public class HoaDon_DAO {
         }
     }
 
-
-    private void insertChiTietHoaDon(Connection conn, String maHDBH, List<ChiTietHoaDon> chiTietList) 
-            throws SQLException {
-        String sql = "INSERT INTO CHITIETHOADON (MAHDBH, MAHH, SOLUONG, THANHTIEN) VALUES (?, ?, ?, ?)";
-        
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            for (ChiTietHoaDon cthd : chiTietList) {
-                if (cthd == null || cthd.getHangHoa() == null) {
-                    continue;
-                }
-                
-                stmt.setString(1, maHDBH);
-                stmt.setString(2, cthd.getHangHoa().getMaHH());
-                stmt.setInt(3, cthd.getSoLuong());
-                stmt.setDouble(4, cthd.getThanhTien());
-                stmt.addBatch();
-            }
-            stmt.executeBatch();
-        }
-    }
 
     private void updateDiemTichLuy(Connection conn, HoaDonBanHang hoaDon) throws SQLException {
         String sql = "UPDATE KHACHHANG SET DIEMTL = DIEMTL + ? WHERE MAKH = ?";
