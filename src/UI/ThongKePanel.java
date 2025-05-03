@@ -5,12 +5,14 @@ import Dao.ThongKe_DAO;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -199,6 +201,10 @@ public class ThongKePanel extends JPanel {
                     "Tháng", "Doanh thu (VNĐ)", dataset
             );
 
+            // Format trục Y theo tiền Việt
+            NumberAxis rangeAxis = (NumberAxis) barChart.getCategoryPlot().getRangeAxis();
+            rangeAxis.setNumberFormatOverride(new DecimalFormat("#,### VNĐ"));
+
             return new ChartPanel(barChart);
 
         } catch (Exception e) {
@@ -206,4 +212,5 @@ public class ThongKePanel extends JPanel {
             return new ChartPanel(null);
         }
     }
+
 }

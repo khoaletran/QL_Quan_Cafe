@@ -102,7 +102,7 @@ public class ThongKe_DAO {
                      "JOIN CHITIETHOADON CTHD ON HDBH.MAHDBH = CTHD.MAHDBH " +
                      "WHERE YEAR(HDBH.NGAYHDBH) = YEAR(GETDATE()) " +
 
-                     "GROUP BY MONTH(NGAYHDBH), TONGTIEN " +
+                     "GROUP BY MONTH(NGAYHDBH) " +
                      "ORDER BY THANG";
 
         Map<String, Double> result = new LinkedHashMap<>();
