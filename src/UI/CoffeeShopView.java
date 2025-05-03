@@ -23,167 +23,174 @@ import Dao.NhanVien_DAO;
 import Model.NhanVien;
 
 public class CoffeeShopView extends JFrame {
-    private JPanel centerPanel; 
-    private JPanel rightPanel; 
-    private JPanel mainPanel; 
-    private String maNhanVien; // Lưu mã nhân viên đăng nhập
-    private boolean isQuanLy; // Lưu trạng thái quản lý của nhân viên
+	private JPanel centerPanel;
+	private JPanel rightPanel;
+	private JPanel mainPanel;
+	private String maNhanVien; // Lưu mã nhân viên đăng nhập
+	private boolean isQuanLy; // Lưu trạng thái quản lý của nhân viên
+	private String tenNhanVien;
 
-    public CoffeeShopView() {
-        setTitle(BIEN.TENQUAN); 
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setIconImage(BIEN.LOGO_QUAN.getImage());
-        showLoginDialog(); // Hiển thị dialog đăng nhập khi khởi động
-    }
+	public CoffeeShopView() {
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+		setIconImage(BIEN.LOGO_QUAN.getImage());
+		showLoginDialog(); // Hiển thị dialog đăng nhập khi khởi động
+	}
 
-    private void showLoginDialog() {
-        JDialog loginDialog = new JDialog(this, "Đăng Nhập", true);
-        loginDialog.setSize(400, 300);
-        loginDialog.setLocationRelativeTo(this);
-        loginDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+	private void showLoginDialog() {
+		JDialog loginDialog = new JDialog(this, "Đăng Nhập", true);
+		loginDialog.setSize(400, 300);
+		loginDialog.setLocationRelativeTo(this);
+		loginDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-        LoginPanel loginPanel = new LoginPanel();
-        loginDialog.add(loginPanel);
+		LoginPanel loginPanel = new LoginPanel();
+		loginDialog.add(loginPanel);
 
-        loginPanel.addLoginListener(e -> {
-            String username = loginPanel.getUsername();
-            String password = loginPanel.getPassword();
+		loginPanel.addLoginListener(e -> {
+			String username = loginPanel.getUsername();
+			String password = loginPanel.getPassword();
 
-            // Kiểm tra đăng nhập bằng NhanVien_DAO
-            NhanVien_DAO nhanVienDAO = new NhanVien_DAO();
-            NhanVien nhanVien = nhanVienDAO.timNhanVienTheoMaNV(username);
-            if (nhanVien != null && nhanVien.getMatKhau().equals(password)) {
-                maNhanVien = nhanVien.getMaNV(); // Lưu mã nhân viên
-                isQuanLy = nhanVien.isQuanly(); // Lưu trạng thái quản lý
-                loginDialog.dispose();
-                initializeMainUI(); // Khởi tạo giao diện chính
-            } else {
-                JOptionPane.showMessageDialog(loginPanel, "Mã nhân viên hoặc mật khẩu không đúng");
-                loginPanel.clearFields();
-            }
-        });
+			// Kiểm tra đăng nhập bằng NhanVien_DAO
+			NhanVien_DAO nhanVienDAO = new NhanVien_DAO();
+			NhanVien nhanVien = nhanVienDAO.timNhanVienTheoMaNV(username);
+			if (nhanVien != null && nhanVien.getMatKhau().equals(password)) {
+				maNhanVien = nhanVien.getMaNV(); // Lưu mã nhân viên
+				tenNhanVien = nhanVien.getTenNV();
+				isQuanLy = nhanVien.isQuanly(); // Lưu trạng thái quản lý
+				loginDialog.dispose();
+				initializeMainUI(); // Khởi tạo giao diện chính
+				setTitle(BIEN.TENQUAN + " - " + tenNhanVien);
+			} else {
+				JOptionPane.showMessageDialog(loginPanel, "Mã nhân viên hoặc mật khẩu không đúng");
+				loginPanel.clearFields();
+			}
+		});
 
-        loginDialog.setVisible(true);
-    }
+		loginDialog.setVisible(true);
+	}
 
-    private void initializeMainUI() {
-        connectDB();
-        createUI();
-        setVisible(true);
-    }
+	private void initializeMainUI() {
+		connectDB();
+		createUI();
+		setVisible(true);
+	}
 
-    private void createUI() {
-        setLayout(new BorderLayout());
-        connectDB();
+	private void createUI() {
+		setLayout(new BorderLayout());
+		connectDB();
 
-        mainPanel = new JPanel(new BorderLayout());
-        LeftMenuPanel leftMenu = new LeftMenuPanel();
+		mainPanel = new JPanel(new BorderLayout());
+		LeftMenuPanel leftMenu = new LeftMenuPanel();
 
-        // Khởi tạo các panel cần thiết
-        OrderPanel orderPanel = new OrderPanel(maNhanVien); // Truyền mã nhân viên
-        
-        centerPanel = new ProductListPanel(orderPanel);
-        rightPanel = new RightPanel(orderPanel);
+		// Khởi tạo các panel cần thiết
+		OrderPanel orderPanel = new OrderPanel(maNhanVien); // Truyền mã nhân viên
 
-        mainPanel.add(leftMenu, BorderLayout.WEST);
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
-        mainPanel.add(rightPanel, BorderLayout.EAST);
+		centerPanel = new ProductListPanel(orderPanel);
+		rightPanel = new RightPanel(orderPanel);
 
-        add(mainPanel, BorderLayout.CENTER);
+		mainPanel.add(leftMenu, BorderLayout.WEST);
+		mainPanel.add(centerPanel, BorderLayout.CENTER);
+		mainPanel.add(rightPanel, BorderLayout.EAST);
 
-        JLabel footerLabel = new JLabel("Hệ Thống Quản Lý Quản Cafe - © 2025", SwingConstants.CENTER);
-        footerLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        add(footerLabel, BorderLayout.SOUTH);
+		add(mainPanel, BorderLayout.CENTER);
 
-        // Thêm sự kiện cho nút "Khách Hàng"
-        leftMenu.setKhachHangButtonListener(() -> {
-            mainPanel.remove(centerPanel);
-            mainPanel.remove(rightPanel);
-            centerPanel = new KhachHangPanel();
-            mainPanel.add(centerPanel, BorderLayout.CENTER);
-            mainPanel.revalidate();
-            mainPanel.repaint();
-        });
+		JLabel footerLabel = new JLabel("Hệ Thống Quản Lý Quản Cafe - © 2025", SwingConstants.CENTER);
+		footerLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+		add(footerLabel, BorderLayout.SOUTH);
 
-        // Thêm sự kiện cho nút "Đơn hàng mới"
-        leftMenu.setDonHangMoiButtonListener(() -> {
-            connectDB();
-            mainPanel.remove(centerPanel);
-            centerPanel = new ProductListPanel(orderPanel);
-            mainPanel.add(centerPanel, BorderLayout.CENTER);
-            mainPanel.add(rightPanel, BorderLayout.EAST);
-            mainPanel.revalidate();
-            mainPanel.repaint();
-        });
+		// Thêm sự kiện cho nút "Khách Hàng"
+		leftMenu.setKhachHangButtonListener(() -> {
+			mainPanel.remove(centerPanel);
+			mainPanel.remove(rightPanel);
+			centerPanel = new KhachHangPanel();
+			mainPanel.add(centerPanel, BorderLayout.CENTER);
+			mainPanel.revalidate();
+			mainPanel.repaint();
+		});
 
-        // Thêm sự kiện cho nút "Nhân Viên" (chỉ quản lý được truy cập)
-        leftMenu.setNhanVienButtonListener(() -> {
-            if (isQuanLy) {
-                mainPanel.remove(centerPanel);
-                mainPanel.remove(rightPanel);
-                centerPanel = new NhanVienPanel();
-                mainPanel.add(centerPanel, BorderLayout.CENTER);
-                mainPanel.revalidate();
-                mainPanel.repaint();
-            } else {
-                JOptionPane.showMessageDialog(this, "Chỉ quản lý mới có quyền truy cập chức năng này!", 
-                                            "Lỗi quyền truy cập", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        
-        // Thêm sự kiện cho nút "Thống Kê" (chỉ quản lý được truy cập)
-        leftMenu.setThongKeButtonListener(() -> {
-            if (isQuanLy) {
-                mainPanel.remove(centerPanel);
-                mainPanel.remove(rightPanel);
-                centerPanel = new ThongKePanel();
-                mainPanel.add(centerPanel, BorderLayout.CENTER);
-                mainPanel.revalidate();
-                mainPanel.repaint();
-            } else {
-                JOptionPane.showMessageDialog(this, "Chỉ quản lý mới có quyền truy cập chức năng này!", 
-                                            "Lỗi quyền truy cập", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        
-        leftMenu.setSanPhamButtonListener(() -> {
-            mainPanel.remove(centerPanel);
-            mainPanel.remove(rightPanel);
-            centerPanel = new SanPhamPanel();
-            mainPanel.add(centerPanel, BorderLayout.CENTER);
-            mainPanel.revalidate();
-            mainPanel.repaint();
-        });
-        
-        leftMenu.setQuanLyDonButtonListener(() -> {
-            mainPanel.remove(centerPanel);
-            mainPanel.remove(rightPanel);
-            centerPanel = new QuanLyDonPanel();
-            mainPanel.add(centerPanel, BorderLayout.CENTER);
-            mainPanel.revalidate();
-            mainPanel.repaint();
-        });
-    }
-    
-    public static void connectDB() {
-        try {
-            ConnectDB.getInstance().connect();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+		// Thêm sự kiện cho nút "Đơn hàng mới"
+		leftMenu.setDonHangMoiButtonListener(() -> {
+			connectDB();
+			mainPanel.remove(centerPanel);
+			centerPanel = new ProductListPanel(orderPanel);
+			mainPanel.add(centerPanel, BorderLayout.CENTER);
+			mainPanel.add(rightPanel, BorderLayout.EAST);
+			mainPanel.revalidate();
+			mainPanel.repaint();
+		});
 
-    public static void main(String[] args) {
-        connectDB();
-        SwingUtilities.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            new CoffeeShopView();
-        });
-    }
+		// Thêm sự kiện cho nút "Nhân Viên" (chỉ quản lý được truy cập)
+		leftMenu.setNhanVienButtonListener(() -> {
+			if (isQuanLy) {
+				mainPanel.remove(centerPanel);
+				mainPanel.remove(rightPanel);
+				centerPanel = new NhanVienPanel();
+				mainPanel.add(centerPanel, BorderLayout.CENTER);
+				mainPanel.revalidate();
+				mainPanel.repaint();
+			} else {
+				JOptionPane.showMessageDialog(this, "Chỉ quản lý mới có quyền truy cập chức năng này!",
+						"Lỗi quyền truy cập", JOptionPane.ERROR_MESSAGE);
+			}
+		});
+
+		// Thêm sự kiện cho nút "Thống Kê" (chỉ quản lý được truy cập)
+		leftMenu.setThongKeButtonListener(() -> {
+			if (isQuanLy) {
+				mainPanel.remove(centerPanel);
+				mainPanel.remove(rightPanel);
+				centerPanel = new ThongKePanel();
+				mainPanel.add(centerPanel, BorderLayout.CENTER);
+				mainPanel.revalidate();
+				mainPanel.repaint();
+			} else {
+				JOptionPane.showMessageDialog(this, "Chỉ quản lý mới có quyền truy cập chức năng này!",
+						"Lỗi quyền truy cập", JOptionPane.ERROR_MESSAGE);
+			}
+		});
+
+		leftMenu.setSanPhamButtonListener(() -> {
+			if (isQuanLy) {
+				mainPanel.remove(centerPanel);
+				mainPanel.remove(rightPanel);
+				centerPanel = new SanPhamPanel();
+				mainPanel.add(centerPanel, BorderLayout.CENTER);
+				mainPanel.revalidate();
+				mainPanel.repaint();
+			} else {
+				JOptionPane.showMessageDialog(this, "Chỉ quản lý mới có quyền truy cập chức năng này!",
+						"Lỗi quyền truy cập", JOptionPane.ERROR_MESSAGE);
+			}
+		});
+
+		leftMenu.setQuanLyDonButtonListener(() -> {
+			mainPanel.remove(centerPanel);
+			mainPanel.remove(rightPanel);
+			centerPanel = new QuanLyDonPanel();
+			mainPanel.add(centerPanel, BorderLayout.CENTER);
+			mainPanel.revalidate();
+			mainPanel.repaint();
+		});
+	}
+
+	public static void connectDB() {
+		try {
+			ConnectDB.getInstance().connect();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) {
+		connectDB();
+		SwingUtilities.invokeLater(() -> {
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			new CoffeeShopView();
+		});
+	}
 }
