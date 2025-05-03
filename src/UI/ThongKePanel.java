@@ -14,6 +14,7 @@ import java.awt.*;
 import java.sql.Connection;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.Map;
 
 public class ThongKePanel extends JPanel {
@@ -25,11 +26,14 @@ public class ThongKePanel extends JPanel {
     private JComboBox<String> comboBoxThangSanPhamThang;
     private JPanel panelPieChartContainer;
 
+    private JComboBox<String> comboBoxNamDoanhThu;
+    private JPanel panelDoanhThuChartContainer;
+
     public ThongKePanel() {
         setLayout(new BorderLayout());
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        // Tab biểu đồ đường
+        // ======== Tab Line Chart Theo Ngày ========
         JPanel panelLine = new JPanel(new BorderLayout());
         JPanel filterPanel = new JPanel();
         comboBoxThang = new JComboBox<>();
@@ -68,14 +72,15 @@ public class ThongKePanel extends JPanel {
 
         tabbedPane.addTab("Line Chart Theo Ngày", panelLine);
 
-        // Tab số lượng sản phẩm theo tháng
+        // ======== Tab Biểu đồ tròn theo tháng ========
         JPanel panelThang = new JPanel(new BorderLayout());
-
         JPanel filterThangPanel = new JPanel();
         comboBoxThangSanPhamThang = new JComboBox<>();
+
         for (int i = 1; i <= 12; i++) {
             comboBoxThangSanPhamThang.addItem(String.format("%02d", i));
         }
+
         filterThangPanel.add(new JLabel("Chọn tháng:"));
         filterThangPanel.add(comboBoxThangSanPhamThang);
 
@@ -89,11 +94,31 @@ public class ThongKePanel extends JPanel {
 
         tabbedPane.addTab("Số Lượng Sản Phẩm Theo tháng", panelThang);
 
-        // Tab doanh thu theo tháng
+        // ======== Tab Doanh thu theo tháng ========
         JPanel panelDoanhThu = new JPanel(new BorderLayout());
-        panelDoanhThu.add(createBieuDoDoanhThuThang(), BorderLayout.CENTER);
+        JPanel topPanelDoanhThu = new JPanel();
+        comboBoxNamDoanhThu = new JComboBox<>();
+
+        int currentYear = Year.now().getValue();
+        for (int y = 2020; y <= currentYear; y++) {
+            comboBoxNamDoanhThu.addItem(String.valueOf(y));
+        }
+        comboBoxNamDoanhThu.setSelectedItem(String.valueOf(currentYear));
+
+        comboBoxNamDoanhThu.addActionListener(e -> updateBieuDoDoanhThuThang());
+
+        topPanelDoanhThu.add(new JLabel("Chọn năm:"));
+        topPanelDoanhThu.add(comboBoxNamDoanhThu);
+
+        panelDoanhThuChartContainer = new JPanel(new BorderLayout());
+        panelDoanhThuChartContainer.add(createBieuDoDoanhThuThang(), BorderLayout.CENTER);
+
+        panelDoanhThu.add(topPanelDoanhThu, BorderLayout.NORTH);
+        panelDoanhThu.add(panelDoanhThuChartContainer, BorderLayout.CENTER);
+
         tabbedPane.addTab("Doanh thu theo tháng", panelDoanhThu);
 
+        // Add tabbedPane vào panel chính
         add(tabbedPane, BorderLayout.CENTER);
     }
 
@@ -189,7 +214,9 @@ public class ThongKePanel extends JPanel {
         try {
             ConnectDB.getInstance().connect();
             Connection conn = ConnectDB.getConnection();
-            Map<String, Double> data = ThongKe_DAO.getDoanhThuTheoThang(conn);
+
+            int selectedYear = Integer.parseInt((String) comboBoxNamDoanhThu.getSelectedItem());
+            Map<String, Double> data = ThongKe_DAO.getDoanhThuTheoThang(conn, selectedYear);
 
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();
             for (Map.Entry<String, Double> entry : data.entrySet()) {
@@ -197,11 +224,10 @@ public class ThongKePanel extends JPanel {
             }
 
             JFreeChart barChart = ChartFactory.createBarChart(
-                    "Doanh thu theo tháng trong năm " + LocalDate.now().getYear(),
+                    "Doanh thu theo tháng trong năm " + selectedYear,
                     "Tháng", "Doanh thu (VNĐ)", dataset
             );
 
-            // Format trục Y theo tiền Việt
             NumberAxis rangeAxis = (NumberAxis) barChart.getCategoryPlot().getRangeAxis();
             rangeAxis.setNumberFormatOverride(new DecimalFormat("#,### VNĐ"));
 
@@ -213,4 +239,10 @@ public class ThongKePanel extends JPanel {
         }
     }
 
+    private void updateBieuDoDoanhThuThang() {
+        panelDoanhThuChartContainer.removeAll();
+        panelDoanhThuChartContainer.add(createBieuDoDoanhThuThang(), BorderLayout.CENTER);
+        panelDoanhThuChartContainer.revalidate();
+        panelDoanhThuChartContainer.repaint();
+    }
 }
