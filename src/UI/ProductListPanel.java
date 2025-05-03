@@ -1,25 +1,51 @@
 package UI;
 
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import ConnectDB.ConnectDB;
 import Dao.HangHoa_DAO;
+import Dao.LoaiHangHoa_DAO;
 import Model.HangHoa;
+import Model.LoaiHangHoa;
 
 public class ProductListPanel extends JPanel {
     private List<HangHoa> dsHH;
     private JPanel productGridPanel;
     private OrderPanel orderPanel;
-    private JTextField searchField; // Khai báo để sử dụng trong DocumentListener
-	private HangHoa_DAO hangHoaDAO;
+    private JTextField searchField;
+    private JComboBox<String> cbLocLoaiHH;
+    private HangHoa_DAO hangHoaDAO;
+    private LoaiHangHoa_DAO loaiHangHoaDAO;
 
     public ProductListPanel(OrderPanel orderPanel) {
+        try {
+            ConnectDB.getInstance().connect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         this.orderPanel = orderPanel;
         setLayout(new BorderLayout());
         hangHoaDAO = new HangHoa_DAO();
+        loaiHangHoaDAO = new LoaiHangHoa_DAO();
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setBackground(Color.WHITE);
         createUI();
@@ -31,18 +57,51 @@ public class ProductListPanel extends JPanel {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
 
-        JPanel searchPanel = new JPanel(new BorderLayout(5, 5));
-        searchPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        // Panel chứa tìm kiếm và lọc
+        JPanel filterPanel = new JPanel(new BorderLayout(10, 5));
+        filterPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        filterPanel.setBackground(Color.WHITE);
+
+        // Thanh tìm kiếm
+        JPanel searchPanel = new JPanel(new BorderLayout());
         searchField = new JTextField();
+        searchField.setFont(new Font("Arial", Font.PLAIN, 12));
+        searchField.setPreferredSize(new Dimension(200, 15));
         CustomButton searchButton = new CustomButton("🔍", Color.WHITE, Color.BLACK, 5);
         searchPanel.add(searchField, BorderLayout.CENTER);
         searchPanel.add(searchButton, BorderLayout.EAST);
+
+        // Bộ lọc loại hàng hóa
+        JPanel locLoaiHangCbo = new JPanel(new BorderLayout());
+        locLoaiHangCbo.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder("Lọc theo loại hàng"),
+            BorderFactory.createEmptyBorder(0, 10, 0, 10)
+        ));
+        
+        cbLocLoaiHH = new JComboBox<>();
+        cbLocLoaiHH.setFont(new Font("Arial", Font.PLAIN, 12));
+        cbLocLoaiHH.addItem("Tất cả");
+        try {
+            List<LoaiHangHoa> dsLoaiHH = loaiHangHoaDAO.getAllLoaiHangHoa();
+            for (LoaiHangHoa lhh : dsLoaiHH) {
+                cbLocLoaiHH.addItem(lhh.getTenLoaiHang());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách loại hàng hóa!", 
+                "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+        cbLocLoaiHH.addItemListener(e -> locLoaiHang());
+        locLoaiHangCbo.add(cbLocLoaiHH, BorderLayout.CENTER);
+
+        filterPanel.add(searchPanel, BorderLayout.CENTER);
+        filterPanel.add(locLoaiHangCbo, BorderLayout.EAST);
 
         // Thêm DocumentListener cho tìm kiếm động
         searchField.getDocument().addDocumentListener(createDocumentListener());
 
         headerPanel.add(titleLabel, BorderLayout.NORTH);
-        headerPanel.add(searchPanel, BorderLayout.SOUTH);
+        headerPanel.add(filterPanel, BorderLayout.SOUTH);
         add(headerPanel, BorderLayout.NORTH);
 
         productGridPanel = new JPanel(new GridLayout(0, 4, 10, 30));
@@ -78,7 +137,7 @@ public class ProductListPanel extends JPanel {
                 String keyword = searchField.getText().trim();
                 try {
                     if (keyword.isEmpty()) {
-                        dsHH = HangHoa_DAO.getAllHangHoa(); // Hiển thị tất cả nếu từ khóa rỗng
+                        dsHH = hangHoaDAO.getAllHangHoaForSanPhamPanel(); // Hiển thị tất cả nếu từ khóa rỗng
                     } else {
                         dsHH = hangHoaDAO.timKiemHangHoa(keyword); // Giả sử phương thức này tồn tại
                     }
@@ -94,11 +153,30 @@ public class ProductListPanel extends JPanel {
 
     private void loadProducts() {
         try {
-            dsHH = HangHoa_DAO.getAllHangHoa();
+            dsHH = hangHoaDAO.getAllHangHoaForSanPhamPanel();
             addProducts(dsHH);
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách sản phẩm!", 
+                "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void locLoaiHang() {
+        String loaiHang = cbLocLoaiHH.getSelectedItem().toString();
+        try {
+            List<HangHoa> filteredHH = new ArrayList<>();
+            for (HangHoa hh : dsHH) {
+                if (loaiHang.equals("Tất cả") || 
+                    (hh.getLoaiHangHoa() != null && 
+                     hh.getLoaiHangHoa().getTenLoaiHang().equalsIgnoreCase(loaiHang))) {
+                    filteredHH.add(hh);
+                }
+            }
+            addProducts(filteredHH); // Cập nhật danh sách sản phẩm
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi lọc sản phẩm!", 
                 "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }

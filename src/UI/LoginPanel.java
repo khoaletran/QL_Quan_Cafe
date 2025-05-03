@@ -8,7 +8,6 @@ public class LoginPanel extends JPanel {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private CustomButton loginButton;
-    private JLabel messageLabel;
 
     public LoginPanel() {
         setLayout(new BorderLayout());
@@ -25,15 +24,14 @@ public class LoginPanel extends JPanel {
         add(titleLabel, BorderLayout.NORTH);
 
         // Panel chính chứa các trường nhập
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new GridBagLayout());
+        JPanel inputPanel = new JPanel(new GridBagLayout());
         inputPanel.setBackground(Color.WHITE);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Tên đăng nhập
-        JLabel usernameLabel = new JLabel("Tên đăng nhập:");
+        JLabel usernameLabel = new JLabel("Mã nhân viên:");
         usernameLabel.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -42,7 +40,6 @@ public class LoginPanel extends JPanel {
         usernameField = new JTextField(15);
         usernameField.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         gbc.gridx = 1;
-        gbc.gridy = 0;
         inputPanel.add(usernameField, gbc);
 
         // Mật khẩu
@@ -55,27 +52,18 @@ public class LoginPanel extends JPanel {
         passwordField = new JPasswordField(15);
         passwordField.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         gbc.gridx = 1;
-        gbc.gridy = 1;
         inputPanel.add(passwordField, gbc);
-
-        // Thông báo lỗi
-        messageLabel = new JLabel("", SwingConstants.CENTER);
-        messageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        messageLabel.setForeground(Color.RED);
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        inputPanel.add(messageLabel, gbc);
 
         // Nút đăng nhập
         loginButton = new CustomButton("Đăng nhập", new Color(70, 130, 180), Color.WHITE, 10);
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 2;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.NONE;
         inputPanel.add(loginButton, gbc);
 
         add(inputPanel, BorderLayout.CENTER);
+        
     }
 
     public void addLoginListener(ActionListener listener) {
@@ -92,13 +80,10 @@ public class LoginPanel extends JPanel {
         return new String(passwordField.getPassword());
     }
 
-    public void setMessage(String message) {
-        messageLabel.setText(message);
-    }
-
     public void clearFields() {
         usernameField.setText("");
         passwordField.setText("");
-        messageLabel.setText("");
+        usernameField.requestFocus();
+        
     }
 }
