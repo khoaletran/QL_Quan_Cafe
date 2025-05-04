@@ -9,7 +9,7 @@ DECLARE @MAGIAM varchar(30);
 DECLARE @GIAMGIA int;
 DECLARE @HTTT BIT;
 
-WHILE @i <= 200 
+WHILE @i <= 500 
 BEGIN
 	DECLARE @Year INT = FLOOR(RAND() * 6) + 2020;
     DECLARE @Month INT = FLOOR(RAND() * 12) + 1;       
