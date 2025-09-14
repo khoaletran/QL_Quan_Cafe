@@ -12,7 +12,7 @@ Chào mừng bạn đến với **Cafe Manager App** – giải pháp quản lý
 - Trần Lê Khoa  (*)
 - Trần Quốc Nhã  
 - Đỗ Minh Quân  
-- Nguyễn Hà Nhật Khánh  
+- Nguyễn Hà Nhật Khanh
 
 ## 🚀 Tính Năng Chính
 ✔️ **Quản lý thực đơn**: Thêm, sửa, xóa món dễ dàng.  
