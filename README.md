@@ -23,8 +23,7 @@ Chào mừng bạn đến với **Cafe Manager App** – giải pháp quản lý
 
 ## 🛠️ Công Nghệ Sử Dụng
 🔹 **Frontend**: Java  
-🔹 **Backend**: MySQL  
-🔹 **Framework**: Eclipse  
+🔹 **Backend**: Java  
 🔹 **Database**: MySQL  
 
 ## 🔥 Mục Tiêu
